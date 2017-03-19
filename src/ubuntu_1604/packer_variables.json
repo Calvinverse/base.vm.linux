@@ -1,0 +1,14 @@
+{
+    "iso_checksum": "737AE7041212C628DE5751D15C3016058B0E833FDC32E7420209B76CA3D0A535",
+    "iso_url": "${IsoFileEscaped}",
+
+    "vm_ram_size_in_mb": "2048",
+    "vm_switch_name": "${VmSwitch}",
+
+    "admin_username": "${LocalAdministratorName}",
+    "admin_password": "${LocalAdministratorPassword}",
+
+    "dir_deploy": "${DirDeployJsonEscaped}",
+    "dir_scripts_user": "${DirTempJsonEscaped}/scripts",
+    "dir_temp_packer": "${DirTempJsonEscaped}/packer"
+}

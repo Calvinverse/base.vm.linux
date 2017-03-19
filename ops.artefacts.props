@@ -133,9 +133,9 @@
     -->
     <ItemGroup>
         <PackerImagesToBuild
-            Include="$(DirSrc)\hyperv.json">
+            Include="$(DirSrc)\ubuntu_1604\hyperv.json">
             <Variables>
-                $(DirBuildTemp)\packer_variables.json
+                $(DirBuildTemp)\ubuntu_1604\packer_variables.json
             </Variables>
         </PackerImagesToBuild>
     </ItemGroup>

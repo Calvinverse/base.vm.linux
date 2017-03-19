@@ -361,7 +361,7 @@
             </PostSteps>
         </BuildStepsToExecute>
         -->
-
+        <!--
         <BuildStepsToExecute Include="$(BuildStepsUnitTestNUnit)">
             <Properties>
                 Configuration=$(TestConfiguration);
@@ -375,8 +375,6 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
-
-        <!--
         <BuildStepsToExecute Include="$(BuildStepsUnitTestMsTest)">
             <Properties>
                 Configuration=$(TestConfiguration);
@@ -421,6 +419,7 @@
         </BuildStepsToExecute>
         -->
 
+        <!--
         <BuildStepsToExecute Include="$(BuildStepsPackIso)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
@@ -434,6 +433,8 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
+        -->
+
         <BuildStepsToExecute Include="$(BuildStepsPackPacker)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
@@ -447,6 +448,7 @@
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
+
         <!--
         <BuildStepsToExecute Include="$(BuildStepsPackNuGet)">
             <Properties>
@@ -560,16 +562,15 @@
     -->
     <ItemGroup>
         <FilesToCopy
-            Exclude="$(DirBuildTempUnattend)\scripts\variables.ps1"
-            Include="$(DirBuildTempUnattend)\scripts\*.*">
-            <Destination>$(DirBuildTempIso)</Destination>
+            Include="$(DirBuildTempScripts)\ubuntu\*.*">
+            <Destination>$(DirBuildTempIso)\ubuntu</Destination>
         </FilesToCopy>
     </ItemGroup>
     <ItemGroup>
         <NuGetFilesToCopy Include="Ops.Tools.BaseImage.Linux">
             <Include>**\*</Include>
             <Destinations>
-                $(DirBuildTempUnattend);
+                $(DirBuildTempScripts);
             </Destinations>
         </NuGetFilesToCopy>
     </ItemGroup>
@@ -608,13 +609,9 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\packer_variables.json">
-            <Template>$(DirSrc)\packer_variables.json</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu_1604\packer_variables.json">
+            <Template>$(DirSrc)\ubuntu_1604\packer_variables.json</Template>
             <Encoding></Encoding>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTempIso)\variables.ps1">
-            <Template>$(DirBuildTempUnattend)\scripts\variables.ps1</Template>
-            <Encoding>UTF-8</Encoding>
         </BuildFilesToGenerate>
     </ItemGroup>
 

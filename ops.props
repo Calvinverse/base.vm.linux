@@ -186,7 +186,6 @@
         <DirBuildTempConfig>$(DirBuildTemp)\config</DirBuildTempConfig>
         <DirBuildTempIso>$(DirBuildTemp)\iso</DirBuildTempIso>
         <DirBuildTempScripts>$(DirBuildTemp)\scripts</DirBuildTempScripts>
-        <DirBuildTempUnattend>$(DirBuildTemp)\unattend</DirBuildTempUnattend>
 
         <!-- The directory that will contain all the test files generated during the test process -->
         <!-- <DirBuildTest>$(DirBuild)\tests</DirBuildTest> -->
