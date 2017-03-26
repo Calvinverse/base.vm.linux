@@ -328,6 +328,10 @@
             <ReplacementValue>TheB1gK@huna</ReplacementValue>
         </TemplateTokens>
 
+        <TemplateTokens Include="HostIpAddress">
+            <ReplacementValue>192.168.3.25</ReplacementValue>
+        </TemplateTokens>
+
         <!-- For the Packer config -->
         <TemplateTokens Include="IsoFileEscaped">
             <ReplacementValue>$(IsoFile.Replace('\', '/'))</ReplacementValue>

@@ -2,6 +2,7 @@
     "variables": {
         "iso_checksum": null,
         "iso_url": null,
+        "host_ip": null,
         "vm_ram_size_in_mb": "2048",
         "vm_switch_name": "internal_switch",
         "admin_username": "admin",
@@ -17,7 +18,7 @@
                 "<esc><wait10><esc><esc><enter><wait>",
                 "set gfxpayload=1024x768<enter>",
                 "linux /install/vmlinuz ",
-                "preseed/url=http://{{.HTTPIP}}:{{.HTTPPort}}/preseed.cfg ",
+                "preseed/url=http://192.168.3.25:{{.HTTPPort}}/preseed.cfg ",
                 "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
                 "hostname={{.Name}} ",
                 "fb=false debconf/frontend=noninteractive ",
@@ -30,6 +31,7 @@
             "enable_secure_boot": false,
             "generation": 2,
             "guest_additions_mode": "disable",
+            "http_directory": "{{ user `dir_scripts_user` }}/ubuntu/http/",
             "iso_url": "{{user `iso_url`}}",
             "iso_checksum_type": "sha256",
             "iso_checksum": "{{user `iso_checksum`}}",
@@ -40,7 +42,7 @@
             "ssh_username": "{{user `admin_username`}}",
             "switch_name": "{{user `vm_switch_name`}}",
             "type": "hyperv-iso",
-            "vm_name": "base.ubuntu1604"
+            "vm_name": "base-ubuntu1604"
         }
     ],
     "provisioners": [
