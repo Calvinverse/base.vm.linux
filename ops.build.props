@@ -613,6 +613,10 @@
             <Template>$(DirSrc)\ubuntu_1604\packer_variables.json</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu\http\preseed.cfg">
+            <Template>$(DirBuildTemp)\scripts\ubuntu\http\preseed.cfg</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
     </ItemGroup>
 
 

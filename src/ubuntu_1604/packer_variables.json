@@ -11,6 +11,7 @@
     "admin_password": "${LocalAdministratorPassword}",
 
     "dir_deploy": "${DirDeployJsonEscaped}",
+    "dir_http_user": "${DirTempJsonEscaped}/ubuntu/http",
     "dir_scripts_user": "${DirTempJsonEscaped}/scripts",
     "dir_temp_packer": "${DirTempJsonEscaped}/packer"
 }
