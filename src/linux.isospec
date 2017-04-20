@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<iso>
+    <name>linux</name>
+    <files>
+        <file src="${DirBuildTempIso}\**\*" target="" />
+    </files>
+</iso>

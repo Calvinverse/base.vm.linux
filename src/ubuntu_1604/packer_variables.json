@@ -1,0 +1,18 @@
+{
+    "iso_checksum": "${IsoFileHash}",
+    "iso_url": "${IsoFileEscaped}",
+
+    "host_ip": "${HostIpAddress}",
+
+    "vm_ram_size_in_mb": "2048",
+    "vm_switch_name": "${VmSwitch}",
+    "vm_name": "${ImageName}",
+
+    "admin_username": "${LocalAdministratorName}",
+    "admin_password": "${LocalAdministratorPassword}",
+
+    "dir_deploy": "${DirDeployJsonEscaped}",
+    "dir_http_user": "${DirTempJsonEscaped}/ubuntu/http",
+    "dir_scripts_user": "${DirTempJsonEscaped}/scripts",
+    "dir_temp": "${DirTempJsonEscaped}"
+}
