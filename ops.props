@@ -1,0 +1,431 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- Overrides for the project specific properties -->
+    <PropertyGroup>
+        <!--
+            The name of the product. This is for instance used for:
+            * Copyrights
+            * API documentation
+        -->
+        <ProductName>Base.Linux</ProductName>
+
+        <!--
+            The name of the product that can be used as part of a file path. This is for instance used for:
+            * Deployment directory naming
+        -->
+        <ProductNameInFilePath>Base.Linux</ProductNameInFilePath>
+
+        <!--
+            The namespace in which all the code for the product is placed. This is for instance used for:
+            * Finding the correct assemblies and namespaces for unit testing and coverage reporting
+            * Generated code files that contain namespaces
+        -->
+        <ProductNamespace>Base.Linux</ProductNamespace>
+
+        <!--
+            The URL of the product website. This is for instance used for:
+            * nuspec files
+        -->
+        <ProductUrl>https://github.com/Calvinverse/base.linux</ProductUrl>
+
+        <!--
+            The first year the product was available / created. This is for instance used for:
+            * Copyrights
+        -->
+        <ProductStartingYear>2017</ProductStartingYear>
+
+        <!--
+            The name of the company. This is for instance used for:
+            * Copyrights
+            * API documentation
+        -->
+        <CompanyName>Calvinverse</CompanyName>
+
+        <!--
+            The name of the company that can be used as a part of a file path. This is for instance used for:
+            * Installer file paths
+        -->
+        <CompanyNameInFilePath>calvinverse</CompanyNameInFilePath>
+
+        <!--
+            The URL of the company website. This is for instance used for:
+            * nuspec files
+        -->
+        <CompanyUrl>https://github.com/Calvinverse</CompanyUrl>
+    </PropertyGroup>
+
+    <!--
+        Overrides for the VCS specific properties
+    -->
+    <PropertyGroup>
+        <!-- The user name of the user who owns the repository on GitHub -->
+        <GitHubUserName>calvinverse</GitHubUserName>
+
+        <!--
+            The github repository that contains the source code for the current product. Used when getting the release notes
+            from the github issues, e.g. nbuildkit.
+        -->
+        <GitHubRepositoryName>base.win2016</GitHubRepositoryName>
+
+        <!--
+            The full URL to the GIT repository. Can include the '%GitHubToken%' environment variable for authenticated
+            connection to the repository, e.g. https://%GitHubToken%:@github.com/MyUser/MyProject.git
+        -->
+        <GitRemoteRepository>https://%GitHubToken%:@github.com/$(GitHubUserName)/$(GitHubRepositoryName).git</GitRemoteRepository>
+    </PropertyGroup>
+
+    <!--
+        Defines the custom version numbers that should be available for template replacement.
+        The template consists of a name and a version number string. The name will be used as the
+        name of the template, i.e. 'VersionAssembly' will be available in the collection of template
+        parameters available for replacement.
+
+        Each version number may consist of zero or more template parameters. Template parameters
+        must be enclosed in '${}', e.g. ${VersionMajor} will be replaced by the major version number
+        as indicated at the top of the file.
+
+        Note that custom version number templates may not reference other custom version number templates.
+    -->
+    <ItemGroup>
+        <!--
+            The template for the version number that will be used in the 'AssemblyVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <!--
+        <TemplateVersion Include="VersionAssembly">
+            <Template>${VersionMajor}.${VersionMinor}.0.0</Template>
+        </TemplateVersion>
+        -->
+        <!--
+            The template for the version number that will be used in the 'AssemblyFileVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <!--
+        <TemplateVersion Include="VersionAssemblyFile">
+            <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}.${VersionBuild}</Template>
+        </TemplateVersion>
+        -->
+        <!--
+            The template for the version number that will be used in the 'AssemblyInformationalVersionAttribute' in the
+            'AssemblyInfo.VersionNumber.xx' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+
+            Also used as the 'ApplicationVersion' in the 'VersionNumber.wxi' file.
+        -->
+        <!--
+        <TemplateVersion Include="VersionProduct">
+            <Template>${VersionSemanticFull}</Template>
+        </TemplateVersion>
+        -->
+        <!--
+            The template for the version number that will be used as the 'InstallVersion' in the
+            'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <!--
+        <TemplateVersion Include="VersionInstall">
+            <Template>${VersionMajor}.${VersionMinor}.${VersionPatch}</Template>
+        </TemplateVersion>
+        -->
+        <!--
+            The template for the version number that will be used as the 'ProductVersionFolder' in the
+            'VersionNumber.wxi' file which can be generated if the 'ShouldGenerateAssemblyVersionInfo'
+            property is set to 'true'
+        -->
+        <!--
+        <TemplateVersion Include="VersionInstallFilePath">
+            <Template>${VersionMajor}.${VersionMinor}</Template>
+        </TemplateVersion>
+        -->
+    </ItemGroup>
+
+    <!--
+        Directories
+    -->
+    <PropertyGroup>
+        <!--
+            NOTE: The 'DirWorkspace' property is always set prior to loading the current file. The variable is set
+            to the directory which contains the current file.
+        -->
+
+        <!-- The directory that will contain all the files generated during the build process -->
+        <!-- <DirBuild>$(DirWorkspace)\build</DirBuild> -->
+
+        <!--
+            The directory that will contain all the binaries generated during the build process.
+            Note that there may be configuration and platform specific sub-directories.
+        -->
+        <!-- <DirBuildBin>$(DirBuild)\bin</DirBuildBin> -->
+
+        <!--
+            The directory where the current binaries are placed after being generated.
+            Note that $(Platform) and $(Configuration) do not have to be defined in this settings file. They may be provided
+            externally as long as they are provided before the settings file is loaded!
+        -->
+        <!-- <DirBuildBinPlatformConfig>$([System.IO.Path]::GetFullPath('$(DirBuildBin)\$(PlatformWithoutSpaces)\$(Configuration)'))</DirBuildBinPlatformConfig> -->
+
+        <!-- The directory that will contain all the generated artifacts during the build process -->
+        <!-- <DirBuildDeploy>$(DirBuild)\deploy</DirBuildDeploy> -->
+
+        <!-- The directory that will contain all the documentation files which are generated during the build process -->
+        <!-- <DirBuildDoc>$(DirBuildDeploy)\doc</DirBuildDoc> -->
+
+        <!-- The directory that will contain all the generated build logs during the build process -->
+        <!-- <DirBuildLogs>$(DirBuild)\logs</DirBuildLogs> -->
+
+        <!-- The directory that will contain the reports generated by OpenCover and ReportGenerator describing the coverage of the unit tests. -->
+        <!-- <DirReportGeneratorOutput>$(DirBuildLogs)\coverage</DirReportGeneratorOutput> -->
+
+        <!-- The directory that will contain all the temporary files needed during the build process -->
+        <!-- <DirBuildTemp>$(DirBuild)\temp</DirBuildTemp> -->
+        <DirBuildTempConfig>$(DirBuildTemp)\config</DirBuildTempConfig>
+        <DirBuildTempIso>$(DirBuildTemp)\iso</DirBuildTempIso>
+        <DirBuildTempScripts>$(DirBuildTemp)\scripts</DirBuildTempScripts>
+
+        <!-- The directory that will contain all the test files generated during the test process -->
+        <!-- <DirBuildTest>$(DirBuild)\tests</DirBuildTest> -->
+
+        <!-- The directory that contains all the NuGet packages for the project -->
+        <!-- <DirPackages>$(DirWorkspace)\packages</DirPackages> -->
+
+        <!-- The directory that contains the source files for the project -->
+        <!-- <DirSrc>$(DirWorkspace)\src</DirSrc> -->
+
+        <!-- The directory that contains the template files for the project -->
+        <!-- <DirTemplates>$(DirWorkspace)\templates</DirTemplates> -->
+
+        <!-- The directory that contains all the test files for the project -->
+        <!-- <DirTest>$(DirWorkspace)\tests</DirTest> -->
+    </PropertyGroup>
+
+    <!--
+        Workflow
+    -->
+    <PropertyGroup>
+        <!--
+            A flag that indicates whether or not the current build should assume that the GitFlow (http://nvie.com/posts/a-successful-git-branching-model/)
+            workflow is being used.
+        -->
+        <IsGitFlow>true</IsGitFlow>
+    </PropertyGroup>
+
+
+    <!--
+        **** PREPARE - NUGET RESTORE ****
+    -->
+    <ItemGroup>
+        <!--
+        <NuGetPackageFiles
+            Include="$(DirWorkspace)\packages.config"
+            Condition="Exists('$(DirWorkspace)\packages.config')" />
+        <NuGetPackageFiles
+            Include="$(DirSrc)\**\packages.config"
+            Exclude="$(DirSrc)\**\node_modules\**\packages.config;$(DirSrc)\**\bin\**\packages.config;$(DirSrc)\**\obj\**\packages.config" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - NPM RESTORE ****
+    -->
+    <ItemGroup>
+        <!--
+        <NpmPackageFiles
+            Include="$(DirWorkspace)\**\package.json"
+            Exclude="$(DirBuild)\**\package.json;$(DirWorkspace)\**\bin\**\package.json;$(DirWorkspace)\**\obj\**\package.json;$(DirWorkspace)\**\bower_components\**\package.json;$(DirWorkspace)\**\node_modules\**\package.json" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - MERGE ****
+    -->
+    <PropertyGroup>
+        <!--
+            The flag that indicates if the input branch is a GitFlow feature branch.
+        -->
+        <!-- <IsFeatureBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(feature\/).*'))</IsFeatureBranch> -->
+
+        <!--
+            The flag that indicates if the input branch is a GitFlow release branch.
+        -->
+        <!-- <IsReleaseBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(release\/).*'))</IsReleaseBranch> -->
+
+        <!--
+            The flag that indicates if the input branch is a GitFlow hotfix branch.
+        -->
+        <!-- <IsHotfixBranch Condition=" '$(IsGitFlow)' == 'true' ">$([System.Text.RegularExpressions.Regex]::IsMatch('$(GitBranchExpected)', '.*(hotfix\/).*'))</IsHotfixBranch> -->
+    </PropertyGroup>
+    <!--
+        The collection of branches that the changes should be merged to. The build will be executed on the last
+        merged branch, e.g. if the list is:
+
+            branch_1
+            branch_2
+            branch_3
+
+        Then the build process will merge to the branches in the given order and will finally execute the following
+        build steps on 'branch_3'.
+        If the branch should be tagged then that can be done as a separate build step.
+        Finally if the zip packaging step is included in the build process it will automatically zip the .git folder
+        so that other builds can reproduce the current workspace exactly.
+
+        Any failure during the branching process will stop the build process.
+    -->
+    <ItemGroup>
+        <!-- GITFLOW: If the input branch (GitBranchExpected) is a feature branch then we merge to develop -->
+        <!--
+        <BranchMergeTarget Include="develop"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsFeatureBranch)' == 'true' " />
+        -->
+
+        <!-- GITFLOW: If the input branch (GitBranchExpected) is a release branch then we merge to develop and master -->
+        <!--
+        <BranchMergeTarget Include="develop"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
+        <BranchMergeTarget Include="master"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsReleaseBranch)' == 'true' " />
+        -->
+
+        <!-- GITFLOW: If the input branch (GitBranchExpected) is a hotfix branch then we merge to develop and master -->
+        <!--
+        <BranchMergeTarget Include="develop"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />
+        <BranchMergeTarget Include="master"
+                           Condition=" '$(IsGitFlow)' == 'true' AND '$(IsHotfixBranch)' == 'true' " />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the system provided scripts that contain a task to generate
+            additional template tokens.
+
+            Each script should have a task with the same name as the file.
+        -->
+        <!-- <TemplateTokenGenerators>UNDEFINED</TemplateTokenGenerators> -->
+    </PropertyGroup>
+    <PropertyGroup>
+        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-16.04.1</LinuxImage>
+    </PropertyGroup>
+
+    <!--
+        Additional items that should be available for the template replacement.
+        The default template parameters, as indicated at the top of this file, are always available.
+    -->
+    <ItemGroup>
+        <!-- General -->
+        <TemplateTokens Include="LocalAdministratorName">
+            <ReplacementValue>thebigkahuna</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="LocalAdministratorPassword">
+            <ReplacementValue>TheB1gK@huna</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="LinuxImage">
+            <ReplacementValue>$(LinuxImage)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="ImageName">
+            <ReplacementValue>$(LinuxImage.Replace(' ', '-').Replace('.', '-').ToLower())</ReplacementValue>
+        </TemplateTokens>
+
+        <TemplateTokens Include="HostIpAddress">
+            <ReplacementValue>192.168.3.25</ReplacementValue>
+        </TemplateTokens>
+
+        <!-- For the Packer config -->
+        <TemplateTokens Include="IsoFileEscaped">
+            <ReplacementValue>$(IsoFile.Replace('\', '/'))</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="IsoFileHash">
+            <ReplacementValue>29A8B9009509B39D542ECB229787CDF48F05E739A932289DE9E9858D7C487C80</ReplacementValue>
+        </TemplateTokens>
+
+        <TemplateTokens Include="DirTempJsonEscaped">
+            <ReplacementValue>$(DirBuildTemp.Replace('\', '/'))</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="DirDeployJsonEscaped">
+            <ReplacementValue>$(DirBuildDeploy.Replace('\', '/'))</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="VmSwitch">
+            <ReplacementValue>External switch</ReplacementValue>
+        </TemplateTokens>
+
+        <!-- For the .isospec file -->
+        <TemplateTokens Include="DirBuildTempIso">
+            <ReplacementValue>$(DirBuildTempIso)</ReplacementValue>
+        </TemplateTokens>
+    </ItemGroup>
+
+
+
+
+
+    <!--
+        *************************************
+        *                                   *
+        *     SHARED TOOLS                  *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the tools paths -->
+    <PropertyGroup>
+        <!--
+            The full path and version of the Bower command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalBowerPath>bower</ToolsExternalBowerPath>
+        <ToolsExternalBowerVersion>1.3.11</ToolsExternalBowerVersion> -->
+
+        <!--
+            The full path and version of the Node.js command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalNodeJsPath>node</ToolsExternalNodeJsPath>
+        <ToolsExternalNodeJsVersion>4.2.3</ToolsExternalNodeJsVersion> -->
+
+        <!--
+            The full path and version of the NPM command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalNpmPath>npm</ToolsExternalNpmPath>
+        <ToolsExternalNpmVersion>3.5.2</ToolsExternalNpmVersion> -->
+
+        <!--
+            The full path and version of the python command line executable. If not defined the packages directory is searched.
+        -->
+        <!-- <ToolsExternalPythonPath>UNDEFINED</ToolsExternalPythonPath>
+        <ToolsExternalPythonVersion>2.7.9</ToolsExternalPythonVersion> -->
+    </PropertyGroup>
+
+
+
+
+
+    <!--
+        *****************************************
+        *                                       *
+        *   TOOLS-OPS SPECIFIC SETTINGS    *
+        *                                       *
+        *****************************************
+    -->
+
+    <PropertyGroup>
+        <OpsConfigurationVersion>0.1</OpsConfigurationVersion>
+    </PropertyGroup>
+
+    <!--
+        Defines the minimum and maximum versions for Ops.Tools.Build which are used to grab the correct packages from
+        NuGet if no package is specified in the packages.config file.
+    -->
+    <PropertyGroup>
+        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">0.1.0</PackageMinimumVersion>
+        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">0.2.0</PackageMaximumVersion>
+    </PropertyGroup>
+</Project>
