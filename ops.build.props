@@ -849,6 +849,26 @@
 
 
 
+    <!--
+        *************************************
+        *                                   *
+        *     SHARED TOOLS                  *
+        *                                   *
+        *************************************
+    -->
+
+    <!-- Overrides for the tools paths -->
+    <PropertyGroup>
+        <!--
+            The full path and version to the packer command line executable. If not defined the packages directory is searched.
+        -->
+        <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
+        <ToolsExternalPackerVersion>1.1.0</ToolsExternalPackerVersion>
+    </PropertyGroup>
+
+
+
+
 
     <!--
         *****************************************
