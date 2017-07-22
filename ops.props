@@ -358,6 +358,9 @@
         <TemplateTokens Include="VmSwitch">
             <ReplacementValue>External switch</ReplacementValue>
         </TemplateTokens>
+        <TemplateTokens Include="VmSwitchVlan">
+            <ReplacementValue></ReplacementValue>
+        </TemplateTokens>
 
         <!-- For the .isospec file -->
         <TemplateTokens Include="DirBuildTempIso">

@@ -3,6 +3,152 @@
          DefaultTargets="Run"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!--
+        **** PREPARE - WORKSPACE ****
+    -->
+        <!--
+        The list of all files that should be deleted prior to starting the test process.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <FilesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+    <!--
+        The list of all directories that should be deleted prior to starting the test process.
+        Deleting the directories will also delete all the files contained in these directories.
+
+        If the deletion process fails the test will continue and a warning will be printed.
+    -->
+    <ItemGroup>
+        <!--
+        <DirectoriesToDelete Include="" />
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - COPY FILES ****
+    -->
+    <ItemGroup>
+        <!--
+        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
+            <Include>**/*.*</Include>
+            <Destinations>$(DirBuildTemp)</Destinations>
+        </NuGetFilesToCopy>
+        -->
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadHttpFilesToCopy)' == 'true' ">
+        <!-- If the archive file with the exported VM does not exist in the deploy directory then download it from the archive server and unzip it -->
+        <HttpFilesToCopy
+            Condition=" '$(IsTest)' == 'true' AND !Exists('$(DirBuildDeploy)') "
+            Include="$(ArtefactRepositoryToPullFrom)/${ProductNameInFilePath}/${VersionSemantic}/${ProductName}-${VersionSemantic}.zip">
+            <Destination>$(DirBuildTemp)\$(ImageName)</Destination>
+            <UseDefaultCredentials>false</UseDefaultCredentials>
+            <Unzip>true</Unzip>
+        </HttpFilesToCopy>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
+        <FilesToCopy
+            Condition=" '$(IsTest)' == 'true' "
+            Exclude="$(DirTests)\pester\System.Tests.ps1;$(DirTests)\pester\Users.Tests.ps1"
+            Include="$(DirTests)\pester\**\*.*">
+            <Destination>$(DirBuildTempTestPester)</Destination>
+        </FilesToCopy>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
+        <!-- If the archive file with the exported VM exists in the deploy directory unzip it from there -->
+        <ArchiveFilesToCopy
+            Condition=" '$(IsTest)' == 'true' AND Exists('$(DirBuildDeploy)') "
+            Include="$(DirBuildDeploy)\${ProductName}-${VersionSemantic}.zip">
+            <Destination>$(DirBuildTemp)\${ImageNameWithoutSpaces}</Destination>
+        </ArchiveFilesToCopy>
+    </ItemGroup>
+
+
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <!--
+        The list of all files that should be generated and their template files.
+
+        The template file may contain zero or more template parameters as indicated at the top of this
+        file. By default template parameters must be enclosed in '${}'. By providing a value for
+        'Expression' it is possible to use a custom regular expression to search for elements to replace,
+        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
+        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
+
+        Only the 'Template' value is required.
+
+        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
+    -->
+    <ItemGroup>
+        <TestFilesToGenerate Include="$(DirBuildTempPackerTest)\packer.json">
+            <Template>$(DirTests)\packer\packer.json</Template>
+            <Encoding></Encoding>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTempPackerTest)\packer_variables.json">
+            <Template>$(DirTests)\packer\packer_variables.json</Template>
+            <Encoding></Encoding>
+        </TestFilesToGenerate>
+
+        <TestFilesToGenerate Include="$(DirBuildTempTestPester)\System.Tests.ps1">
+            <Template>$(DirTests)\pester\System.Tests.ps1</Template>
+            <Encoding></Encoding>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate Include="$(DirBuildTempTestPester)\Users.Tests.ps1">
+            <Template>$(DirTests)\pester\Users.Tests.ps1</Template>
+            <Encoding></Encoding>
+        </TestFilesToGenerate>
+    </ItemGroup>
+
+
+    <!--
+        **** INTEGRATION - PESTER ****
+    -->
+    <PropertyGroup>
+        <!--
+            The full path to the file into which Pester will write the test results.
+        -->
+        <!-- <FileTestReport>$(DirBuildLogs)\pester.integration.xml</FileTestReport> -->
+    </PropertyGroup>
+    <!--
+        The list of all arguments that should be passed to the Pester test.
+    -->
+    <ItemGroup>
+        <!--
+        <PesterTestArguments Include="">
+            <Value></Value>
+        </PesterTestArguments>
+        -->
+    </ItemGroup>
+
+
+    <!--
+        **** INTEGRATION - PACKER ****
+    -->
+    <!--
+        The item group defining the location and contents of the Packer files that are used during the test
+        to validate the Packer images.
+
+        All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadPackerImagesToTest)' == 'true' ">
+        <PackerImagesToTest
+            Include="$(DirBuildTempPackerTest)\packer.json">
+            <Variables>
+                $(DirBuildTempPackerTest)\packer_variables.json
+            </Variables>
+        </PackerImagesToTest>
+    </ItemGroup>
+    
+    
+    <!--
+        **** TEST STEPS ****
+    -->
+    <!--
         The following ItemGroup defines which steps are taken during the test process. The order of the items in the item group
         determines in which order the test steps are executed.
 
@@ -246,6 +392,34 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPackIso)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+            <Groups>
+                test;
+                test.iso;
+                test.iso.integration;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsIntegrationPacker)">
+            <Properties>
+            </Properties>
+            <Groups>
+                test;
+                test.packer;
+                test.packer.integration;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
     </ItemGroup>
 
     <!--
@@ -290,106 +464,6 @@
             <Name>My test step</Name>
             <Path>$(DirWorkspace)\my.test.step.msbuild</Path>
         </AvailableStepMetadata>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - WORKSPACE ****
-    -->
-        <!--
-        The list of all files that should be deleted prior to starting the test process.
-
-        If the deletion process fails the test will continue and a warning will be printed.
-    -->
-    <ItemGroup>
-        <!--
-        <FilesToDelete Include="" />
-        -->
-    </ItemGroup>
-
-    <!--
-        The list of all directories that should be deleted prior to starting the test process.
-        Deleting the directories will also delete all the files contained in these directories.
-
-        If the deletion process fails the test will continue and a warning will be printed.
-    -->
-    <ItemGroup>
-        <!--
-        <DirectoriesToDelete Include="" />
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - COPY FILES ****
-    -->
-    <!--
-        Files that should be copied, either from the file system or from a NuGet package.
-    -->
-    <ItemGroup>
-        <!--
-        <FilesToCopy Include="">
-            <Destination></Destination>
-        </FilesToCopy>
-        -->
-    </ItemGroup>
-    <ItemGroup>
-        <!--
-        <NuGetFilesToCopy Include="My.Cool.NuGet.Package">
-            <Include>**/*.*</Include>
-            <Destinations>$(DirBuildTemp)</Destinations>
-        </NuGetFilesToCopy>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** PREPARE - GENERATE FILES ****
-    -->
-    <!--
-        The list of all files that should be generated and their template files.
-
-        The template file may contain zero or more template parameters as indicated at the top of this
-        file. By default template parameters must be enclosed in '${}'. By providing a value for
-        'Expression' it is possible to use a custom regular expression to search for elements to replace,
-        e.g. $TOKEN$. Note that elements in the regular expession might need to be converted in a suitable
-        format because XML doesn't like < and > and MsBuild doesn't like $ (%24), * (%2A), ? (%3F).
-
-        Only the 'Template' value is required.
-
-        Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
-    -->
-    <ItemGroup>
-        <!--
-        <TestFilesToGenerate Include="$(DirBuildTemp)\MyFile.txt">
-            <<Encoding>UTF-8</Encoding>
-            <Expression>(MyRegex)</Expression>
-            <ReplacementValue>MyAdditionalTemplateValue</ReplacementValue>
-            <Template>$(DirTemplates)\MyOtherTemplatefile.txt</Template>
-            <Token>MyAdditionalTemplateParameter</Token>
-        </TestFilesToGenerate>
-        -->
-    </ItemGroup>
-
-
-    <!--
-        **** INTEGRATION - PESTER ****
-    -->
-    <PropertyGroup>
-        <!--
-            The full path to the file into which Pester will write the test results.
-        -->
-        <!-- <FileTestReport>$(DirBuildLogs)\pester.integration.xml</FileTestReport> -->
-    </PropertyGroup>
-    <!--
-        The list of all arguments that should be passed to the Pester test.
-    -->
-    <ItemGroup>
-        <!--
-        <PesterTestArguments Include="">
-            <Value></Value>
-        </PesterTestArguments>
         -->
     </ItemGroup>
 
