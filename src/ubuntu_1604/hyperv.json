@@ -1,17 +1,20 @@
 {
     "variables": {
-        "iso_checksum": null,
-        "iso_url": null,
-        "host_ip": null,
-        "vm_ram_size_in_mb": "2048",
-        "vm_switch_name": "internal_switch",
-        "vm_name": "base-ubuntu1604",
         "admin_username": "admin",
         "admin_password": "admin",
+
         "dir_deploy": null,
         "dir_http_user": null,
         "dir_scripts_user": null,
-        "dir_temp": null
+        "dir_temp": null,
+        
+        "iso_checksum": null,
+        "iso_url": null,
+
+        "vm_name": "not_really_a_vm_name",
+        "vm_ram_size_in_mb": "2048",
+        "vm_switch_name": "this_switch_does_not_exist",
+        "vm_switch_vlan": ""
     },
     "builders": [
         {
