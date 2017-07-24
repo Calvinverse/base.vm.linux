@@ -101,8 +101,8 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu_1604\packer_variables.json">
-            <Template>$(DirSrc)\ubuntu_1604\packer_variables.json</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\build\packer_variables.json">
+            <Template>$(DirSrc)\packer_variables.json</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu\http\preseed.cfg">

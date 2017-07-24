@@ -200,7 +200,8 @@
         <!-- <DirTemplates>$(DirWorkspace)\templates</DirTemplates> -->
 
         <!-- The directory that contains all the test files for the project -->
-        <!-- <DirTest>$(DirWorkspace)\tests</DirTest> -->
+        <!-- <DirTests>$(DirWorkspace)\tests</DirTests> -->
+        <DirTestsPacker>$(DirTests)\packer</DirTestsPacker>
     </PropertyGroup>
 
     <!--
