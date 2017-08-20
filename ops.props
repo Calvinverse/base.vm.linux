@@ -186,6 +186,8 @@
         <DirBuildTempConfig>$(DirBuildTemp)\config</DirBuildTempConfig>
         <DirBuildTempIso>$(DirBuildTemp)\iso</DirBuildTempIso>
         <DirBuildTempScripts>$(DirBuildTemp)\scripts</DirBuildTempScripts>
+        <DirBuildTempTestsIntegrationPacker>$(DirBuidTemp)\tests\integration\packer</DirBuildTempTestsIntegrationPacker>
+        <DirBuildTempTestsIntegrationPester>$(DirBuildTemp)\tests\integration\pester</DirBuildTempTestsIntegrationPester>
 
         <!-- The directory that will contain all the test files generated during the test process -->
         <!-- <DirBuildTest>$(DirBuild)\tests</DirBuildTest> -->

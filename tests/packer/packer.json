@@ -44,7 +44,7 @@
     "provisioners": [
         {
             "destination": "/tmp/pester",
-            "source": "{{ user `dir_temp` }}/tests/pester",
+            "source": "{{ user `dir_temp` }}/tests/integration/pester",
             "type": "file"
         },
         {

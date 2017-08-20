@@ -55,7 +55,7 @@
             Condition=" '$(IsTest)' == 'true' "
             Exclude="$(DirTests)\pester\System.Tests.ps1;$(DirTests)\pester\Users.Tests.ps1"
             Include="$(DirTests)\pester\**\*.*">
-            <Destination>$(DirBuildTempTestPester)</Destination>
+            <Destination>$(DirBuildTempTestsIntegrationPester)</Destination>
         </FilesToCopy>
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
@@ -85,20 +85,20 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <TestFilesToGenerate Include="$(DirBuildTempPackerTest)\packer.json">
+        <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPacker)\packer.json">
             <Template>$(DirTests)\packer\packer.json</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
-        <TestFilesToGenerate Include="$(DirBuildTempPackerTest)\packer_variables.json">
+        <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPacker)\packer_variables.json">
             <Template>$(DirTests)\packer\packer_variables.json</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
 
-        <TestFilesToGenerate Include="$(DirBuildTempTestPester)\System.Tests.ps1">
+        <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPester)\System.Tests.ps1">
             <Template>$(DirTests)\pester\System.Tests.ps1</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
-        <TestFilesToGenerate Include="$(DirBuildTempTestPester)\Users.Tests.ps1">
+        <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPester)\Users.Tests.ps1">
             <Template>$(DirTests)\pester\Users.Tests.ps1</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
@@ -137,14 +137,14 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadPackerImagesToTest)' == 'true' ">
         <PackerImagesToTest
-            Include="$(DirBuildTempPackerTest)\packer.json">
+            Include="$(DirBuildTempTestsIntegrationPacker)\packer.json">
             <Variables>
-                $(DirBuildTempPackerTest)\packer_variables.json
+                $(DirBuildTempTestsIntegrationPacker)\packer_variables.json
             </Variables>
         </PackerImagesToTest>
     </ItemGroup>
-    
-    
+
+
     <!--
         **** TEST STEPS ****
     -->
