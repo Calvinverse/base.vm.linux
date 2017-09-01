@@ -53,18 +53,18 @@
         Files that should be copied, either from the file system or from a NuGet package.
     -->
     <ItemGroup>
-        <FilesToCopy
-            Include="$(DirBuildTempScripts)\ubuntu\*.*">
-            <Destination>$(DirBuildTempIso)\ubuntu</Destination>
-        </FilesToCopy>
-    </ItemGroup>
-    <ItemGroup>
         <NuGetFilesToCopy Include="Ops.Tools.BaseImage.Linux">
             <Include>**\*</Include>
             <Destinations>
                 $(DirBuildTempScripts);
             </Destinations>
         </NuGetFilesToCopy>
+    </ItemGroup>
+    <ItemGroup>
+        <FilesToCopy
+            Include="$(DirBuildTempScripts)\ubuntu\*.*">
+            <Destination>$(DirBuildTempIso)\ubuntu</Destination>
+        </FilesToCopy>
     </ItemGroup>
 
 
@@ -101,12 +101,20 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\build\packer.json">
+            <Template>$(DirSrc)\packer.json</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\build\packer_variables.json">
             <Template>$(DirSrc)\packer_variables.json</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu\http\preseed.cfg">
             <Template>$(DirBuildTemp)\scripts\ubuntu\http\preseed.cfg</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\scripts\sysprep.sh">
+            <Template>$(DirBuildTemp)\scripts\ubuntu\sysprep.sh</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
     </ItemGroup>
@@ -807,7 +815,7 @@
             The full path and version to the packer command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
-        <ToolsExternalPackerVersion>1.1.0</ToolsExternalPackerVersion>
+        <ToolsExternalPackerVersion>1.2.0</ToolsExternalPackerVersion>
     </PropertyGroup>
 
 

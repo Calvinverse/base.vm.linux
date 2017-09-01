@@ -7,7 +7,7 @@
         "dir_http_user": null,
         "dir_scripts_user": null,
         "dir_temp": null,
-        
+
         "iso_checksum": null,
         "iso_url": null,
 
@@ -23,7 +23,7 @@
                 "<esc><wait10><esc><esc><enter><wait>",
                 "set gfxpayload=1024x768<enter>",
                 "linux /install/vmlinuz ",
-                "preseed/url=http://192.168.3.25:{{.HTTPPort}}/preseed.cfg ",
+                "preseed/url=http://${NetworkHostIpAddressForPreseed}:{{.HTTPPort}}/preseed.cfg ",
                 "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
                 "hostname={{.Name}} ",
                 "fb=false debconf/frontend=noninteractive ",
@@ -59,7 +59,8 @@
             "scripts": [
                 "{{ user `dir_scripts_user` }}/ubuntu/update.sh",
                 "{{ user `dir_scripts_user` }}/ubuntu/network.sh",
-                "{{ user `dir_scripts_user` }}/ubuntu/cleanup.sh"
+                "{{ user `dir_scripts_user` }}/ubuntu/cleanup.sh",
+                "{{ user `dir_scripts_user` }}/ubuntu/sysprep.sh"
             ]
         }
     ]

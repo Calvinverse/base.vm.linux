@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <archive>
-    <name>${LinuxImage}-${VersionSemantic}</name>
+    <name>${ProductName}-${VersionSemantic}</name>
     <files>
         <file
             src="${DirWorkspace}\readme.md"

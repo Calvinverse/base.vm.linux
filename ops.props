@@ -341,8 +341,12 @@
         <TemplateTokens Include="ImageName">
             <ReplacementValue>$(LinuxImage.Replace(' ', '-').Replace('.', '-').ToLower())</ReplacementValue>
         </TemplateTokens>
+        <TemplateTokens Include="SysprepHostName">
+            <ReplacementValue>UbuntuTemplate_$([System.DateTime]::Now.ToString('yyyyMMdd'))</ReplacementValue>
+        </TemplateTokens>
 
-        <TemplateTokens Include="HostIpAddress">
+        <TemplateTokens
+            Include="NetworkHostIpAddressForPreseed">
             <ReplacementValue>192.168.3.25</ReplacementValue>
         </TemplateTokens>
 

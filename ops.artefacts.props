@@ -135,16 +135,9 @@
     <ItemGroup>
         <PackerImagesToBuild
             Condition=" '$(IsBuild)' == 'true' "
-            Include="$(DirSrc)\packer.json">
+            Include="$(DirBuildTemp)\build\packer.json">
             <Variables>
                 $(DirBuildTemp)\build\packer_variables.json
-            </Variables>
-        </PackerImagesToBuild>
-        <PackerImagesToBuild
-            Condition=" '$(IsTest)' == 'true' "
-            Include="$(DirTestsPacker)\packer.json">
-            <Variables>
-                $(DirBuildTemp)\tests\packer_variables.json
             </Variables>
         </PackerImagesToBuild>
     </ItemGroup>
