@@ -86,20 +86,20 @@
     -->
     <ItemGroup>
         <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPacker)\packer.json">
-            <Template>$(DirTests)\packer\packer.json</Template>
+            <Template>$(DirTestsIntegrationPacker)\packer.json</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPacker)\packer_variables.json">
-            <Template>$(DirTests)\packer\packer_variables.json</Template>
+            <Template>$(DirTestsIntegrationPacker)\packer_variables.json</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
 
         <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPester)\System.Tests.ps1">
-            <Template>$(DirTests)\pester\System.Tests.ps1</Template>
+            <Template>$(DirTestsIntegrationPester)\System.Tests.ps1</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPester)\Users.Tests.ps1">
-            <Template>$(DirTests)\pester\Users.Tests.ps1</Template>
+            <Template>$(DirTestsIntegrationPester)\Users.Tests.ps1</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
     </ItemGroup>
