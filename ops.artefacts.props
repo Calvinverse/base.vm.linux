@@ -117,6 +117,7 @@
     -->
     <ItemGroup>
         <IsoPackageSpecs
+            Condition=" '$(IsBuild)' == 'true' "
             Include="$(DirWorkspace)\**\*.isospec"
             Exclude="$(DirBuild)\**\*.isospec" />
     </ItemGroup>
