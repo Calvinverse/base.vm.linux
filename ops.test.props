@@ -63,7 +63,7 @@
         <ArchiveFilesToCopy
             Condition=" '$(IsTest)' == 'true' AND Exists('$(DirBuildDeploy)') "
             Include="$(DirBuildDeploy)\${ProductName}-${VersionSemantic}.zip">
-            <Destination>$(DirBuildTemp)\${ImageNameWithoutSpaces}</Destination>
+            <Destination>$(DirBuildTemp)\${ImageName}</Destination>
         </ArchiveFilesToCopy>
     </ItemGroup>
 
@@ -298,12 +298,26 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
-        <TestStepsToExecute Include="$(TestStepsPrepareCopyNuGet)">
+       <TestStepsToExecute Include="$(TestStepsPrepareCopyNuGet)">
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.nuget;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyHttp)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.url;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -314,8 +328,22 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.files;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </TestStepsToExecute>
+        <TestStepsToExecute Include="$(TestStepsPrepareCopyArchive)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.archive;
             </Groups>
             <PreSteps>
             </PreSteps>
