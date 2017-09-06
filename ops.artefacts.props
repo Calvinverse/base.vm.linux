@@ -117,6 +117,7 @@
     -->
     <ItemGroup>
         <IsoPackageSpecs
+            Condition=" '$(IsBuild)' == 'true' "
             Include="$(DirWorkspace)\**\*.isospec"
             Exclude="$(DirBuild)\**\*.isospec" />
     </ItemGroup>
@@ -133,9 +134,10 @@
     -->
     <ItemGroup>
         <PackerImagesToBuild
-            Include="$(DirSrc)\ubuntu_1604\hyperv.json">
+            Condition=" '$(IsBuild)' == 'true' "
+            Include="$(DirBuildTemp)\build\packer.json">
             <Variables>
-                $(DirBuildTemp)\ubuntu_1604\packer_variables.json
+                $(DirBuildTemp)\build\packer_variables.json
             </Variables>
         </PackerImagesToBuild>
     </ItemGroup>
