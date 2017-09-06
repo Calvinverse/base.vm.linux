@@ -186,6 +186,8 @@
         <DirBuildTempConfig>$(DirBuildTemp)\config</DirBuildTempConfig>
         <DirBuildTempIso>$(DirBuildTemp)\iso</DirBuildTempIso>
         <DirBuildTempScripts>$(DirBuildTemp)\scripts</DirBuildTempScripts>
+        <DirBuildTempTestsIntegrationPacker>$(DirBuildTemp)\tests\integration\packer</DirBuildTempTestsIntegrationPacker>
+        <DirBuildTempTestsIntegrationPester>$(DirBuildTemp)\tests\integration\pester</DirBuildTempTestsIntegrationPester>
 
         <!-- The directory that will contain all the test files generated during the test process -->
         <!-- <DirBuildTest>$(DirBuild)\tests</DirBuildTest> -->
@@ -200,7 +202,10 @@
         <!-- <DirTemplates>$(DirWorkspace)\templates</DirTemplates> -->
 
         <!-- The directory that contains all the test files for the project -->
-        <!-- <DirTest>$(DirWorkspace)\tests</DirTest> -->
+        <!-- <DirTests>$(DirWorkspace)\tests</DirTests> -->
+        <DirTestsIntegration>$(DirTests)\integration</DirTestsIntegration>
+        <DirTestsIntegrationPacker>$(DirTestsIntegration)\packer</DirTestsIntegrationPacker>
+        <DirTestsIntegrationPester>$(DirTestsIntegration)\pester</DirTestsIntegrationPester>
     </PropertyGroup>
 
     <!--
@@ -336,8 +341,12 @@
         <TemplateTokens Include="ImageName">
             <ReplacementValue>$(LinuxImage.Replace(' ', '-').Replace('.', '-').ToLower())</ReplacementValue>
         </TemplateTokens>
+        <TemplateTokens Include="SysprepHostName">
+            <ReplacementValue>UbuntuTemplate_$([System.DateTime]::Now.ToString('yyyyMMdd'))</ReplacementValue>
+        </TemplateTokens>
 
-        <TemplateTokens Include="HostIpAddress">
+        <TemplateTokens
+            Include="NetworkHostIpAddressForPreseed">
             <ReplacementValue>192.168.3.25</ReplacementValue>
         </TemplateTokens>
 
@@ -357,6 +366,9 @@
         </TemplateTokens>
         <TemplateTokens Include="VmSwitch">
             <ReplacementValue>External switch</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="VmSwitchVlan">
+            <ReplacementValue></ReplacementValue>
         </TemplateTokens>
 
         <!-- For the .isospec file -->
@@ -417,7 +429,7 @@
     -->
 
     <PropertyGroup>
-        <OpsConfigurationVersion>0.1</OpsConfigurationVersion>
+        <OpsConfigurationVersion>0.3</OpsConfigurationVersion>
     </PropertyGroup>
 
     <!--
@@ -425,7 +437,7 @@
         NuGet if no package is specified in the packages.config file.
     -->
     <PropertyGroup>
-        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">0.1.0</PackageMinimumVersion>
-        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">0.2.0</PackageMaximumVersion>
+        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">0.3.0</PackageMinimumVersion>
+        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">0.4.0</PackageMaximumVersion>
     </PropertyGroup>
 </Project>
