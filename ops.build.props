@@ -58,7 +58,7 @@
             <Destination>$(DirBuildTempIso)\ubuntu</Destination>
         </FilesToCopy>
         <FilesToCopy
-            Exclude="$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb;$(DirSrcCookbooks)\$(NameCookbook)\attributes\resource_information.rb"
+            Exclude="$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb"
             Include="$(DirSrcCookbooks)\$(NameCookbook)\**\*.*">
             <Destination>$(DirBuildTempCookbooks)\$(NameCookbook)</Destination>
         </FilesToCopy>
@@ -108,10 +108,6 @@
     <ItemGroup Condition=" '$(ShouldLoadBuildFilesToGenerate)' == 'true' ">
         <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\$(NameCookbook)\metadata.rb">
             <Template>$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb</Template>
-            <Encoding></Encoding>
-        </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\$(NameCookbook)\attributes\resource_information.rb">
-            <Template>$(DirSrcCookbooks)\$(NameCookbook)\attributes\resource_information.rb</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
 

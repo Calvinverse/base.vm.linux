@@ -187,6 +187,7 @@
         <DirBuildTempCookbooks>$(DirBuildTemp)\cookbooks</DirBuildTempCookbooks>
         <DirBuildTempIso>$(DirBuildTemp)\iso</DirBuildTempIso>
         <DirBuildTempScripts>$(DirBuildTemp)\scripts</DirBuildTempScripts>
+        <DirBuildTempBuildPacker>$(DirBuildTemp)\build</DirBuildTempBuildPacker>
         <DirBuildTempTestsIntegrationPacker>$(DirBuildTemp)\tests\integration\packer</DirBuildTempTestsIntegrationPacker>
         <DirBuildTempTestsIntegrationPester>$(DirBuildTemp)\tests\integration\pester</DirBuildTempTestsIntegrationPester>
 

@@ -298,6 +298,7 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
+
        <TestStepsToExecute Include="$(TestStepsPrepareCopyNuGet)">
             <Properties>
             </Properties>
@@ -350,6 +351,7 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
+
         <TestStepsToExecute Include="$(TestStepsPrepareGenerateFiles)">
             <Properties>
             </Properties>
@@ -362,6 +364,8 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
+
+        <!--
         <TestStepsToExecute Include="$(TestStepsIntegrationPester)">
             <Properties>
             </Properties>
@@ -374,6 +378,8 @@
             <PostSteps>
             </PostSteps>
         </TestStepsToExecute>
+        -->
+
         <TestStepsToExecute Include="$(TestStepsPackIso)">
             <Properties>
                 Configuration=$(ProductionConfiguration);

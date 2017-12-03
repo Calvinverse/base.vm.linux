@@ -118,8 +118,7 @@
     <ItemGroup>
         <IsoPackageSpecs
             Condition=" '$(IsBuild)' == 'true' "
-            Include="$(DirWorkspace)\**\*.isospec"
-            Exclude="$(DirBuild)\**\*.isospec" />
+            Include="$(DirSrc)\**\*.isospec" />
     </ItemGroup>
 
 
@@ -134,10 +133,10 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadPackerImagesToBuild)' == 'true' ">
         <PackerImagesToBuild
-            Condition=" '$(DirSrcPacker)' != '' AND '$(IsBuild)' == 'true'  "
-            Include="$(DirSrcPacker)\packer.json">
+            Condition=" '$(IsBuild)' == 'true'  "
+            Include="$(DirBuildTempBuildPacker)\packer.json">
             <Variables>
-                $(DirBuildTemp)\packer_variables.json
+                $(DirBuildTempBuildPacker)\packer_variables.json
             </Variables>
         </PackerImagesToBuild>
     </ItemGroup>
