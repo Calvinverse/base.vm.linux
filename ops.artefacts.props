@@ -132,12 +132,12 @@
 
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadPackerImagesToBuild)' == 'true' ">
         <PackerImagesToBuild
-            Condition=" '$(IsBuild)' == 'true' "
-            Include="$(DirBuildTemp)\build\packer.json">
+            Condition=" '$(DirSrcPacker)' != '' AND '$(IsBuild)' == 'true'  "
+            Include="$(DirSrcPacker)\packer.json">
             <Variables>
-                $(DirBuildTemp)\build\packer_variables.json
+                $(DirBuildTemp)\packer_variables.json
             </Variables>
         </PackerImagesToBuild>
     </ItemGroup>
@@ -155,6 +155,6 @@
     -->
 
     <PropertyGroup>
-        <OpsConfigurationVersion>0.1</OpsConfigurationVersion>
+        <OpsConfigurationVersion>0.3</OpsConfigurationVersion>
     </PropertyGroup>
 </Project>

@@ -52,19 +52,24 @@
     <!--
         Files that should be copied, either from the file system or from a NuGet package.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
+        <FilesToCopy
+            Include="$(DirBuildTempScripts)\ubuntu\*.*">
+            <Destination>$(DirBuildTempIso)\ubuntu</Destination>
+        </FilesToCopy>
+        <FilesToCopy
+            Exclude="$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb;$(DirSrcCookbooks)\$(NameCookbook)\attributes\resource_information.rb"
+            Include="$(DirSrcCookbooks)\$(NameCookbook)\**\*.*">
+            <Destination>$(DirBuildTempCookbooks)\$(NameCookbook)</Destination>
+        </FilesToCopy>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadNuGetFilesToCopy)' == 'true' ">
         <NuGetFilesToCopy Include="Ops.Tools.BaseImage.Linux">
             <Include>**\*</Include>
             <Destinations>
                 $(DirBuildTempScripts);
             </Destinations>
         </NuGetFilesToCopy>
-    </ItemGroup>
-    <ItemGroup>
-        <FilesToCopy
-            Include="$(DirBuildTempScripts)\ubuntu\*.*">
-            <Destination>$(DirBuildTempIso)\ubuntu</Destination>
-        </FilesToCopy>
     </ItemGroup>
 
 
@@ -100,13 +105,22 @@
 
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
-    <ItemGroup>
+    <ItemGroup Condition=" '$(ShouldLoadBuildFilesToGenerate)' == 'true' ">
+        <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\$(NameCookbook)\metadata.rb">
+            <Template>$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\$(NameCookbook)\attributes\resource_information.rb">
+            <Template>$(DirSrcCookbooks)\$(NameCookbook)\attributes\resource_information.rb</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
+
         <BuildFilesToGenerate Include="$(DirBuildTemp)\build\packer.json">
-            <Template>$(DirSrc)\packer.json</Template>
+            <Template>$(DirSrcPacker)\packer.json</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\build\packer_variables.json">
-            <Template>$(DirSrc)\packer_variables.json</Template>
+            <Template>$(DirSrcPacker)\packer_variables.json</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu\http\preseed.cfg">
@@ -314,6 +328,71 @@
                                    Exclude="" />
         -->
     </ItemGroup>
+
+
+    <!--
+        **** ANALYZE - RUBOCOP ****
+    -->
+    <!--
+        The collection of files that should be analyzed with Rubocop
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadRubocopConfigurationFiles)' == 'true' ">
+        <RubocopConfigurationFiles Include="$(DirSrcCookbooks)\rubocop.yml" />
+    </ItemGroup>
+
+
+    <!--
+        **** ANALYZE - FOODCRITIC ****
+    -->
+    <!--
+        The collection of cookbooks that should be analyzed with Foodcritic
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadChefCookbooksToAnalyze)' == 'true' ">
+        <ChefCookbooksToAnalyze Include="$(DirBuildTempCookbooks)\$(NameCookbook)" >
+            <!--
+                Ignore:
+                FC071 - Missing LICENSE file: because it's there, just not in the expected directory
+            -->
+            <RulesToExclude>FC071</RulesToExclude>
+        </ChefCookbooksToAnalyze>
+    </ItemGroup>
+
+
+    <!--
+        **** TEST - CHEFSPEC ****
+    -->
+    <!--
+        The collection of cookbooks that should be tested with ChefSpec.
+    -->
+    <ItemGroup Condition=" '$(ShouldLoadChefCookbooksToTest)' == 'true' ">
+        <ChefCookbooksToTest Include="$(DirBuildTempCookbooks)\$(NameCookbook)">
+            <ChefSpecPattern>./spec/*_spec.rb</ChefSpecPattern>
+        </ChefCookbooksToTest>
+    </ItemGroup>
+
+
+    <!--
+        **** PACKER - PACK ****
+    -->
+    <PropertyGroup>
+        <!-- Indicate that packer should keep the image if an error occurs. -->
+        <!-- <PackerKeepImageOnError>false</PackerKeepImageOnError> -->
+    </PropertyGroup>
+
+
+    <!--
+        **** DOCKER - PACK ****
+    -->
+    <PropertyGroup>
+        <!-- Indicate that docker should ignore cached images if possible. -->
+        <!-- <DockerIgnoreCache>true</DockerIgnoreCache> -->
+
+        <!-- Indicate that docker should always pull images if possible -->
+        <!-- <DockerAlwaysPull>true</DockerAlwaysPull> -->
+
+        <!-- Indicate that docker should squash intermediate layers when creating an image -->
+        <!-- <DockerSquashImages>true</DockerSquashImages> -->
+    </PropertyGroup>
 
 
     <!--
@@ -558,12 +637,29 @@
         </BuildStepsToExecute>
         -->
 
+        <!--
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreGems)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.restore;
+                prepare.restore.gems;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+        -->
+
         <BuildStepsToExecute Include="$(BuildStepsPrepareCopyNuGet)">
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.nuget;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -574,8 +670,22 @@
             <Properties>
             </Properties>
             <Groups>
-                CopyFiles;
-                Prepare;
+                prepare;
+                prepare.copy;
+                prepare.copy.files;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareCopyArchive)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.archive;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -613,6 +723,20 @@
             <Groups>
                 Generate;
                 Prepare;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsPrepareRestoreBerkshelf)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.restore;
+                prepare.restore.cookbooks;
             </Groups>
             <PreSteps>
             </PreSteps>
@@ -691,29 +815,76 @@
         </BuildStepsToExecute>
         -->
 
-        <!--
-        <BuildStepsToExecute Include="$(BuildStepsPackIso)">
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeRuboCop)">
             <Properties>
-                Configuration=$(ProductionConfiguration);
+                Configuration=$(TestConfiguration);
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Package;
+                test;
+                test.analyze;
+                test.analyze.rubocop;
             </Groups>
             <PreSteps>
             </PreSteps>
             <PostSteps>
             </PostSteps>
         </BuildStepsToExecute>
-        -->
 
+        <BuildStepsToExecute Include="$(BuildStepsAnalyzeFoodCritic)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+            <Groups>
+                test;
+                test.analyze;
+                test.analyze.foodcritic;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsUnitTestChefSpec)">
+            <Properties>
+                Configuration=$(TestConfiguration);
+                Platform=$(Platform)
+            </Properties>
+            <Groups>
+                test;
+                test.unittest;
+                test.unittest.chefspec;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+
+        <BuildStepsToExecute Include="$(BuildStepsPackIso)">
+            <Properties>
+                Configuration=$(ProductionConfiguration);
+                Platform=$(Platform)
+            </Properties>
+            <Groups>
+                package;
+                package.iso;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
         <BuildStepsToExecute Include="$(BuildStepsPackPacker)">
             <Properties>
                 Configuration=$(ProductionConfiguration);
                 Platform=$(Platform)
             </Properties>
             <Groups>
-                Package;
+                package;
+                package.packer;
             </Groups>
             <PreSteps>
             </PreSteps>

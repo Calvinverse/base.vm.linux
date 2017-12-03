@@ -2,6 +2,10 @@
     "admin_username": "${LocalAdministratorName}",
     "admin_password": "${LocalAdministratorPassword}",
 
+    "cookbook_name": "${NameCookbook}",
+
+    "dir_cookbooks_src": "${DirSrcCookbooksJsonEscaped}",
+    "dir_cookbooks_vendors": "${DirVendorCookbooksJsonEscaped}",
     "dir_deploy": "${DirDeployJsonEscaped}",
     "dir_http_user": "${DirTempJsonEscaped}/ubuntu/http",
     "dir_scripts_user": "${DirTempJsonEscaped}/scripts",
