@@ -82,8 +82,22 @@ file '/etc/init.d/provision.sh' do
       cp -a /mnt/dvd/consul/consul_secrets.json /etc/consul/conf.d/secrets.json
       dos2unix /etc/consul/conf.d/secrets.json
 
-      cp -a /mnt/dvd/consul/client/consul_client_location.json /etc/consul/conf.d/location.json
-      dos2unix /etc/consul/conf.d/location.json
+      # Copy the consul client files if they exist
+      if [ ! -f /mnt/dvd/consul/client/consul_client_location.json ]; then
+        cp -a /mnt/dvd/consul/client/consul_client_location.json /etc/consul/conf.d/location.json
+        dos2unix /etc/consul/conf.d/location.json
+      fi
+
+      # Copy the consul server files if they exist
+      if [ ! -f /mnt/dvd/consul/server/consul_server_bootstrap.json ]; then
+        cp -a /mnt/dvd/consul/server/consul_server_bootstrap.json /etc/consul/conf.d/bootstrap.json
+        dos2unix /etc/consul/conf.d/bootstrap.json
+      fi
+
+      if [ ! -f /mnt/dvd/consul/server/consul_server_location.json ]; then
+        cp -a /mnt/dvd/consul/server/consul_server_location.json /etc/consul/conf.d/location.json
+        dos2unix /etc/consul/conf.d/location.json
+      fi
 
       #
       # UNBOUND CONFIGURATION
