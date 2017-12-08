@@ -3,6 +3,10 @@
         "admin_username": "admin",
         "admin_password": "admin",
 
+        "cookbook_name": "not_realy_a_cookbook_name",
+
+        "dir_cookbooks_src": "src/cookbooks",
+        "dir_cookbooks_vendors": "packages/vendor/cookbooks",
         "dir_deploy": null,
         "dir_http_user": null,
         "dir_scripts_user": null,
@@ -54,10 +58,52 @@
     ],
     "provisioners": [
         {
+            "command": "Set-VM -Name {{ user `vm_name` }} -AutomaticCheckpointsEnabled $false",
+            "execute_command": ["Powershell.exe", "-NonInteractive", "-NoLogo", "-NoProfile", "-Command", "{{.Command}}"],
+            "type": "shell-local"
+        },
+        {
+            "command": "Get-VMSnapshot -VMName {{ user `vm_name` }} | Remove-VMSnapshot",
+            "execute_command": ["Powershell.exe", "-NonInteractive", "-NoLogo", "-NoProfile", "-Command", "{{.Command}}"],
+            "type": "shell-local"
+        },
+        {
             "type": "shell",
-            "execute_command": "echo '{{user `admin_password`}}' | sudo -S -E sh {{.Path}}",
+            "execute_command": "echo '{{user `admin_password`}}' | sudo -S sh {{.Path}}",
             "scripts": [
-                "{{ user `dir_scripts_user` }}/ubuntu/update.sh",
+                "{{ user `dir_scripts_user` }}/ubuntu/update.sh"
+            ]
+        },
+        {
+            "expect_disconnect": false,
+            "inline": [
+                "echo '{{user `admin_password`}}' | sudo -S -E bash -c 'echo \"{{user `admin_username`}} ALL=(ALL:ALL) NOPASSWD: ALL\" | (EDITOR=\"tee -a\" visudo)'"
+            ],
+            "type": "shell"
+        },
+        {
+            "expect_disconnect": false,
+            "inline": [
+                "sudo -E apt-get install --assume-yes curl"
+            ],
+            "type": "shell"
+        },
+        {
+            "cookbook_paths": [
+                "{{ user `dir_cookbooks_vendors` }}"
+            ],
+            "execute_command": "sudo -E chef-solo --no-color -c {{.ConfigPath}} -j {{.JsonPath}}",
+            "guest_os_type": "unix",
+            "install_command": "curl -LO https://omnitruck.chef.io/install.sh && {{if .Sudo}}sudo{{end}} bash ./install.sh -v 13.1.31 && rm install.sh",
+            "run_list": [
+                "{{ user `cookbook_name` }}::default"
+            ],
+            "type": "chef-solo"
+        },
+        {
+            "type": "shell",
+            "execute_command": "sudo -E sh {{.Path}}",
+            "scripts": [
                 "{{ user `dir_scripts_user` }}/ubuntu/network.sh",
                 "{{ user `dir_scripts_user` }}/ubuntu/cleanup.sh",
                 "{{ user `dir_scripts_user` }}/ubuntu/sysprep.sh"
