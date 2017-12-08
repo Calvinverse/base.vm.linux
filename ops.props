@@ -415,6 +415,9 @@
         <TemplateTokens Include="DirBuildTempIso">
             <ReplacementValue>$(DirBuildTempIso)</ReplacementValue>
         </TemplateTokens>
+        <TemplateTokens Include="DirTestsIntegration">
+            <ReplacementValue>$(DirTestsIntegration)</ReplacementValue>
+        </TemplateTokens>
     </ItemGroup>
 
 
