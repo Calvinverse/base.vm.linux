@@ -38,7 +38,7 @@ Restart=on-failure
 
 '@
         $serviceFileContent = Get-Content $serviceConfigurationPath | Out-String
-        $systemctlOutput = & systemctl status consul
+        $systemctlOutput = & systemctl status consul-template
         It 'with a systemd service' {
             $serviceFileContent | Should Be ($expectedContent -replace "`r", "")
 

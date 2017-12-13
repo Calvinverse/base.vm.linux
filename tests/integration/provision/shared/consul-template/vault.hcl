@@ -3,7 +3,7 @@
 vault {
   # This is the address of the Vault leader. The protocol (http(s)) portion
   # of the address is required.
-  address = "https://active.vault.service.consul:8200"
+  #address = "https://active.vault.service.consul:8200"
 
   # This is the grace period between lease renewal of periodic secrets and secret
   # re-acquisition. When renewing a secret, if the remaining lease is less than or
@@ -13,7 +13,7 @@ vault {
   #
   # Note: If you set this to a value that is higher than your default TTL or
   # max TTL, Consul Template will always read a new secret!
-  grace = "5m"
+  #grace = "5m"
 
   # This is the token to use when communicating with the Vault server.
   # Like other tools that integrate with Vault, Consul Template makes the
@@ -21,13 +21,13 @@ vault {
   # incorporated logic to generate tokens via Vault's auth methods.
   #
   # This value can also be specified via the environment variable VAULT_TOKEN.
-  token = "abcd1234"
+  #token = "abcd1234"
 
   # This tells Consul Template that the provided token is actually a wrapped
   # token that should be unwrapped using Vault's cubbyhole response wrapping
   # before being used. Please see Vault's cubbyhole response wrapping
   # documentation for more information.
-  unwrap_token = true
+  #unwrap_token = true
 
   # This option tells Consul Template to automatically renew the Vault token
   # given. If you are unfamiliar with Vault's architecture, Vault requires
@@ -39,7 +39,7 @@ vault {
   # Note that secrets specified in a template (using {{secret}} for example)
   # are always renewed, even if this option is set to false. This option only
   # applies to the top-level Vault token itself.
-  renew_token = true
+  #renew_token = true
 
   # This section details the retry options for connecting to Vault. Please see
   # the retry options in the Consul section for more information (they are the

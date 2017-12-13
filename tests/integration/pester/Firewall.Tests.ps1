@@ -1,7 +1,6 @@
 Describe 'The firewall' {
+    $ufwOutput = & sudo ufw status
     Context 'on the machine' {
-        $ufwOutput = & sudo ufw status
-
         It 'should return a status' {
             $ufwOutput | Should Not Be $null
             $ufwOutput.GetType().FullName | Should Be 'System.Object[]'
