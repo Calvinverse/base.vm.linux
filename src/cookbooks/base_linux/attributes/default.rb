@@ -47,6 +47,17 @@ default['consul']['config']['enable_syslog'] = true
 default['consul']['config']['owner'] = 'root'
 
 #
+# CONSULTEMPLATE
+#
+
+default['consul_template']['install_path'] = '/usr/local/bin/consul-template'
+default['consul_template']['config_path'] = '/etc/consul-template.d/conf'
+default['consul_template']['template_path'] = '/etc/consul-template.d/templates'
+
+default['consul_template']['service_user'] = 'consul_template'
+default['consul_template']['service_group'] = 'consul_template'
+
+#
 # FIREWALL
 #
 

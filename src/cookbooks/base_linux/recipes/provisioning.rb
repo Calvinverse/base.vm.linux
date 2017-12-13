@@ -100,6 +100,12 @@ file '/etc/init.d/provision.sh' do
       fi
 
       #
+      # CONSUL CONFIGURATION
+      #
+      cp -a /mnt/dvd/consul-template/vault.hcl /etc/consul-template.d/conf/vault.hcl
+      dos2unix /etc/consul-template.d/conf/vault.hcl
+
+      #
       # UNBOUND CONFIGURATION
       #
       cp -a /mnt/dvd/unbound/unbound_zones.conf /etc/unbound.d/unbound_zones.conf
@@ -115,7 +121,7 @@ file '/etc/init.d/provision.sh' do
       # ENABLE SERVICES
       #
       sudo systemctl enable unbound.service
-      sudo systemctl enable nomad.service
+      sudo systemctl enable consultemplate.service
 
       # The next line creates an empty file so it won't run the next boot
       touch $FLAG

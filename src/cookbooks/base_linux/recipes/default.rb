@@ -19,5 +19,6 @@ end
 include_recipe 'base_linux::firewall'
 
 include_recipe 'base_linux::consul'
+include_recipe 'base_linux::consul_template'
 include_recipe 'base_linux::network'
 include_recipe 'base_linux::provisioning'
