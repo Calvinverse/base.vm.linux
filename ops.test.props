@@ -53,8 +53,8 @@
     <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
         <FilesToCopy
             Condition=" '$(IsTest)' == 'true' "
-            Exclude="$(DirTests)\pester\System.Tests.ps1;$(DirTests)\pester\Users.Tests.ps1"
-            Include="$(DirTests)\pester\**\*.*">
+            Exclude="$(DirTestsIntegrationPester)\System.Tests.ps1;$(DirTestsIntegrationPester)\Users.Tests.ps1"
+            Include="$(DirTestsIntegrationPester)\*.*">
             <Destination>$(DirBuildTempTestsIntegrationPester)</Destination>
         </FilesToCopy>
     </ItemGroup>
