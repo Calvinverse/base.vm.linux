@@ -30,12 +30,16 @@ end
 #
 
 consul_template_config_path = node['consul_template']['config_path']
-directory consul_template_config_path do
-  action :create
-  group 'root'
-  mode '0755'
-  owner 'root'
-  recursive true
+consul_template_data_path = node['consul_template']['data_path']
+
+%W[#{consul_template_config_path} #{consul_template_data_path}].each do |path|
+  directory path do
+    action :create
+    group 'root'
+    mode '0755'
+    owner 'root'
+    recursive true
+  end
 end
 
 file "#{consul_template_config_path}/base.hcl" do
@@ -157,7 +161,7 @@ file "#{consul_template_config_path}/base.hcl" do
     # This is the path to store a PID file which will contain the process ID of the
     # Consul Template process. This is useful if you plan to send custom signals
     # to the process.
-    pid_file = "/tmp/consul-template/pid"
+    pid_file = "#{consul_template_data_path}/pid"
 
     # This is the quiescence timers; it defines the minimum and maximum amount of
     # time to wait for the cluster to reach a consistent state before rendering a
@@ -194,8 +198,14 @@ file "#{consul_template_config_path}/base.hcl" do
   CONF
 end
 
+directory '/tmp' do
+  action :create
+end
+
 directory '/tmp/consul-template' do
   action :create
+  mode '0777'
+  owner node['consul_template']['service_user']
 end
 
 consul_template_template_path = node['consul_template']['template_path']

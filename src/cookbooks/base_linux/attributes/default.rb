@@ -51,6 +51,7 @@ default['consul']['config']['owner'] = 'root'
 #
 
 default['consul_template']['install_path'] = '/usr/local/bin/consul-template'
+default['consul_template']['data_path'] = '/etc/consul-template.d/data'
 default['consul_template']['config_path'] = '/etc/consul-template.d/conf'
 default['consul_template']['template_path'] = '/etc/consul-template.d/templates'
 

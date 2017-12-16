@@ -31,6 +31,10 @@ describe 'base_linux::consul_template' do
       expect(chef_run).to create_directory('/etc/consul-template.d/conf')
     end
 
+    it 'creates the consul-template data directory' do
+      expect(chef_run).to create_directory('/etc/consul-template.d/data')
+    end
+
     it 'creates the consul-template template directory' do
       expect(chef_run).to create_directory('/etc/consul-template.d/templates')
     end
@@ -152,7 +156,7 @@ describe 'base_linux::consul_template' do
       # This is the path to store a PID file which will contain the process ID of the
       # Consul Template process. This is useful if you plan to send custom signals
       # to the process.
-      pid_file = "/tmp/consul-template/pid"
+      pid_file = "/etc/consul-template.d/data/pid"
 
       # This is the quiescence timers; it defines the minimum and maximum amount of
       # time to wait for the cluster to reach a consistent state before rendering a
