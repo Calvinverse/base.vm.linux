@@ -10,5 +10,7 @@
         <file src="${DirTestsIntegration}\provision\shared\consul-template\*.*" target="consul-template" />
 
         <file src="${DirTestsIntegration}\provision\shared\unbound\*.*" target="unbound" />
+
+        <file src="${DirTestsIntegration}\provision\shared\*.json" target="" />
     </files>
 </iso>

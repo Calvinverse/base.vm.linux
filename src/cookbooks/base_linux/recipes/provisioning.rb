@@ -44,6 +44,18 @@ file '/etc/init.d/provision.sh' do
 
     FLAG="/var/log/firstboot.log"
     if [ ! -f $FLAG ]; then
+      #
+      # MOUNT THE DVD WITH THE CONFIGURATION FILES
+      #
+      if [ ! -d /mnt/dvd ]; then
+        mkdir /mnt/dvd
+      fi
+      mount /dev/dvd /mnt/dvd
+
+      if [ ! -f /mnt/dvd/run_provision.json ]; then
+        echo 'run_provisioning.json not found on DVD. Will not execute provisioning'
+        exit 0
+      fi
 
       IPADDRESS=$(f_getEth0Ip)
 
@@ -52,14 +64,6 @@ file '/etc/init.d/provision.sh' do
       #
       # Create '/etc/consul/conf.d/connections.json'
       # echo "{ \\"advertise_addr\\": \\"${IPADDRESS}\\", \\"bind_addr\\": \\"${IPADDRESS}\\" }"  > /etc/consul/conf.d/connections.json
-
-      #
-      # MOUNT THE DVD WITH THE CONFIGURATION FILES
-      #
-      if [ ! -d /mnt/dvd ]; then
-        mkdir /mnt/dvd
-      fi
-      mount /dev/dvd /mnt/dvd
 
       #
       # CONFIGURE SSH
@@ -121,7 +125,7 @@ file '/etc/init.d/provision.sh' do
       # ENABLE SERVICES
       #
       sudo systemctl enable unbound.service
-      sudo systemctl enable consultemplate.service
+      sudo systemctl enable consul-template.service
 
       # The next line creates an empty file so it won't run the next boot
       touch $FLAG
@@ -154,7 +158,10 @@ file '/etc/systemd/system/provision.service' do
   SYSTEMD
 end
 
-# Make sure the service starts on boot
+# Make sure the service does not start on boot. This is because we don't want
+# the service to start when the base image is used in the next stage of the build process,
+# i.e. when we are building on top of the base image. The construction process for
+# that image should enable the provisioning service.
 service 'provision.service' do
-  action [:enable]
+  action [:disable]
 end
