@@ -49,9 +49,16 @@
     <!--
         **** PREPARE - COPY FILES ****
     -->
-    <!--
-        Files that should be copied, either from the file system or from a NuGet package.
-    -->
+    <ItemGroup Condition=" '$(ShouldLoadHttpFilesToCopy)' == 'true' ">
+        <HttpFilesToCopy Include="https://releases.hashicorp.com/consul-template/${VersionConsulTemplate}/consul-template_${VersionConsulTemplate}_linux_amd64.zip">
+            <Destination>$(DirBuildTempCookbooks)\$(NameCookbook)\files\ubuntu</Destination>
+            <GpgKey>91A6E7F85D05C65630BEF18951852D87348FFC4C</GpgKey>
+            <HashAlgorithm>SHA256</HashAlgorithm>
+            <HashFile>https://releases.hashicorp.com/consul-template/${VersionConsulTemplate}/consul-template_${VersionConsulTemplate}_SHA256SUMS</HashFile>
+            <SignatureFile>https://releases.hashicorp.com/consul-template/${VersionConsulTemplate}/consul-template_${VersionConsulTemplate}_SHA256SUMS.sig</SignatureFile>
+            <Unzip>true</Unzip>
+        </HttpFilesToCopy>
+    </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
         <FilesToCopy
             Include="$(DirBuildTempScripts)\ubuntu\*.*">
@@ -656,6 +663,19 @@
                 prepare;
                 prepare.copy;
                 prepare.copy.nuget;
+            </Groups>
+            <PreSteps>
+            </PreSteps>
+            <PostSteps>
+            </PostSteps>
+        </BuildStepsToExecute>
+        <BuildStepsToExecute Include="$(BuildStepsPrepareCopyHttp)">
+            <Properties>
+            </Properties>
+            <Groups>
+                prepare;
+                prepare.copy;
+                prepare.copy.url;
             </Groups>
             <PreSteps>
             </PreSteps>

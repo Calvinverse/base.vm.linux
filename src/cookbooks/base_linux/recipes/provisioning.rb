@@ -44,6 +44,19 @@ file '/etc/init.d/provision.sh' do
 
     FLAG="/var/log/firstboot.log"
     if [ ! -f $FLAG ]; then
+      #
+      # MOUNT THE DVD WITH THE CONFIGURATION FILES
+      #
+      if [ ! -d /mnt/dvd ]; then
+        mkdir /mnt/dvd
+      fi
+      mount /dev/dvd /mnt/dvd
+
+      if [ ! -f /mnt/dvd/run_provisioning.json ]; then
+        umount /dev/dvd
+        echo 'run_provisioning.json not found on DVD. Will not execute provisioning'
+        exit 0
+      fi
 
       IPADDRESS=$(f_getEth0Ip)
 
@@ -52,14 +65,6 @@ file '/etc/init.d/provision.sh' do
       #
       # Create '/etc/consul/conf.d/connections.json'
       # echo "{ \\"advertise_addr\\": \\"${IPADDRESS}\\", \\"bind_addr\\": \\"${IPADDRESS}\\" }"  > /etc/consul/conf.d/connections.json
-
-      #
-      # MOUNT THE DVD WITH THE CONFIGURATION FILES
-      #
-      if [ ! -d /mnt/dvd ]; then
-        mkdir /mnt/dvd
-      fi
-      mount /dev/dvd /mnt/dvd
 
       #
       # CONFIGURE SSH
@@ -100,6 +105,12 @@ file '/etc/init.d/provision.sh' do
       fi
 
       #
+      # CONSUL CONFIGURATION
+      #
+      cp -a /mnt/dvd/consul-template/vault.hcl /etc/consul-template.d/conf/vault.hcl
+      dos2unix /etc/consul-template.d/conf/vault.hcl
+
+      #
       # UNBOUND CONFIGURATION
       #
       cp -a /mnt/dvd/unbound/unbound_zones.conf /etc/unbound.d/unbound_zones.conf
@@ -115,7 +126,7 @@ file '/etc/init.d/provision.sh' do
       # ENABLE SERVICES
       #
       sudo systemctl enable unbound.service
-      sudo systemctl enable nomad.service
+      sudo systemctl enable consul-template.service
 
       # The next line creates an empty file so it won't run the next boot
       touch $FLAG

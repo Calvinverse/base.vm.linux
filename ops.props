@@ -375,6 +375,10 @@
             <ReplacementValue>UbuntuTemplate_$([System.DateTime]::Now.ToString('yyyyMMdd'))</ReplacementValue>
         </TemplateTokens>
 
+        <TemplateTokens Include="VersionConsulTemplate">
+            <ReplacementValue>0.19.4</ReplacementValue>
+        </TemplateTokens>
+
         <TemplateTokens
             Include="NetworkHostIpAddressForPreseed">
             <ReplacementValue>192.168.3.25</ReplacementValue>
@@ -438,6 +442,11 @@
             The full path to the berkshelf application. If not defined the Gems bin directory is searched.
         -->
         <ToolsExternalBerkshelfPath>berks</ToolsExternalBerkshelfPath>
+
+        <!--
+            The full path and version of the GPG command line executable. If not defined the packages directory is searched.
+        -->
+        <ToolsExternalGpgPath>gpg</ToolsExternalGpgPath>
 
         <!--
             The full path and version to the packer command line executable. If not defined the packages directory is searched.
