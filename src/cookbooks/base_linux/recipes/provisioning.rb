@@ -52,7 +52,8 @@ file '/etc/init.d/provision.sh' do
       fi
       mount /dev/dvd /mnt/dvd
 
-      if [ ! -f /mnt/dvd/run_provision.json ]; then
+      if [ ! -f /mnt/dvd/run_provisioning.json ]; then
+        umount /dev/dvd
         echo 'run_provisioning.json not found on DVD. Will not execute provisioning'
         exit 0
       fi
@@ -158,10 +159,7 @@ file '/etc/systemd/system/provision.service' do
   SYSTEMD
 end
 
-# Make sure the service does not start on boot. This is because we don't want
-# the service to start when the base image is used in the next stage of the build process,
-# i.e. when we are building on top of the base image. The construction process for
-# that image should enable the provisioning service.
+# Make sure the service starts on boot
 service 'provision.service' do
-  action [:disable]
+  action [:enable]
 end

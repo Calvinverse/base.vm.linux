@@ -23,7 +23,7 @@ describe 'base_linux::provisioning' do
     end
 
     it 'enables the provisioning service' do
-      expect(chef_run).to disable_service('provision.service')
+      expect(chef_run).to enable_service('provision.service')
     end
   end
 end
