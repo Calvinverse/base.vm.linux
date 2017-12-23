@@ -1,0 +1,20 @@
+{
+    "bootstrap_expect": 1,
+
+    "datacenter": "test-integration",
+    "domain": "integrationtest",
+
+    "data_dir": "/tmp/pester/consul/data",
+
+    "log_level": "INFO",
+
+    "ports" : {
+        "dns" : 8650,
+        "http" : 8550,
+        "serf_lan" : 8351,
+        "serf_wan" : 8352,
+        "server" : 8350
+    },
+
+    "server": true
+}

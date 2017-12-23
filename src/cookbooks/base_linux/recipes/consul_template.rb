@@ -198,16 +198,6 @@ file "#{consul_template_config_path}/base.hcl" do
   CONF
 end
 
-directory '/tmp' do
-  action :create
-end
-
-directory '/tmp/consul-template' do
-  action :create
-  mode '0777'
-  owner node['consul_template']['service_user']
-end
-
 consul_template_template_path = node['consul_template']['template_path']
 directory consul_template_template_path do
   action :create

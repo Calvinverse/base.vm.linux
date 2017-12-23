@@ -61,6 +61,21 @@
         {
             "expect_disconnect": false,
             "inline": [
+                "ls /tmp/pester",
+                "ls /tmp/pester/consul"
+            ],
+            "type": "shell"
+        },
+        {
+            "expect_disconnect": false,
+            "inline": [
+                "nohub /opt/consul/1.0.1/consul agent -config-file /tmp/pester/consul/server.json &>/dev/null"
+            ],
+            "type": "shell"
+        },
+        {
+            "expect_disconnect": false,
+            "inline": [
                 "(/usr/lib/update-notifier/apt-check --package-names 2>&1) &>> /tmp/updates.txt"
             ],
             "type": "shell"
@@ -73,6 +88,13 @@
                 "curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/microsoft.list",
                 "echo '{{user `admin_password`}}' | sudo -S -E apt-get update",
                 "echo '{{user `admin_password`}}' | sudo -S -E apt-get install --assume-yes powershell=6.0.0-beta.8-1.ubuntu.16.04"
+            ],
+            "type": "shell"
+        },
+        {
+            "expect_disconnect": false,
+            "inline": [
+                "echo '{{user `admin_password`}}' | sudo -S -E powershell -Command '. /tmp/pester/consul/Set-ConsulKV.ps1; Set-ConsulKV'"
             ],
             "type": "shell"
         },
