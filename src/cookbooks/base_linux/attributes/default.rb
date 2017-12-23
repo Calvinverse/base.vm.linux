@@ -79,6 +79,26 @@ default['firewall']['ipv6_enabled'] = false
 #
 
 #
+# SCOLLECTOR
+#
+
+default['scollector']['release_url'] = 'https://github.com/bosun-monitor/bosun/releases/download'
+default['scollector']['bin_path'] = '/usr/local/bin/scollector'
+default['scollector']['conf_dir'] = '/etc/scollector.d'
+default['scollector']['version'] = '0.6.0-beta1'
+
+default['scollector']['config_file'] = 'scollector.toml'
+default['scollector']['consul_template_file'] = 'scollector.ctmpl'
+
+#
+# SYSLOG-NG
+#
+
+default['syslog_ng']['config_file'] = 'syslog-ng-rabbitmq.conf'
+default['syslog_ng']['consul_template_file'] = 'syslog-ng.ctmpl'
+default['syslog_ng']['config_path'] = '/etc/syslog-ng/conf.d'
+
+#
 # UNBOUND
 #
 
