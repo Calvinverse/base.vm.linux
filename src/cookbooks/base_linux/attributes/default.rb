@@ -38,7 +38,8 @@ default['consul']['config']['dns_config'] = {
 }
 
 # Always leave the cluster if we are terminated
-default['consul']['config']['leave_on_terminate'] = true
+default['consul']['config']['leave_on_terminate'] = false
+default['consul']['config']['skip_leave_on_interrupt'] = true
 
 # Send all logs to syslog
 default['consul']['config']['log_level'] = 'INFO'
