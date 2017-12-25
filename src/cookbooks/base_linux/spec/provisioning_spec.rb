@@ -14,6 +14,22 @@ describe 'base_linux::provisioning' do
       expect(chef_run).to install_apt_package('pwgen')
     end
 
+    it 'creates provision_helpers.sh in the /etc/init.d directory' do
+      expect(chef_run).to create_file('/etc/init.d/provision_helpers.sh')
+    end
+
+    it 'creates provision_consul.sh in the /etc/init.d directory' do
+      expect(chef_run).to create_file('/etc/init.d/provision_consul.sh')
+    end
+
+    it 'creates provision_consul-template.sh in the /etc/init.d directory' do
+      expect(chef_run).to create_file('/etc/init.d/provision_consul-template.sh')
+    end
+
+    it 'creates provision_unbound.sh in the /etc/init.d directory' do
+      expect(chef_run).to create_file('/etc/init.d/provision_unbound.sh')
+    end
+
     it 'creates provision.sh in the /etc/init.d directory' do
       expect(chef_run).to create_file('/etc/init.d/provision.sh')
     end

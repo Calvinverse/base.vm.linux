@@ -117,6 +117,10 @@
             <Template>$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
+        <BuildFilesToGenerate Include="$(DirBuildTempCookbooks)\$(NameCookbook)\attributes\resource_information.rb">
+            <Template>$(DirSrcCookbooks)\$(NameCookbook)\attributes\resource_information.rb</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
 
         <BuildFilesToGenerate Include="$(DirBuildTemp)\build\packer.json">
             <Template>$(DirSrcPacker)\packer.json</Template>

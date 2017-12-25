@@ -49,10 +49,10 @@ Describe 'On the system' {
         )
 
         It 'should have a file with updates' {
-            '/tmp/updates.txt' | Should Exist
+            '/test/updates.txt' | Should Exist
         }
 
-        $fileSize = (Get-Item '/tmp/updates.txt').Length
+        $fileSize = (Get-Item '/test/updates.txt').Length
         if ($fileSize -gt 0)
         {
             $updates = Get-Content /tmp/updates.txt
@@ -61,6 +61,74 @@ Describe 'On the system' {
             It 'should all be installed' {
                 $additionalPackages.Length | Should Be 0
             }
+        }
+    }
+
+    Context 'system metrics' {
+        It 'with binaries in /usr/local/bin' {
+            '/usr/local/bin/scollector' | Should Exist
+        }
+
+        It 'with default configuration in /etc/scollector.d/scollector.toml' {
+            '/etc/scollector.d/scollector.toml' | Should Exist
+        }
+
+        $expectedContent = @'
+Host = "http://write.metrics.service.integrationtest:4242"
+
+[Tags]
+    environment = "test-integration"
+    os = "linux"
+
+'@
+        $scollectorConfigContent = Get-Content '/etc/scollector.d/scollector.toml' | Out-String
+        It 'with the expected content in the configuration file' {
+            $scollectorConfigContent | Should Be ($expectedContent -replace "`r", "")
+        }
+    }
+
+    Context 'has been daemonized' {
+        $serviceConfigurationPath = '/etc/systemd/system/scollector.service'
+        if (-not (Test-Path $serviceConfigurationPath))
+        {
+            It 'has a systemd configuration' {
+                $false | Should Be $true
+            }
+        }
+
+        $expectedContent = @'
+[Unit]
+Description=SCollector
+Requires=network-online.target
+After=network-online.target
+Documentation=http://bosun.org/scollector/
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+ExecStart=/usr/local/bin/scollector -conf /etc/scollector.d/scollector.toml
+Restart=on-failure
+
+'@
+        $serviceFileContent = Get-Content $serviceConfigurationPath | Out-String
+        $systemctlOutput = & systemctl status scollector
+        It 'with a systemd service' {
+            $serviceFileContent | Should Be ($expectedContent -replace "`r", "")
+
+            $systemctlOutput | Should Not Be $null
+            $systemctlOutput.GetType().FullName | Should Be 'System.Object[]'
+            $systemctlOutput.Length | Should BeGreaterThan 3
+            $systemctlOutput[0] | Should Match 'scollector.service - SCollector'
+        }
+
+        It 'that is enabled' {
+            $systemctlOutput[1] | Should Match 'Loaded:\sloaded\s\(.*;\senabled;.*\)'
+
+        }
+
+        It 'and is running' {
+            $systemctlOutput[2] | Should Match 'Active:\sactive\s\(running\).*'
         }
     }
 }

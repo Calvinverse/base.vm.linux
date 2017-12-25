@@ -54,14 +54,21 @@
             "type": "shell"
         },
         {
-            "destination": "/tmp/pester",
+            "expect_disconnect": false,
+            "inline": [
+                "echo '{{user `admin_password`}}' | sudo -S -E mkdir -m 777 /test"
+            ],
+            "type": "shell"
+        },
+        {
+            "destination": "/test/pester/",
             "source": "{{ user `dir_temp` }}/tests/integration/pester",
             "type": "file"
         },
         {
             "expect_disconnect": false,
             "inline": [
-                "(/usr/lib/update-notifier/apt-check --package-names 2>&1) &>> /tmp/updates.txt"
+                "(/usr/lib/update-notifier/apt-check --package-names 2>&1) &>> /test/updates.txt"
             ],
             "type": "shell"
         },
@@ -79,7 +86,14 @@
         {
             "expect_disconnect": false,
             "inline": [
-                "echo '{{user `admin_password`}}' | sudo -S -E powershell -Command '$ErrorActionPreference = \"Stop\"; $result = Invoke-Pester -Script /tmp/pester/* -PassThru; exit $result.FailedCount '"
+                "echo '{{user `admin_password`}}' | sudo -S -E powershell -Command '. /test/pester/consul/Set-ConsulKV.ps1; Set-ConsulKV'"
+            ],
+            "type": "shell"
+        },
+        {
+            "expect_disconnect": false,
+            "inline": [
+                "echo '{{user `admin_password`}}' | sudo -S -E powershell -Command '$ErrorActionPreference = \"Stop\"; $result = Invoke-Pester -Script /test/pester/* -PassThru; exit $result.FailedCount '"
             ],
             "type": "shell"
         }

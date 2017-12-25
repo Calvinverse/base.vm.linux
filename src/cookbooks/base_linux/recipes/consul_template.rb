@@ -198,16 +198,6 @@ file "#{consul_template_config_path}/base.hcl" do
   CONF
 end
 
-directory '/tmp' do
-  action :create
-end
-
-directory '/tmp/consul-template' do
-  action :create
-  mode '0777'
-  owner node['consul_template']['service_user']
-end
-
 consul_template_template_path = node['consul_template']['template_path']
 directory consul_template_template_path do
   action :create
@@ -230,7 +220,7 @@ systemd_service 'consul-template' do
     wanted_by %w[multi-user.target]
   end
   service do
-    exec_start "#{consul_template_install_path} -config=#{consul_template_config_path} -config=#{consul_template_template_path}"
+    exec_start "#{consul_template_install_path} -config=#{consul_template_config_path}"
     restart 'on-failure'
   end
   requires %w[multi-user.target]
