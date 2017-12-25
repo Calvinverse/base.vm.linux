@@ -57,7 +57,7 @@ file "#{consul_template_template_path}/#{syslog_ng_template_file}" do
         password("{{ .Data.password }}")
       {{ end }}
     {{ end }}
-        port({{ keyOrDefault "config/services/queue/port" 80 }})
+        port({{ keyOrDefault "config/services/queue/port" "80" }})
         routing-key("syslog")
         username("{{ keyOrDefault "config/services/queue/logs/syslog/username" "logs" }}")
         vhost("{{ keyOrDefault "config/services/queue/logs/syslog/vhost" "logs" }}")
@@ -75,7 +75,8 @@ end
 
 # Create the consul-template configuration file
 syslog_ng_config_file = node['syslog_ng']['config_file']
-file "#{consul_template_template_path}/syslog-ng.hcl" do
+consul_template_config_path = node['consul_template']['config_path']
+file "#{consul_template_config_path}/syslog-ng.hcl" do
   action :create
   content <<~HCL
     # This block defines the configuration for a template. Unlike other blocks,
@@ -202,7 +203,7 @@ scollector_template_file = node['scollector']['consul_template_file']
 file "#{consul_template_template_path}/#{scollector_template_file}" do
   action :create
   content <<~CONF
-    Host = "http://{{ keyOrDefault "config/services/metrics/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/port" 80 }}"
+    Host = "http://{{ keyOrDefault "config/services/metrics/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/port" "80" }}"
 
     [Tags]
         environment = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"
@@ -214,7 +215,7 @@ end
 # Create the consul-template configuration file
 scollector_config_file = node['scollector']['config_file']
 scollector_install_path = node['scollector']['conf_dir']
-file "#{consul_template_template_path}/scollector.hcl" do
+file "#{consul_template_config_path}/scollector.hcl" do
   action :create
   content <<~HCL
     # This block defines the configuration for a template. Unlike other blocks,

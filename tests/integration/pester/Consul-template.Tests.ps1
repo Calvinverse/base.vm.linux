@@ -37,7 +37,7 @@ Documentation=https://github.com/hashicorp/consul-template
 WantedBy=multi-user.target
 
 [Service]
-ExecStart=/usr/local/bin/consul-template -config=/etc/consul-template.d/conf -config=/etc/consul-template.d/templates
+ExecStart=/usr/local/bin/consul-template -config=/etc/consul-template.d/conf
 Restart=on-failure
 
 '@

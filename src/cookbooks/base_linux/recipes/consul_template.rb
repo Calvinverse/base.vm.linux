@@ -220,7 +220,7 @@ systemd_service 'consul-template' do
     wanted_by %w[multi-user.target]
   end
   service do
-    exec_start "#{consul_template_install_path} -config=#{consul_template_config_path} -config=#{consul_template_template_path}"
+    exec_start "#{consul_template_install_path} -config=#{consul_template_config_path}"
     restart 'on-failure'
   end
   requires %w[multi-user.target]

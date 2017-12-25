@@ -48,7 +48,7 @@ describe 'base_linux::system' do
           password("{{ .Data.password }}")
         {{ end }}
       {{ end }}
-          port({{ keyOrDefault "config/services/queue/port" 80 }})
+          port({{ keyOrDefault "config/services/queue/port" "80" }})
           routing-key("syslog")
           username("{{ keyOrDefault "config/services/queue/logs/syslog/username" "logs" }}")
           vhost("{{ keyOrDefault "config/services/queue/logs/syslog/vhost" "logs" }}")
@@ -132,7 +132,7 @@ describe 'base_linux::system' do
       }
     CONF
     it 'creates syslog-ng.hcl in the consul-template template directory' do
-      expect(chef_run).to create_file('/etc/consul-template.d/templates/syslog-ng.hcl')
+      expect(chef_run).to create_file('/etc/consul-template.d/conf/syslog-ng.hcl')
         .with_content(consul_template_syslog_ng_content)
     end
   end
@@ -170,7 +170,7 @@ describe 'base_linux::system' do
     end
 
     scollector_template_content = <<~CONF
-      Host = "http://{{ keyOrDefault "config/services/metrics/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/port" 80 }}"
+      Host = "http://{{ keyOrDefault "config/services/metrics/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/port" "80" }}"
 
       [Tags]
           environment = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"
@@ -247,7 +247,7 @@ describe 'base_linux::system' do
       }
     CONF
     it 'creates scollector.hcl in the consul-template template directory' do
-      expect(chef_run).to create_file('/etc/consul-template.d/templates/scollector.hcl')
+      expect(chef_run).to create_file('/etc/consul-template.d/conf/scollector.hcl')
         .with_content(consul_template_scollector_content)
     end
   end
