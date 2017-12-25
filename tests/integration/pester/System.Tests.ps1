@@ -49,10 +49,10 @@ Describe 'On the system' {
         )
 
         It 'should have a file with updates' {
-            '/tmp/updates.txt' | Should Exist
+            '/test/updates.txt' | Should Exist
         }
 
-        $fileSize = (Get-Item '/tmp/updates.txt').Length
+        $fileSize = (Get-Item '/test/updates.txt').Length
         if ($fileSize -gt 0)
         {
             $updates = Get-Content /tmp/updates.txt
