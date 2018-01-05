@@ -12,8 +12,10 @@ function Get-IpAddress
 
 function Set-ConsulKV
 {
+    $consulVersion = '1.0.2'
+
     Write-Output "Starting consul ..."
-    $process = Start-Process -FilePath '/opt/consul/1.0.1/consul' -ArgumentList "agent -config-file /test/pester/consul/server.json" -PassThru -RedirectStandardOutput /test/pester/consul/consuloutput.out -RedirectStandardError /test/pester/consul/consulerror.out
+    $process = Start-Process -FilePath "/opt/consul/$($consulVersion)/consul" -ArgumentList "agent -config-file /test/pester/consul/server.json" -PassThru -RedirectStandardOutput /test/pester/consul/consuloutput.out -RedirectStandardError /test/pester/consul/consulerror.out
 
     Write-Output "Going to sleep for 10 seconds ..."
     Start-Sleep -Seconds 10
@@ -21,19 +23,19 @@ function Set-ConsulKV
     Write-Output "Setting consul key-values ..."
 
     # Load config/services/consul
-    & /opt/consul/1.0.1/consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/datacenter 'test-integration'
-    & /opt/consul/1.0.1/consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/domain 'integrationtest'
+    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/datacenter 'test-integration'
+    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/domain 'integrationtest'
 
     # load config/services/queue
-    & /opt/consul/1.0.1/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/host 'active.queue'
-    & /opt/consul/1.0.1/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/port '5672'
+    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/host 'active.queue'
+    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/port '5672'
 
-    & /opt/consul/1.0.1/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/logs/syslog/username 'testuser'
-    & /opt/consul/1.0.1/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/logs/syslog/vhost 'testlogs'
+    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/logs/syslog/username 'testuser'
+    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/logs/syslog/vhost 'testlogs'
 
     # load config/services/metrics
-    & /opt/consul/1.0.1/consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/host 'write.metrics'
-    & /opt/consul/1.0.1/consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/port '4242'
+    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/host 'write.metrics'
+    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/port '4242'
 
     Write-Output "Joining the local consul ..."
 
@@ -41,13 +43,13 @@ function Set-ConsulKV
     $ipAddress = Get-IpAddress
     Write-Output "Joining: $($ipAddress):8351"
 
-    Start-Process -FilePath '/opt/consul/1.0.1/consul' -ArgumentList "join $($ipAddress):8351"
+    Start-Process -FilePath "/opt/consul/$($consulVersion)/consul" -ArgumentList "join $($ipAddress):8351"
 
     Write-Output "Getting members for client"
-    & /opt/consul/1.0.1/consul members
+    & /opt/consul/$($consulVersion)/consul members
 
     Write-Output "Getting members for server"
-    & /opt/consul/1.0.1/consul members -http-addr=http://127.0.0.1:8550
+    & /opt/consul/$($consulVersion)/consul members -http-addr=http://127.0.0.1:8550
 
     Write-Output "Giving consul-template 30 seconds to process the data ..."
     Start-Sleep -Seconds 30
