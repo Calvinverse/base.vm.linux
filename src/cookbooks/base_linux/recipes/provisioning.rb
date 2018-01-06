@@ -63,6 +63,7 @@ file '/etc/init.d/provision_consul.sh' do
     #!/bin/bash
 
     function f_provisionConsul {
+      # Stop the consul service and kill the data directory. It will have the consul node-id in it which must go!
       sudo systemctl stop consul.service
       sudo rm -rfv /var/lib/consul/*
 
@@ -71,6 +72,9 @@ file '/etc/init.d/provision_consul.sh' do
 
       cp -a /mnt/dvd/consul/consul_secrets.json /etc/consul/conf.d/secrets.json
       dos2unix /etc/consul/conf.d/secrets.json
+
+      cp -a /mnt/dvd/consul/consul_metrics.json /etc/consul/conf.d/metrics.json
+      dos2unix /etc/consul/conf.d/metrics.json
 
       # Copy the consul client files if they exist
       if [ ! -f /mnt/dvd/consul/client/consul_client_location.json ]; then
