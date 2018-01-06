@@ -101,6 +101,19 @@
             "type": "chef-solo"
         },
         {
+            "expect_disconnect": false,
+            "inline": [
+                "sudo apt list --installed > /tmp/packages.txt"
+            ],
+            "type": "shell"
+        },
+        {
+            "destination" : "{{ user `dir_temp` }}/installed_packages.txt",
+            "direction" : "download",
+            "source" : "/tmp/packages.txt",
+            "type" : "file"
+        },
+        {
             "type": "shell",
             "execute_command": "sudo -E sh {{.Path}}",
             "scripts": [

@@ -6,6 +6,9 @@
             src="${DirWorkspace}\readme.md"
             target="" />
         <file
+            src="${DirTemp}\installed_packages.txt"
+            target="" />
+        <file
             src="${DirTemp}\${ImageName}\**\*.*"
             target="" />
     </files>
