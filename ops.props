@@ -359,6 +359,9 @@
     -->
     <ItemGroup>
         <!-- General -->
+        <TemplateTokens Include="ProductShortName">
+            <ReplacementValue>$(ProductName.Replace('.', '-').ToLower())</ReplacementValue>
+        </TemplateTokens>
         <TemplateTokens Include="LocalAdministratorName">
             <ReplacementValue>thebigkahuna</ReplacementValue>
         </TemplateTokens>

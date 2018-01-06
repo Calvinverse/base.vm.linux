@@ -42,14 +42,14 @@ file '/etc/init.d/provision_helpers.sh' do
         done< <(LANG=C /sbin/ifconfig eth0)
     }
 
-    function setHostName {
+    function f_setHostName {
       #Assign existing hostname to $hostn
       hostn=$(cat /etc/hostname)
 
       # Generate a 16 character password
       POSTFIX=$(pwgen --no-capitalize 16 1)
 
-      NAME="cv${RESOURCE_SHORT_NAME}-${RESOURCE_VERSION_MAJOR}-${RESOURCE_VERSION_MINOR}-${RESOURCE_VERSION_PATCH}-${POSTFIX}"
+      NAME="cv-${RESOURCE_SHORT_NAME}-${RESOURCE_VERSION_MAJOR}-${RESOURCE_VERSION_MINOR}-${RESOURCE_VERSION_PATCH}-${POSTFIX}"
       sudo sed -i "s/$hostn/$NAME/g" /etc/hosts
       sudo sed -i "s/$hostn/$NAME/g" /etc/hostname
     }
@@ -137,6 +137,8 @@ file '/etc/init.d/provision.sh' do
     . /etc/init.d/provision_consul.sh
     . /etc/init.d/provision_consul-template.sh
     . /etc/init.d/provision_unbound.sh
+
+    f_setHostName
 
     FLAG="/var/log/firstboot.log"
     if [ ! -f $FLAG ]; then
