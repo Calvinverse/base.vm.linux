@@ -193,8 +193,6 @@ systemd_service 'scollector' do
   requires %w[network-online.target]
 end
 
-# Make sure the scollector service doesn't start automatically. This will be changed
-# after we have provisioned the box
 service 'scollector' do
   action :enable
 end
