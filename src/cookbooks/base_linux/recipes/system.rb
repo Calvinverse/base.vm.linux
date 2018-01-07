@@ -201,7 +201,7 @@ scollector_template_file = node['scollector']['consul_template_file']
 file "#{consul_template_template_path}/#{scollector_template_file}" do
   action :create
   content <<~CONF
-    Host = "http://{{ keyOrDefault "config/services/metrics/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/port" "80" }}"
+    Host = "http://{{ keyOrDefault "config/services/metrics/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/opentsdb/port" "80" }}"
 
     [Tags]
         environment = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"

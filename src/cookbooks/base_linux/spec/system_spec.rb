@@ -170,7 +170,7 @@ describe 'base_linux::system' do
     end
 
     scollector_template_content = <<~CONF
-      Host = "http://{{ keyOrDefault "config/services/metrics/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/port" "80" }}"
+      Host = "http://{{ keyOrDefault "config/services/metrics/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/opentsdb/port" "80" }}"
 
       [Tags]
           environment = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"
