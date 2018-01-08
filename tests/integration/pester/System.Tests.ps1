@@ -74,7 +74,7 @@ Describe 'On the system' {
         }
 
         $expectedContent = @'
-Host = "http://write.metrics.service.integrationtest:4242"
+Host = "http://opentsdb.metrics.service.integrationtest:4242"
 
 [Tags]
     environment = "test-integration"

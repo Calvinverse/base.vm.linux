@@ -51,13 +51,13 @@ file "#{consul_template_template_path}/#{syslog_ng_template_file}" do
         body("$(format-json date=datetime($ISODATE) pid=int64($PID) program=$PROGRAM message=$MESSAGE facility=$FACILITY host=$FULLHOST priorityNum=int64($LEVEL_NUM) priority=$LEVEL)")
         exchange("{{ keyOrDefault "config/services/queue/logs/syslog/exchange" "" }}"")
         exchange-type("direct")
-        host("{{ keyOrDefault "config/services/queue/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "consul" }}")
+        host("{{ keyOrDefault "config/services/queue/protocols/amqp/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "consul" }}")
     {{ with secret "secret/services/queue/logs/syslog"}}
       {{ if .Data.password }}
         password("{{ .Data.password }}")
       {{ end }}
     {{ end }}
-        port({{ keyOrDefault "config/services/queue/port" "80" }})
+        port({{ keyOrDefault "config/services/queue/protocols/amqp/port" "80" }})
         routing-key("syslog")
         username("{{ keyOrDefault "config/services/queue/logs/syslog/username" "logs" }}")
         vhost("{{ keyOrDefault "config/services/queue/logs/syslog/vhost" "logs" }}")
@@ -201,7 +201,7 @@ scollector_template_file = node['scollector']['consul_template_file']
 file "#{consul_template_template_path}/#{scollector_template_file}" do
   action :create
   content <<~CONF
-    Host = "http://{{ keyOrDefault "config/services/metrics/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/opentsdb/port" "80" }}"
+    Host = "http://{{ keyOrDefault "config/services/metrics/protocols/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/opentsdb/port" "80" }}"
 
     [Tags]
         environment = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"
