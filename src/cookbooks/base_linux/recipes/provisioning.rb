@@ -138,8 +138,6 @@ file '/etc/init.d/provision.sh' do
     . /etc/init.d/provision_consul-template.sh
     . /etc/init.d/provision_unbound.sh
 
-    f_setHostName
-
     FLAG="/var/log/firstboot.log"
     if [ ! -f $FLAG ]; then
       #
@@ -156,13 +154,7 @@ file '/etc/init.d/provision.sh' do
         exit 0
       fi
 
-      IPADDRESS=$(f_getEth0Ip)
-
-      #
-      # CREATE MACHINE SPECIFIC CONFIGURATION FILES
-      #
-      # Create '/etc/consul/conf.d/connections.json'
-      # echo "{ \\"advertise_addr\\": \\"${IPADDRESS}\\", \\"bind_addr\\": \\"${IPADDRESS}\\" }"  > /etc/consul/conf.d/connections.json
+      f_setHostName
 
       #
       # CONFIGURE SSH
@@ -197,7 +189,7 @@ file '/etc/init.d/provision.sh' do
       # The next line creates an empty file so it won't run the next boot
       touch $FLAG
 
-      # restart the machine so that all configuration settings take hold
+      # restart the machine so that all configuration settings take hold (specifically the change in machine name)
       sudo shutdown -r now
     else
       echo "Provisioning script ran previously so nothing to do"
