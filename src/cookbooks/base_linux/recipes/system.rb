@@ -45,7 +45,7 @@ file "#{consul_template_template_path}/#{syslog_ng_template_file}" do
     ########################
     # Destinations
     ########################
-    # The RabbitMQ desitination
+    # The RabbitMQ destination
     destination d_rabbit {
       amqp(
         body("$(format-json date=datetime($ISODATE) pid=int64($PID) program=$PROGRAM message=$MESSAGE facility=$FACILITY host=$FULLHOST priorityNum=int64($LEVEL_NUM) priority=$LEVEL)")

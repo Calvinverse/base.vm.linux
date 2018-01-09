@@ -37,7 +37,7 @@ default['consul']['config']['dns_config'] = {
   }
 }
 
-# Always leave the cluster if we are terminated
+# Never leave the cluster if we are terminated
 default['consul']['config']['leave_on_terminate'] = false
 default['consul']['config']['skip_leave_on_interrupt'] = true
 
@@ -74,10 +74,6 @@ default['firewall']['allow_winrm'] = false
 
 # No communication via IPv6 at all
 default['firewall']['ipv6_enabled'] = false
-
-#
-# PROVISIONING
-#
 
 #
 # SCOLLECTOR

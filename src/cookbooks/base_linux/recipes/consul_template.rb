@@ -13,7 +13,7 @@ poise_service_user node['consul_template']['service_user'] do
 end
 
 #
-# INSTALL FABIO
+# INSTALL CONSUL-TEMPLATE
 #
 
 consul_template_install_path = node['consul_template']['install_path']
