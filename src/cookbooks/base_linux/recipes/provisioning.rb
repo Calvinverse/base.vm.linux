@@ -43,15 +43,12 @@ file '/etc/init.d/provision_helpers.sh' do
     }
 
     function f_setHostName {
-      #Assign existing hostname to $hostn
-      hostn=$(cat /etc/hostname)
-
       # Generate a 16 character password
       POSTFIX=$(pwgen --no-capitalize 16 1)
 
       NAME="cv-${RESOURCE_SHORT_NAME}-${RESOURCE_VERSION_MAJOR}-${RESOURCE_VERSION_MINOR}-${RESOURCE_VERSION_PATCH}-${POSTFIX}"
-      sudo sed -i "s/$hostn/$NAME/g" /etc/hosts
-      sudo sed -i "s/$hostn/$NAME/g" /etc/hostname
+      sudo sed -i "s/.*127.0.1.1.*/127.0.1.1\t${NAME}/g" /etc/hosts
+      sudo hostnamectl set-hostname $NAME
     }
   BASH
   mode '755'
