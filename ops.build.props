@@ -65,7 +65,7 @@
             <Destination>$(DirBuildTempIso)\ubuntu</Destination>
         </FilesToCopy>
         <FilesToCopy
-            Exclude="$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb"
+            Exclude="$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb;$(DirBuildTempCookbooks)\$(NameCookbook)\attributes\resource_information.rb"
             Include="$(DirSrcCookbooks)\$(NameCookbook)\**\*.*">
             <Destination>$(DirBuildTempCookbooks)\$(NameCookbook)</Destination>
         </FilesToCopy>
