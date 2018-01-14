@@ -3,7 +3,7 @@
 vault {
   # This is the address of the Vault leader. The protocol (http(s)) portion
   # of the address is required.
-  #address = "https://active.vault.service.consul:8200"
+  address = "http://localhost:8200"
 
   # This is the grace period between lease renewal of periodic secrets and secret
   # re-acquisition. When renewing a secret, if the remaining lease is less than or
