@@ -62,6 +62,32 @@ Describe 'On the system' {
                 $additionalPackages.Length | Should Be 0
             }
         }
+
+        $systemctlOutput = & systemctl status apt-daily.service
+        It 'has disable the apt-daily service' {
+            $systemctlOutput | Should Not Be $null
+            $systemctlOutput.GetType().FullName | Should Be 'System.Object[]'
+            $systemctlOutput.Length | Should BeGreaterThan 3
+            $systemctlOutput[0] | Should Match 'apt-daily.service - Daily apt download activities'
+            $systemctlOutput[1] | Should Match 'Loaded:\sloaded\s\(.*;\sstatic;.*\)'
+            $systemctlOutput[2] | Should Match 'Active:\sinactive\s\(dead\).*'
+        }
+
+        $systemctlOutput = & systemctl status apt-daily.timer
+        It 'has disable the apt-daily timer' {
+            $systemctlOutput | Should Not Be $null
+            $systemctlOutput.GetType().FullName | Should Be 'System.Object[]'
+            $systemctlOutput.Length | Should Be 3
+            $systemctlOutput[0] | Should Match 'apt-daily.timer - Daily apt download activities'
+            $systemctlOutput[1] | Should Match 'Loaded:\sloaded\s\(.*;\sdisabled;.*\)'
+            $systemctlOutput[2] | Should Match 'Active:\sinactive\s\(dead\).*'
+        }
+    }
+
+    Context 'system logs' {
+        It 'with the RabbitMQ target defined in /etc/syslog-ng/conf.d/syslog-ng-rabbitmq.conf' {
+            # '/etc/syslog-ng/conf.d/syslog-ng-rabbitmq.conf' | Should Exist
+        }
     }
 
     Context 'system metrics' {
