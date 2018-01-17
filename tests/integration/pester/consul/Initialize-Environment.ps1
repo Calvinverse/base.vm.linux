@@ -136,7 +136,12 @@ function Start-TestConsul
     $ErrorActionPreference = 'Stop'
 
     Write-Output "Starting consul ..."
-    $process = Start-Process -FilePath "/opt/consul/$($consulVersion)/consul" -ArgumentList "agent -config-file /test/pester/consul/server.json" -PassThru -RedirectStandardOutput /test/pester/consul/consuloutput.out -RedirectStandardError /test/pester/consul/consulerror.out
+    $process = Start-Process `
+        -FilePath "/opt/consul/$($consulVersion)/consul" `
+        -ArgumentList "agent -config-file /test/pester/consul/server.json" `
+        -PassThru `
+        -RedirectStandardOutput /test/pester/consul/consuloutput.out `
+        -RedirectStandardError /test/pester/consul/consulerror.out
 }
 
 function Start-TestVault
@@ -148,5 +153,10 @@ function Start-TestVault
     $ErrorActionPreference = 'Stop'
 
     Write-Output "Starting vault ..."
-    $process = Start-Process -FilePath "/test/vault/vault" -ArgumentList "-dev" -PassThru -RedirectStandardOutput /test/vault/vaultoutput.out -RedirectStandardError /test/vault/vaulterror.out
+    $process = Start-Process `
+        -FilePath "/test/vault/vault" `
+        -ArgumentList "-dev" `
+        -PassThru `
+        -RedirectStandardOutput /test/vault/vaultoutput.out `
+        -RedirectStandardError /test/vault/vaulterror.out
 }
