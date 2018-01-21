@@ -151,8 +151,6 @@ file '/etc/init.d/provision.sh' do
         exit 0
       fi
 
-      f_setHostName
-
       #
       # CONFIGURE SSH
       #
@@ -176,6 +174,19 @@ file '/etc/init.d/provision.sh' do
       # UNBOUND CONFIGURATION
       #
       f_provisionUnbound
+
+      #
+      # CUSTOM PROVISIONING
+      #
+      if [ -f /etc/init.d/provision_image.sh ]; then
+        . /etc/init.d/provision_image.sh
+        f_provisionImage
+      fi
+
+      #
+      # SET HOST NAME
+      #
+      f_setHostName
 
       #
       # UNMOUNT DVD
