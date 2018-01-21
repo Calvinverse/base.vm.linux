@@ -193,7 +193,7 @@ file "#{consul_template_config_path}/base.hcl" do
 
       # This is the prefix to the path in Consul's KV store where de-duplication
       # templates will be pre-rendered and stored.
-      prefix = "consul-template/dedup/"
+      prefix = "data/services/consul-template/dedup/"
     }
   CONF
 end

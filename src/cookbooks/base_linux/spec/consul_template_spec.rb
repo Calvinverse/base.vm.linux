@@ -188,7 +188,7 @@ describe 'base_linux::consul_template' do
 
         # This is the prefix to the path in Consul's KV store where de-duplication
         # templates will be pre-rendered and stored.
-        prefix = "consul-template/dedup/"
+        prefix = "data/services/consul-template/dedup/"
       }
     HCL
     it 'creates base.hcl in the consul-template configuration directory' do
