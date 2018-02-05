@@ -298,6 +298,7 @@ describe 'base_linux::system_metrics' do
       #                            OUTPUT PLUGINS                                   #
       ###############################################################################
 
+      {{ if keyExists "config/services/metrics/protocols/opentsdb/host" }}
       # Configuration for influxdb server to send metrics to
       [[outputs.influxdb]]
         ## The full HTTP or UDP URL for your InfluxDB instance.
@@ -340,6 +341,11 @@ describe 'base_linux::system_metrics' do
 
         ## Compress each HTTP request payload using GZIP.
         # content_encoding = "gzip"
+      {{ else }}
+      # Send metrics to nowhere at all
+      [[outputs.discard]]
+        # no configuration
+      {{ end }}
     CONF
     it 'creates telegraf system outputs template file in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/templates/telegraf_system_outputs.ctmpl')
@@ -577,6 +583,7 @@ describe 'base_linux::system_metrics' do
       #                            OUTPUT PLUGINS                                   #
       ###############################################################################
 
+      {{ if keyExists "config/services/metrics/protocols/opentsdb/host" }}
       # Configuration for influxdb server to send metrics to
       [[outputs.influxdb]]
         ## The full HTTP or UDP URL for your InfluxDB instance.
@@ -619,6 +626,11 @@ describe 'base_linux::system_metrics' do
 
         ## Compress each HTTP request payload using GZIP.
         # content_encoding = "gzip"
+      {{ else }}
+      # Send metrics to nowhere at all
+      [[outputs.discard]]
+        # no configuration
+      {{ end }}
     CONF
     it 'creates telegraf statsd outputs template file in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/templates/telegraf_statsd_outputs.ctmpl')

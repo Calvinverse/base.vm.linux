@@ -320,6 +320,7 @@ file "#{consul_template_template_path}/#{telegraf_system_output_template_file}" 
     #                            OUTPUT PLUGINS                                   #
     ###############################################################################
 
+    {{ if keyExists "config/services/metrics/protocols/opentsdb/host" }}
     # Configuration for influxdb server to send metrics to
     [[outputs.influxdb]]
       ## The full HTTP or UDP URL for your InfluxDB instance.
@@ -362,6 +363,11 @@ file "#{consul_template_template_path}/#{telegraf_system_output_template_file}" 
 
       ## Compress each HTTP request payload using GZIP.
       # content_encoding = "gzip"
+    {{ else }}
+    # Send metrics to nowhere at all
+    [[outputs.discard]]
+      # no configuration
+    {{ end }}
   CONF
   mode '755'
 end
@@ -610,6 +616,7 @@ file "#{consul_template_template_path}/#{telegraf_statsd_output_template_file}" 
     #                            OUTPUT PLUGINS                                   #
     ###############################################################################
 
+    {{ if keyExists "config/services/metrics/protocols/opentsdb/host" }}
     # Configuration for influxdb server to send metrics to
     [[outputs.influxdb]]
       ## The full HTTP or UDP URL for your InfluxDB instance.
@@ -652,6 +659,11 @@ file "#{consul_template_template_path}/#{telegraf_statsd_output_template_file}" 
 
       ## Compress each HTTP request payload using GZIP.
       # content_encoding = "gzip"
+    {{ else }}
+    # Send metrics to nowhere at all
+    [[outputs.discard]]
+      # no configuration
+    {{ end }}
   CONF
   mode '755'
 end
