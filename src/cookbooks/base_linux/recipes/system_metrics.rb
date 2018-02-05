@@ -192,6 +192,7 @@ systemd_service telegraf_system_service do
     wanted_by %w[multi-user.target]
   end
   service do
+    environment_file '/etc/environment'
     exec_start "telegraf --config #{telegraf_config_file} --config-directory #{telegraf_system_config_directory}"
     restart 'on-failure'
   end
@@ -456,6 +457,7 @@ systemd_service telegraf_statsd_service do
     wanted_by %w[multi-user.target]
   end
   service do
+    environment_file '/etc/environment'
     exec_start "telegraf --config #{telegraf_statsd_config_file} --config-directory #{telegraf_statsd_config_directory}"
     restart 'on-failure'
   end

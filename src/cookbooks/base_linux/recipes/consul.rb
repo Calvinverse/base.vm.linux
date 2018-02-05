@@ -22,6 +22,23 @@ end
 include_recipe 'consul::default'
 
 #
+# CONFIGURATION
+#
+
+file '/etc/consul/conf.d/metrics.json' do
+  action :create
+  content <<~JSON
+    {
+        "telemetry": {
+            "disable_hostname": true,
+            "statsd_address": "localhost:8125"
+        }
+    }
+  JSON
+  mode '755'
+end
+
+#
 # ALLOW CONSUL THROUGH THE FIREWALL
 #
 
