@@ -18,8 +18,7 @@ function Initialize-Environment
 
     try
     {
-        $consulVersion = '1.0.2'
-        Start-TestConsul -consulVersion $consulVersion
+        Start-TestConsul
 
         Install-Vault -vaultVersion '0.9.1'
         Start-TestVault
@@ -27,10 +26,10 @@ function Initialize-Environment
         Write-Output "Waiting for 10 seconds for consul and vault to start ..."
         Start-Sleep -Seconds 10
 
-        Join-Cluster -consulVersion $consulVersion
+        Join-Cluster
 
         Set-VaultSecrets
-        Set-ConsulKV -consulVersion $consulVersion
+        Set-ConsulKV
 
         Write-Output "Giving consul-template 30 seconds to process the data ..."
         Start-Sleep -Seconds 30
@@ -71,11 +70,6 @@ function Install-Vault
 
 function Join-Cluster
 {
-    [CmdletBinding()]
-    param(
-        [string] $consulVersion
-    )
-
     $ErrorActionPreference = 'Stop'
 
     Write-Output "Joining the local consul ..."
@@ -84,13 +78,13 @@ function Join-Cluster
     $ipAddress = Get-IpAddress
     Write-Output "Joining: $($ipAddress):8351"
 
-    Start-Process -FilePath "/opt/consul/$($consulVersion)/consul" -ArgumentList "join $($ipAddress):8351"
+    Start-Process -FilePath "consul" -ArgumentList "join $($ipAddress):8351"
 
     Write-Output "Getting members for client"
-    & /opt/consul/$($consulVersion)/consul members
+    & consul members
 
     Write-Output "Getting members for server"
-    & /opt/consul/$($consulVersion)/consul members -http-addr=http://127.0.0.1:8550
+    & consul members -http-addr=http://127.0.0.1:8550
 }
 
 function Set-ConsulKV
@@ -100,21 +94,21 @@ function Set-ConsulKV
     Write-Output "Setting consul key-values ..."
 
     # Load config/services/consul
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/datacenter 'test-integration'
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/domain 'integrationtest'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/datacenter 'test-integration'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/domain 'integrationtest'
 
     # load config/services/metrics
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/protocols/opentsdb/host 'opentsdb.metrics'
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/protocols/opentsdb/port '4242'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/protocols/opentsdb/host 'opentsdb.metrics'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/protocols/opentsdb/port '4242'
 
     # load config/services/queue
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/protocols/http/host 'http.queue'
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/protocols/http/port '15672'
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/protocols/amqp/host 'amqp.queue'
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/protocols/amqp/port '5672'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/protocols/http/host 'http.queue'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/protocols/http/port '15672'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/protocols/amqp/host 'amqp.queue'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/protocols/amqp/port '5672'
 
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/logs/syslog/username 'testuser'
-    & /opt/consul/$($consulVersion)/consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/logs/syslog/vhost 'testlogs'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/logs/syslog/username 'testuser'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/logs/syslog/vhost 'testlogs'
 }
 
 function Set-VaultSecrets
@@ -128,16 +122,11 @@ function Set-VaultSecrets
 
 function Start-TestConsul
 {
-    [CmdletBinding()]
-    param(
-        [string] $consulVersion
-    )
-
     $ErrorActionPreference = 'Stop'
 
     Write-Output "Starting consul ..."
     $process = Start-Process `
-        -FilePath "/opt/consul/$($consulVersion)/consul" `
+        -FilePath 'consul' `
         -ArgumentList "agent -config-file /test/pester/consul/server.json" `
         -PassThru `
         -RedirectStandardOutput /test/pester/consul/consuloutput.out `
@@ -154,7 +143,7 @@ function Start-TestVault
 
     Write-Output "Starting vault ..."
     $process = Start-Process `
-        -FilePath "/test/vault/vault" `
+        -FilePath '/test/vault/vault' `
         -ArgumentList "-dev" `
         -PassThru `
         -RedirectStandardOutput /test/vault/vaultoutput.out `
