@@ -22,6 +22,19 @@ describe 'base_linux::network' do
       )
     end
 
+    unbound_zones_config_content = <<~CONF
+      #
+      # See unbound.conf(5) man page, version 1.6.3.
+      #
+
+      # This file is an empty file just so that there is a zones file and
+      # unbound will start
+    CONF
+    it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
+      expect(chef_run).to create_file('/etc/unbound.d/unbound_zones.conf').with_content(unbound_zones_config_content)
+    end
+  end
+
     unbound_default_config_content = <<~CONF
       #
       # See unbound.conf(5) man page, version 1.6.3.
@@ -297,8 +310,8 @@ describe 'base_linux::network' do
       )
     end
 
-    it 'disables the unbound service' do
-      expect(chef_run).to disable_service('unbound')
+    it 'enables the unbound service' do
+      expect(chef_run).to enable_service('unbound')
     end
   end
 

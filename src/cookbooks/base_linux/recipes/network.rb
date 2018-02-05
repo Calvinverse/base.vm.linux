@@ -37,6 +37,19 @@ end
 # CONFIGURATION
 #
 
+
+file "#{unbound_config_directory}/unbound_zones.conf" do
+  action :create
+  content <<~CONF
+    #
+    # See unbound.conf(5) man page, version 1.6.3.
+    #
+
+    # This file is an empty file just so that there is a zones file and
+    # unbound will start
+  CONF
+end
+
 unbound_config_file = node['file_name']['unbound_config_file']
 file "/etc/unbound/#{unbound_config_file}" do
   action :create
@@ -322,7 +335,7 @@ end
 # Make sure the unbound service doesn't start automatically. This will be changed
 # after we have provisioned the box
 service 'unbound' do
-  action :disable
+  action :enable
 end
 
 #

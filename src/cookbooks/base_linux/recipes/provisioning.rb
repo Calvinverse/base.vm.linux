@@ -119,7 +119,7 @@ file '/etc/init.d/provision_unbound.sh' do
       cp -a /mnt/dvd/unbound/unbound_zones.conf /etc/unbound.d/unbound_zones.conf
       dos2unix /etc/unbound.d/unbound_zones.conf
 
-      sudo systemctl enable unbound.service
+      sudo systemctl restart unbound.service
     }
   BASH
   mode '755'
