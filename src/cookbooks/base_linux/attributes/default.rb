@@ -76,24 +76,32 @@ default['firewall']['allow_winrm'] = false
 default['firewall']['ipv6_enabled'] = false
 
 #
-# SCOLLECTOR
-#
-
-default['scollector']['release_url'] = 'https://github.com/bosun-monitor/bosun/releases/download'
-default['scollector']['bin_path'] = '/usr/local/bin/scollector'
-default['scollector']['conf_dir'] = '/etc/scollector.d'
-default['scollector']['version'] = '0.6.0-beta1'
-
-default['scollector']['config_file'] = 'scollector.toml'
-default['scollector']['consul_template_file'] = 'scollector.ctmpl'
-
-#
 # SYSLOG-NG
 #
 
 default['syslog_ng']['config_file'] = 'syslog-ng-rabbitmq.conf'
 default['syslog_ng']['consul_template_file'] = 'syslog-ng.ctmpl'
 default['syslog_ng']['config_path'] = '/etc/syslog-ng/conf.d'
+
+#
+# TELEGRAF
+#
+
+default['telegraf']['version'] = '1.4.1-1'
+default['telegraf']['shasums'] = 'f70ca532511a92e590eaf129ee816dd7cd8c0f7eeb62b41e1b8c8623334d6a8d'
+default['telegraf']['download_urls'] = 'https://dl.influxdata.com/telegraf/releases'
+
+default['telegraf']['config_file_path'] = '/etc/telegraf/telegraf.conf'
+
+default['telegraf']['system']['service'] = 'telegraf-system'
+default['telegraf']['system']['config_directory_path'] = '/etc/telegraf/telegraf.d/system'
+default['telegraf']['system']['inputs_file'] = 'inputs.conf'
+default['telegraf']['system']['consul_template_output_file'] = 'telegraf_system_outputs.ctmpl'
+
+default['telegraf']['statsd']['service'] = 'telegraf-statsd'
+default['telegraf']['statsd']['config_directory_path'] = '/etc/telegraf/telegraf.d/statsd'
+default['telegraf']['statsd']['consul_template_input_file'] = 'telegraf_statsd_inputs.ctmpl'
+default['telegraf']['statsd']['consul_template_output_file'] = 'telegraf_statsd_outputs.ctmpl'
 
 #
 # UNBOUND

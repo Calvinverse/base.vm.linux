@@ -21,6 +21,10 @@ include_recipe 'base_linux::meta'
 
 include_recipe 'base_linux::consul'
 include_recipe 'base_linux::consul_template'
+
 include_recipe 'base_linux::system'
+include_recipe 'base_linux::system_logs'
+include_recipe 'base_linux::system_metrics'
+
 include_recipe 'base_linux::network'
 include_recipe 'base_linux::provisioning'
