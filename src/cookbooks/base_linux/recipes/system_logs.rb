@@ -32,9 +32,15 @@ directory syslog_ng_config_path do
   action :create
 end
 
+#
+# CONSUL TEMPLATE FILES
+#
+
+consul_template_template_path = node['consul_template']['template_path']
+consul_template_config_path = node['consul_template']['config_path']
+
 # Create the consul-template template file
 syslog_ng_template_file = node['syslog_ng']['consul_template_file']
-consul_template_template_path = node['consul_template']['template_path']
 file "#{consul_template_template_path}/#{syslog_ng_template_file}" do
   action :create
   content <<~CONF
@@ -71,7 +77,6 @@ end
 
 # Create the consul-template configuration file
 syslog_ng_config_file = node['syslog_ng']['config_file']
-consul_template_config_path = node['consul_template']['config_path']
 file "#{consul_template_config_path}/syslog-ng.hcl" do
   action :create
   content <<~HCL

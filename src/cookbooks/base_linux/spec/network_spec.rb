@@ -33,7 +33,6 @@ describe 'base_linux::network' do
     it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
       expect(chef_run).to create_file('/etc/unbound.d/unbound_zones.conf').with_content(unbound_zones_config_content)
     end
-  end
 
     unbound_default_config_content = <<~CONF
       #

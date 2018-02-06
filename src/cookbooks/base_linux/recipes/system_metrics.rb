@@ -28,6 +28,9 @@ end
 # DEFAULT CONFIGURATION
 #
 
+consul_template_template_path = node['consul_template']['template_path']
+consul_template_config_path = node['consul_template']['config_path']
+
 # The configuration file for telegraf is dropped in the configuration path
 # when the resource is provisioned because it contains environment specific information
 telegraf_template_file = node['telegraf']['consul_template_file']
@@ -102,6 +105,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
 end
 
 # Create the consul-template configuration file
+telegraf_config_file = node['telegraf']['config_file_path']
 file "#{consul_template_config_path}/telegraf.hcl" do
   action :create
   content <<~HCL
@@ -176,13 +180,12 @@ end
 # CONFIGURE SYSTEM METRICS
 #
 
-telegraf_system_config_directory = default['telegraf']['system']['config_directory_path']
+telegraf_system_config_directory = node['telegraf']['system']['config_directory_path']
 directory telegraf_system_config_directory do
   action :create
 end
 
 telegraf_system_service = node['telegraf']['system']['service']
-telegraf_system_config_file = node['telegraf']['system']['config_file_path']
 systemd_service telegraf_system_service do
   action :create
   after %w[network-online.target]
@@ -199,7 +202,7 @@ systemd_service telegraf_system_service do
   requires %w[network-online.target]
 end
 
-telegraf_system_input_file = node['telegraf']['system']['input_file']
+telegraf_system_input_file = node['telegraf']['system']['inputs_file']
 file "#{telegraf_system_config_directory}/#{telegraf_system_input_file}" do
   action :create
   content <<~CONF
@@ -310,7 +313,7 @@ file "#{telegraf_system_config_directory}/#{telegraf_system_input_file}" do
   mode '755'
 end
 
-telegraf_system_output_template_file = node['telegraf']['system']['consul_template_output_file']
+telegraf_system_output_template_file = node['telegraf']['system']['consul_template_outputs_file']
 file "#{consul_template_template_path}/#{telegraf_system_output_template_file}" do
   action :create
   content <<~CONF
@@ -447,7 +450,7 @@ end
 # CONFIGURE STATSD METRICS
 #
 
-telegraf_statsd_config_directory = default['telegraf']['statsd']['config_directory_path']
+telegraf_statsd_config_directory = node['telegraf']['statsd']['config_directory_path']
 directory telegraf_system_config_directory do
   action :create
 end
@@ -470,8 +473,8 @@ systemd_service telegraf_statsd_service do
   requires %w[network-online.target]
 end
 
-telegraf_statsd_input_template_file = node['telegraf']['statsd']['consul_template_input_file']
-file "#{consul_template_template_path}/#{telegraf_statsd_input_template_file}" do
+telegraf_statsd_inputs_template_file = node['telegraf']['statsd']['consul_template_inputs_file']
+file "#{consul_template_template_path}/#{telegraf_statsd_inputs_template_file}" do
   action :create
   content <<~CONF
     # Telegraf Configuration
@@ -546,7 +549,7 @@ file "#{consul_template_config_path}/telegraf_statsd_inputs.hcl" do
       # This is the source file on disk to use as the input template. This is often
       # called the "Consul Template template". This option is required if not using
       # the `contents` option.
-      source = "#{consul_template_template_path}/#{telegraf_statsd_input_template_file}"
+      source = "#{consul_template_template_path}/#{telegraf_statsd_inputs_template_file}"
 
       # This is the destination path on disk where the source template will render.
       # If the parent directories do not exist, Consul Template will attempt to
@@ -606,8 +609,8 @@ file "#{consul_template_config_path}/telegraf_statsd_inputs.hcl" do
   mode '755'
 end
 
-telegraf_statsd_output_template_file = node['telegraf']['statsd']['consul_template_output_file']
-file "#{consul_template_template_path}/#{telegraf_statsd_output_template_file}" do
+telegraf_statsd_outputs_template_file = node['telegraf']['statsd']['consul_template_outputs_file']
+file "#{consul_template_template_path}/#{telegraf_statsd_outputs_template_file}" do
   action :create
   content <<~CONF
     # Telegraf Configuration
@@ -679,7 +682,7 @@ file "#{consul_template_config_path}/telegraf_statsd_outputs.hcl" do
       # This is the source file on disk to use as the input template. This is often
       # called the "Consul Template template". This option is required if not using
       # the `contents` option.
-      source = "#{consul_template_template_path}/#{telegraf_statsd_output_template_file}"
+      source = "#{consul_template_template_path}/#{telegraf_statsd_outputs_template_file}"
 
       # This is the destination path on disk where the source template will render.
       # If the parent directories do not exist, Consul Template will attempt to

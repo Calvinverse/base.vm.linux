@@ -37,7 +37,6 @@ end
 # CONFIGURATION
 #
 
-
 file "#{unbound_config_directory}/unbound_zones.conf" do
   action :create
   content <<~CONF

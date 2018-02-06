@@ -16,7 +16,7 @@ describe 'base_linux::system_metrics' do
 
     it 'installs telegraf' do
       expect(chef_run).to install_dpkg_package('telegraf').with(
-        options: '--force-confdef --force-confold'
+        options: '--force-confdef --force-confold',
         source: "#{Chef::Config[:file_cache_path]}/#{file_name}"
       )
     end

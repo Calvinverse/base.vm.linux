@@ -12,6 +12,8 @@ describe 'base_linux::consul' do
   end
 
   context 'creates the consul configuration files' do
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
+
     consul_metrics_content = <<~JSON
       {
           "telemetry": {

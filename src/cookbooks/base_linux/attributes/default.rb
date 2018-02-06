@@ -91,17 +91,18 @@ default['telegraf']['version'] = '1.5.2-1'
 default['telegraf']['shasums'] = '8bc54e7005c1e4ff7d68a7cd724b65cddb9d8e09ad81c89e01f6819254f97a86'
 default['telegraf']['download_urls'] = 'https://dl.influxdata.com/telegraf/releases'
 
+default['telegraf']['consul_template_file'] = 'telegraf.ctmpl'
 default['telegraf']['config_file_path'] = '/etc/telegraf/telegraf.conf'
 
 default['telegraf']['system']['service'] = 'telegraf-system'
 default['telegraf']['system']['config_directory_path'] = '/etc/telegraf/telegraf.d/system'
 default['telegraf']['system']['inputs_file'] = 'inputs.conf'
-default['telegraf']['system']['consul_template_output_file'] = 'telegraf_system_outputs.ctmpl'
+default['telegraf']['system']['consul_template_outputs_file'] = 'telegraf_system_outputs.ctmpl'
 
 default['telegraf']['statsd']['service'] = 'telegraf-statsd'
 default['telegraf']['statsd']['config_directory_path'] = '/etc/telegraf/telegraf.d/statsd'
-default['telegraf']['statsd']['consul_template_input_file'] = 'telegraf_statsd_inputs.ctmpl'
-default['telegraf']['statsd']['consul_template_output_file'] = 'telegraf_statsd_outputs.ctmpl'
+default['telegraf']['statsd']['consul_template_inputs_file'] = 'telegraf_statsd_inputs.ctmpl'
+default['telegraf']['statsd']['consul_template_outputs_file'] = 'telegraf_statsd_outputs.ctmpl'
 
 #
 # UNBOUND
