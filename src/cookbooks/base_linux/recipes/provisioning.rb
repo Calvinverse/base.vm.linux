@@ -76,6 +76,7 @@ file '/etc/init.d/provision_consul.sh' do
         dos2unix /etc/consul/conf.d/location.json
 
         'CONSUL_SERVER_OR_CLIENT=client' >> /etc/environment
+        'CONSUL_SERVER_OR_CLIENT=client' >> /etc/default/telegraf
       fi
 
       # Copy the consul server files if they exist
@@ -89,6 +90,7 @@ file '/etc/init.d/provision_consul.sh' do
         dos2unix /etc/consul/conf.d/location.json
 
         'CONSUL_SERVER_OR_CLIENT=server' >> /etc/environment
+        'CONSUL_SERVER_OR_CLIENT=server' >> /etc/default/telegraf
       fi
     }
   BASH

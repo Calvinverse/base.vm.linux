@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-describe 'base_linux::system_metrics' do
+describe 'template_resource_linux_ubuntu_server::system_metrics' do
   context 'installs telegraf' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
-    install_version = '1.4.1-1'
+    install_version = '1.5.2-1'
     file_name = "telegraf_#{install_version}_amd64.deb"
     it 'downloads telegraf' do
       expect(chef_run).to create_remote_file("#{Chef::Config[:file_cache_path]}/#{file_name}").with(
@@ -16,9 +16,13 @@ describe 'base_linux::system_metrics' do
 
     it 'installs telegraf' do
       expect(chef_run).to install_dpkg_package('telegraf').with(
-        options: '--force-confdef --force-confold',
+        options: ['--force-confdef', '--force-confold'],
         source: "#{Chef::Config[:file_cache_path]}/#{file_name}"
       )
+    end
+
+    it 'enables the telegraf service' do
+      expect(chef_run).to enable_service('telegraf')
     end
 
     telegraf_template_content = <<~CONF
@@ -114,7 +118,7 @@ describe 'base_linux::system_metrics' do
         # command will only run if the resulting template changes. The command must
         # return within 30s (configurable), and it must have a successful exit code.
         # Consul Template is not a replacement for a process monitor or init system.
-        command = "systemctl restart 'telegraf-*'"
+        command = "systemctl restart telegraf"
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.
@@ -163,25 +167,9 @@ describe 'base_linux::system_metrics' do
   end
 
   context 'configures the system telegraf' do
-    it 'installs the telegraf system service' do
-      expect(chef_run).to create_systemd_service('telegraf-system').with(
-        action: [:create],
-        after: %w[network-online.target],
-        description: 'Telegraf - System',
-        documentation: 'https://docs.influxdata.com/telegraf',
-        requires: %w[network-online.target]
-      )
-    end
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
-    it 'enables the telegraf system service' do
-      expect(chef_run).to enable_service('telegraf-system')
-    end
-
-    it 'creates the telegraf system configuratino  directory' do
-      expect(chef_run).to create_directory('/etc/telegraf/telegraf.d/system')
-    end
-
-    telegraf_system_input_content = <<~CONF
+    telegraf_system_inputs_template_content = <<~CONF
       # Telegraf Configuration
 
       ###############################################################################
@@ -198,6 +186,8 @@ describe 'base_linux::system_metrics' do
         collect_cpu_time = false
         ## If true, compute and report the sum of all non-idle CPU states.
         report_active = false
+        [inputs.cpu.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
 
 
       # Read metrics about disk usage by mount point
@@ -209,6 +199,8 @@ describe 'base_linux::system_metrics' do
         ## Ignore some mountpoints by filesystem type. For example (dev)tmpfs (usually
         ## present on /run, /var/run, /dev/shm or /dev).
         ignore_fs = ["tmpfs", "devtmpfs", "devfs"]
+        [inputs.disk.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
 
 
       # Read metrics about disk IO by device
@@ -236,16 +228,22 @@ describe 'base_linux::system_metrics' do
         ## The typical use case is for LVM volumes, to get the VG/LV name instead of
         ## the near-meaningless DM-0 name.
         # name_templates = ["$ID_FS_LABEL","$DM_VG_NAME/$DM_LV_NAME"]
+        [inputs.diskio.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
 
 
       # Get kernel statistics from /proc/stat
       [[inputs.kernel]]
         # no configuration
+        [inputs.kernel.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
 
 
       # Read metrics about memory usage
       [[inputs.mem]]
         # no configuration
+        [inputs.mem.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
 
       # Gather metrics about network interfaces
       [[inputs.net]]
@@ -256,21 +254,29 @@ describe 'base_linux::system_metrics' do
         ##
         # interfaces = ["eth*", "enp0s[0-1]", "lo"]
         ##
+        [inputs.net.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
 
 
       # Get the number of processes and group them by status
       [[inputs.processes]]
         # no configuration
+        [inputs.processes.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
 
 
       # Read metrics about swap memory usage
       [[inputs.swap]]
         # no configuration
+        [inputs.swap.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
 
 
       # Read metrics about system load & uptime
       [[inputs.system]]
         # no configuration
+        [inputs.system.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
 
       # # A plugin to collect stats from Unbound - a validating, recursive, and caching DNS resolver
       [[inputs.unbound]]
@@ -285,10 +291,82 @@ describe 'base_linux::system_metrics' do
 
         ## Use the builtin fielddrop/fieldpass telegraf filters in order to keep/remove specific fields
         # fieldpass = ["total_*", "num_*","time_up", "mem_*"]
+        [inputs.unbound.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
     CONF
-    it 'creates input configuration file in the telegraf system configuration directory' do
-      expect(chef_run).to create_file('/etc/telegraf/telegraf.d/system/inputs.conf')
-        .with_content(telegraf_system_input_content)
+    it 'creates telegraf system inputs template file in the consul-template template directory' do
+      expect(chef_run).to create_file('/etc/consul-template.d/templates/telegraf_system_inputs.ctmpl')
+        .with_content(telegraf_system_inputs_template_content)
+    end
+
+    consul_template_telegraf_system_inputs_content = <<~CONF
+      # This block defines the configuration for a template. Unlike other blocks,
+      # this block may be specified multiple times to configure multiple templates.
+      # It is also possible to configure templates via the CLI directly.
+      template {
+        # This is the source file on disk to use as the input template. This is often
+        # called the "Consul Template template". This option is required if not using
+        # the `contents` option.
+        source = "/etc/consul-template.d/templates/telegraf_system_inputs.ctmpl"
+
+        # This is the destination path on disk where the source template will render.
+        # If the parent directories do not exist, Consul Template will attempt to
+        # create them, unless create_dest_dirs is false.
+        destination = "/etc/telegraf/telegraf.d/inputs_system.conf"
+
+        # This options tells Consul Template to create the parent directories of the
+        # destination path if they do not exist. The default value is true.
+        create_dest_dirs = false
+
+        # This is the optional command to run when the template is rendered. The
+        # command will only run if the resulting template changes. The command must
+        # return within 30s (configurable), and it must have a successful exit code.
+        # Consul Template is not a replacement for a process monitor or init system.
+        command = "systemctl restart telegraf"
+
+        # This is the maximum amount of time to wait for the optional command to
+        # return. Default is 30s.
+        command_timeout = "15s"
+
+        # Exit with an error when accessing a struct or map field/key that does not
+        # exist. The default behavior will print "<no value>" when accessing a field
+        # that does not exist. It is highly recommended you set this to "true" when
+        # retrieving secrets from Vault.
+        error_on_missing_key = false
+
+        # This is the permission to render the file. If this option is left
+        # unspecified, Consul Template will attempt to match the permissions of the
+        # file that already exists at the destination path. If no file exists at that
+        # path, the permissions are 0644.
+        perms = 0755
+
+        # This option backs up the previously rendered template at the destination
+        # path before writing a new one. It keeps exactly one backup. This option is
+        # useful for preventing accidental changes to the data without having a
+        # rollback strategy.
+        backup = true
+
+        # These are the delimiters to use in the template. The default is "{{" and
+        # "}}", but for some templates, it may be easier to use a different delimiter
+        # that does not conflict with the output file itself.
+        left_delimiter  = "{{"
+        right_delimiter = "}}"
+
+        # This is the `minimum(:maximum)` to wait before rendering a new template to
+        # disk and triggering a command, separated by a colon (`:`). If the optional
+        # maximum value is omitted, it is assumed to be 4x the required minimum value.
+        # This is a numeric time with a unit suffix ("5s"). There is no default value.
+        # The wait value for a template takes precedence over any globally-configured
+        # wait.
+        wait {
+          min = "2s"
+          max = "10s"
+        }
+      }
+    CONF
+    it 'creates telegraf_system_inputs.hcl in the consul-template template directory' do
+      expect(chef_run).to create_file('/etc/consul-template.d/conf/telegraf_system_inputs.hcl')
+        .with_content(consul_template_telegraf_system_inputs_content)
     end
 
     telegraf_system_outputs_template_content = <<~CONF
@@ -341,10 +419,14 @@ describe 'base_linux::system_metrics' do
 
         ## Compress each HTTP request payload using GZIP.
         # content_encoding = "gzip"
+        [ouputs.influxdb.tagpass]
+          influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"]
       {{ else }}
       # Send metrics to nowhere at all
       [[outputs.discard]]
         # no configuration
+        [ouputs.discard.tagpass]
+          influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"]
       {{ end }}
     CONF
     it 'creates telegraf system outputs template file in the consul-template template directory' do
@@ -365,7 +447,7 @@ describe 'base_linux::system_metrics' do
         # This is the destination path on disk where the source template will render.
         # If the parent directories do not exist, Consul Template will attempt to
         # create them, unless create_dest_dirs is false.
-        destination = "/etc/telegraf/telegraf.d/system/outputs.conf"
+        destination = "/etc/telegraf/telegraf.d/outputs_system.conf"
 
         # This options tells Consul Template to create the parent directories of the
         # destination path if they do not exist. The default value is true.
@@ -375,7 +457,7 @@ describe 'base_linux::system_metrics' do
         # command will only run if the resulting template changes. The command must
         # return within 30s (configurable), and it must have a successful exit code.
         # Consul Template is not a replacement for a process monitor or init system.
-        command = "systemctl restart telegraf-system"
+        command = "systemctl restart telegraf"
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.
@@ -424,23 +506,7 @@ describe 'base_linux::system_metrics' do
   end
 
   context 'configures the statsd telegraf' do
-    it 'installs the telegraf statsd service' do
-      expect(chef_run).to create_systemd_service('telegraf-statsd').with(
-        action: [:create],
-        after: %w[network-online.target],
-        description: 'Telegraf - Statsd',
-        documentation: 'https://docs.influxdata.com/telegraf',
-        requires: %w[network-online.target]
-      )
-    end
-
-    it 'enables the telegraf statsd service' do
-      expect(chef_run).to enable_service('telegraf-statsd')
-    end
-
-    it 'creates the telegraf statsd configuration directory' do
-      expect(chef_run).to create_directory('/etc/telegraf/telegraf.d/statsd')
-    end
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
     telegraf_statsd_inputs_template_content = <<~CONF
       # Telegraf Configuration
@@ -488,7 +554,7 @@ describe 'base_linux::system_metrics' do
       {{ range $key, $pairs := tree "services" | byKey }}
         # {{ $key }}
         {{ $templates := or (index $pairs "metrics/statsd") "" }}
-        {{ $templates | split "\n" }}
+        {{ $templates | split "\\n" }}
       {{ end }}
         ]
 
@@ -500,6 +566,8 @@ describe 'base_linux::system_metrics' do
         ## calculation of percentiles. Raising this limit increases the accuracy
         ## of percentiles but also increases the memory usage and cpu time.
         # percentile_limit = 1000
+        [inputs.statsd.tags]
+          influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"
     CONF
     it 'creates telegraf statsd inputs template file in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/templates/telegraf_statsd_inputs.ctmpl')
@@ -519,7 +587,7 @@ describe 'base_linux::system_metrics' do
         # This is the destination path on disk where the source template will render.
         # If the parent directories do not exist, Consul Template will attempt to
         # create them, unless create_dest_dirs is false.
-        destination = "/etc/telegraf/telegraf.d/statsd/inputs.conf"
+        destination = "/etc/telegraf/telegraf.d/inputs_statsd.conf"
 
         # This options tells Consul Template to create the parent directories of the
         # destination path if they do not exist. The default value is true.
@@ -529,7 +597,7 @@ describe 'base_linux::system_metrics' do
         # command will only run if the resulting template changes. The command must
         # return within 30s (configurable), and it must have a successful exit code.
         # Consul Template is not a replacement for a process monitor or init system.
-        command = "systemctl restart telegraf-statsd"
+        command = "systemctl restart telegraf"
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.
@@ -626,10 +694,14 @@ describe 'base_linux::system_metrics' do
 
         ## Compress each HTTP request payload using GZIP.
         # content_encoding = "gzip"
+        [ouputs.influxdb.tagpass]
+          influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"]
       {{ else }}
       # Send metrics to nowhere at all
       [[outputs.discard]]
         # no configuration
+        [ouputs.influxdb.tagpass]
+          influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"]
       {{ end }}
     CONF
     it 'creates telegraf statsd outputs template file in the consul-template template directory' do
@@ -650,7 +722,7 @@ describe 'base_linux::system_metrics' do
         # This is the destination path on disk where the source template will render.
         # If the parent directories do not exist, Consul Template will attempt to
         # create them, unless create_dest_dirs is false.
-        destination = "/etc/telegraf/telegraf.d/statsd/outputs.conf"
+        destination = "/etc/telegraf/telegraf.d/outputs_statsd.conf"
 
         # This options tells Consul Template to create the parent directories of the
         # destination path if they do not exist. The default value is true.
@@ -660,7 +732,7 @@ describe 'base_linux::system_metrics' do
         # command will only run if the resulting template changes. The command must
         # return within 30s (configurable), and it must have a successful exit code.
         # Consul Template is not a replacement for a process monitor or init system.
-        command = "systemctl restart telegraf-statsd"
+        command = "systemctl restart telegraf"
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.
