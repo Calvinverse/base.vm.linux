@@ -75,7 +75,7 @@ file '/etc/init.d/provision_consul.sh' do
         cp -a /mnt/dvd/consul/client/consul_client_location.json /etc/consul/conf.d/location.json
         dos2unix /etc/consul/conf.d/location.json
 
-        'CONSUL_SERVER_OR_CLIENT=client' >> /etc/environment
+        echo 'CONSUL_SERVER_OR_CLIENT=client' >> /etc/environment
       fi
 
       # Copy the consul server files if they exist
@@ -88,7 +88,7 @@ file '/etc/init.d/provision_consul.sh' do
         cp -a /mnt/dvd/consul/server/consul_server_location.json /etc/consul/conf.d/location.json
         dos2unix /etc/consul/conf.d/location.json
 
-        'CONSUL_SERVER_OR_CLIENT=server' >> /etc/environment
+        echo 'CONSUL_SERVER_OR_CLIENT=server' >> /etc/environment
       fi
     }
   BASH
