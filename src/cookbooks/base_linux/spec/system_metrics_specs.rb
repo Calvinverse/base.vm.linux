@@ -419,13 +419,13 @@ describe 'template_resource_linux_ubuntu_server::system_metrics' do
 
         ## Compress each HTTP request payload using GZIP.
         # content_encoding = "gzip"
-        [ouputs.influxdb.tagpass]
+        [outputs.influxdb.tagpass]
           influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"]
       {{ else }}
       # Send metrics to nowhere at all
       [[outputs.discard]]
         # no configuration
-        [ouputs.discard.tagpass]
+        [outputs.discard.tagpass]
           influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"]
       {{ end }}
     CONF
@@ -694,13 +694,13 @@ describe 'template_resource_linux_ubuntu_server::system_metrics' do
 
         ## Compress each HTTP request payload using GZIP.
         # content_encoding = "gzip"
-        [ouputs.influxdb.tagpass]
+        [outputs.influxdb.tagpass]
           influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"]
       {{ else }}
       # Send metrics to nowhere at all
       [[outputs.discard]]
         # no configuration
-        [ouputs.influxdb.tagpass]
+        [outputs.discard.tagpass]
           influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"]
       {{ end }}
     CONF
