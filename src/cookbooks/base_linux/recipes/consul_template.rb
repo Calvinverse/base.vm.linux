@@ -220,6 +220,7 @@ systemd_service 'consul-template' do
     wanted_by %w[multi-user.target]
   end
   service do
+    environment_file '/etc/environment'
     exec_start "#{consul_template_install_path} -config=#{consul_template_config_path}"
     restart 'on-failure'
   end

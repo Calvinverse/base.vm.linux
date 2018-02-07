@@ -50,7 +50,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
     [global_tags]
       environment = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"
       os = "linux"
-      consul = "$CONSUL_SERVER_OR_CLIENT"
+      consul = "{{ env "CONSUL_SERVER_OR_CLIENT" | toLower }}"
 
     # Configuration for telegraf agent
     [agent]

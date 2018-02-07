@@ -32,7 +32,7 @@ describe 'template_resource_linux_ubuntu_server::system_metrics' do
       [global_tags]
         environment = "{{ keyOrDefault "config/services/consul/datacenter" "unknown" }}"
         os = "linux"
-        consul = "$CONSUL_SERVER_OR_CLIENT"
+        consul = "{{ env "CONSUL_SERVER_OR_CLIENT" | toLower }}"
 
       # Configuration for telegraf agent
       [agent]
