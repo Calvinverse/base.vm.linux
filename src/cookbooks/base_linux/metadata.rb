@@ -13,7 +13,6 @@ version '${VersionSemantic}'
 
 supports 'ubuntu', '>= 16.04'
 
-depends 'chef-apt-docker', '= 2.0.2'
 depends 'consul', '= 3.1.0'
 depends 'firewall', '= 2.6.2'
 depends 'systemd', '= 2.1.3'

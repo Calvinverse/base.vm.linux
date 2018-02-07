@@ -331,8 +331,8 @@ systemd_service 'unbound' do
   requires %w[multi-user.target]
 end
 
-# Make sure the unbound service doesn't start automatically. This will be changed
-# after we have provisioned the box
+# Make sure the unbound service is running from the start. This is necessary so that when we
+# provision off this base image we will be able to resolve hosts.
 service 'unbound' do
   action :enable
 end
