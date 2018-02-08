@@ -127,13 +127,18 @@ function Start-TestConsul
 {
     $ErrorActionPreference = 'Stop'
 
+    if (-not (Test-Path /test/consul))
+    {
+        New-Item -Path /test/consul -ItemType Directory | Out-Null
+    }
+
     Write-Output "Starting consul ..."
     $process = Start-Process `
-        -FilePath 'consul' `
-        -ArgumentList "agent -config-file /test/pester/consul/server.json" `
+        -FilePath "consul" `
+        -ArgumentList "agent -config-file /test/pester/environment/server.json" `
         -PassThru `
-        -RedirectStandardOutput /test/pester/consul/consuloutput.out `
-        -RedirectStandardError /test/pester/consul/consulerror.out
+        -RedirectStandardOutput /test/consul/output.out `
+        -RedirectStandardError /test/consul/error.out
 }
 
 function Start-TestVault
