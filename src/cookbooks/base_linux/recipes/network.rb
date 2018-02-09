@@ -15,6 +15,13 @@ poise_service_user node['unbound']['service_user'] do
   group node['unbound']['service_group']
 end
 
+# Grant the telegraf user permission to interact with unbound so that it can get the metrics
+group node['unbound']['service_group'] do
+  action :modify
+  append true
+  members node['telegraf']['service_user']
+end
+
 #
 # DIRECTORIES
 #

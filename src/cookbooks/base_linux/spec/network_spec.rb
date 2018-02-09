@@ -5,6 +5,17 @@ require 'spec_helper'
 describe 'base_linux::network' do
   unbound_config_directory = '/etc/unbound.d'
 
+  context 'create users and groups' do
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
+
+    it 'adds the telegraf user to the unbound group' do
+      expect(chef_run).to modify_group('unbound').with(
+        append: true,
+        members: ['telegraf']
+      )
+    end
+  end
+
   context 'create the unbound locations' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 

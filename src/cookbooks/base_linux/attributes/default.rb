@@ -87,6 +87,9 @@ default['syslog_ng']['config_path'] = '/etc/syslog-ng/conf.d'
 # TELEGRAF
 #
 
+# Note that this should match whatever the dpkg telegraf sets up the service with
+default['telegraf']['service_user'] = 'telegraf'
+
 default['telegraf']['version'] = '1.5.2-1'
 default['telegraf']['shasums'] = '8bc54e7005c1e4ff7d68a7cd724b65cddb9d8e09ad81c89e01f6819254f97a86'
 default['telegraf']['download_urls'] = 'https://dl.influxdata.com/telegraf/releases'
