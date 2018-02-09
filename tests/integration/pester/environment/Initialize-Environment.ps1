@@ -135,7 +135,7 @@ function Start-TestConsul
     Write-Output "Starting consul ..."
     $process = Start-Process `
         -FilePath "consul" `
-        -ArgumentList "agent -config-file /test/pester/environment/server.json" `
+        -ArgumentList "agent -config-file /test/pester/environment/consul.json" `
         -PassThru `
         -RedirectStandardOutput /test/consul/output.out `
         -RedirectStandardError /test/consul/error.out
