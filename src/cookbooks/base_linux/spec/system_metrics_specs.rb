@@ -551,10 +551,10 @@ describe 'template_resource_linux_ubuntu_server::system_metrics' do
         ## Statsd data translation templates, more info can be read here:
         ## https://github.com/influxdata/telegraf/blob/master/docs/DATA_FORMATS_INPUT.md#graphite
         templates = [
-      {{ range $key, $pairs := tree "services" | byKey }}
-        # {{ $key }}
-        {{ $templates := or (index $pairs "metrics/statsd") "" }}
-        {{ $templates | split "\\n" }}
+      {{ range $service := (env "STATSD_ENABLED_SERVICES" | split ";") }}
+        {{ if keyExists (printf "config/services/%s/metrics/statsd/rules" $service) }}
+          {{ key (printf "config/services/%s/metrics/statsd/rules" $service) | indent 4 }}
+        {{ end }}
       {{ end }}
         ]
 
