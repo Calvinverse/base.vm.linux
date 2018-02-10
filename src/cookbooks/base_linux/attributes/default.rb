@@ -98,11 +98,13 @@ default['telegraf']['consul_template_file'] = 'telegraf.ctmpl'
 default['telegraf']['config_file_path'] = '/etc/telegraf/telegraf.conf'
 default['telegraf']['config_directory'] = '/etc/telegraf/telegraf.d'
 
-default['telegraf']['system']['consul_template_inputs_file'] = 'telegraf_system_inputs.ctmpl'
-default['telegraf']['system']['consul_template_outputs_file'] = 'telegraf_system_outputs.ctmpl'
+default['telegraf']['services']['consul_template_outputs_file'] = 'telegraf_services_outputs.ctmpl'
 
 default['telegraf']['statsd']['consul_template_inputs_file'] = 'telegraf_statsd_inputs.ctmpl'
 default['telegraf']['statsd']['consul_template_outputs_file'] = 'telegraf_statsd_outputs.ctmpl'
+
+default['telegraf']['system']['consul_template_inputs_file'] = 'telegraf_system_inputs.ctmpl'
+default['telegraf']['system']['consul_template_outputs_file'] = 'telegraf_system_outputs.ctmpl'
 
 #
 # UNBOUND
