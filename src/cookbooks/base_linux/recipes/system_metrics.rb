@@ -36,8 +36,6 @@ end
 consul_template_template_path = node['consul_template']['template_path']
 consul_template_config_path = node['consul_template']['config_path']
 
-telegraf_config_directory = node['telegraf']['config_directory']
-
 # The configuration file for telegraf is dropped in the configuration path
 # when the resource is provisioned because it contains environment specific information
 telegraf_template_file = node['telegraf']['consul_template_file']
@@ -107,91 +105,6 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       hostname = ""
       ## If set to true, do no set the "host" tag in the telegraf agent.
       omit_hostname = false
-  CONF
-  mode '755'
-end
-
-# Create the consul-template configuration file
-telegraf_config_file = node['telegraf']['config_file_path']
-file "#{consul_template_config_path}/telegraf.hcl" do
-  action :create
-  content <<~HCL
-    # This block defines the configuration for a template. Unlike other blocks,
-    # this block may be specified multiple times to configure multiple templates.
-    # It is also possible to configure templates via the CLI directly.
-    template {
-      # This is the source file on disk to use as the input template. This is often
-      # called the "Consul Template template". This option is required if not using
-      # the `contents` option.
-      source = "#{consul_template_template_path}/#{telegraf_template_file}"
-
-      # This is the destination path on disk where the source template will render.
-      # If the parent directories do not exist, Consul Template will attempt to
-      # create them, unless create_dest_dirs is false.
-      destination = "#{telegraf_config_file}"
-
-      # This options tells Consul Template to create the parent directories of the
-      # destination path if they do not exist. The default value is true.
-      create_dest_dirs = false
-
-      # This is the optional command to run when the template is rendered. The
-      # command will only run if the resulting template changes. The command must
-      # return within 30s (configurable), and it must have a successful exit code.
-      # Consul Template is not a replacement for a process monitor or init system.
-      command = "systemctl restart #{telegraf_service}"
-
-      # This is the maximum amount of time to wait for the optional command to
-      # return. Default is 30s.
-      command_timeout = "15s"
-
-      # Exit with an error when accessing a struct or map field/key that does not
-      # exist. The default behavior will print "<no value>" when accessing a field
-      # that does not exist. It is highly recommended you set this to "true" when
-      # retrieving secrets from Vault.
-      error_on_missing_key = false
-
-      # This is the permission to render the file. If this option is left
-      # unspecified, Consul Template will attempt to match the permissions of the
-      # file that already exists at the destination path. If no file exists at that
-      # path, the permissions are 0644.
-      perms = 0755
-
-      # This option backs up the previously rendered template at the destination
-      # path before writing a new one. It keeps exactly one backup. This option is
-      # useful for preventing accidental changes to the data without having a
-      # rollback strategy.
-      backup = true
-
-      # These are the delimiters to use in the template. The default is "{{" and
-      # "}}", but for some templates, it may be easier to use a different delimiter
-      # that does not conflict with the output file itself.
-      left_delimiter  = "{{"
-      right_delimiter = "}}"
-
-      # This is the `minimum(:maximum)` to wait before rendering a new template to
-      # disk and triggering a command, separated by a colon (`:`). If the optional
-      # maximum value is omitted, it is assumed to be 4x the required minimum value.
-      # This is a numeric time with a unit suffix ("5s"). There is no default value.
-      # The wait value for a template takes precedence over any globally-configured
-      # wait.
-      wait {
-        min = "2s"
-        max = "10s"
-      }
-    }
-  HCL
-  mode '755'
-end
-
-#
-# CONFIGURE SYSTEM METRICS
-#
-
-telegraf_system_inputs_template_file = node['telegraf']['system']['consul_template_inputs_file']
-file "#{consul_template_template_path}/#{telegraf_system_inputs_template_file}" do
-  action :create
-  content <<~CONF
-    # Telegraf Configuration
 
     ###############################################################################
     #                            INPUT PLUGINS                                    #
@@ -314,229 +227,6 @@ file "#{consul_template_template_path}/#{telegraf_system_inputs_template_file}" 
       # fieldpass = ["total_*", "num_*","time_up", "mem_*"]
       [inputs.unbound.tags]
         influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
-  CONF
-  mode '755'
-end
-
-file "#{consul_template_config_path}/telegraf_system_inputs.hcl" do
-  action :create
-  content <<~HCL
-    # This block defines the configuration for a template. Unlike other blocks,
-    # this block may be specified multiple times to configure multiple templates.
-    # It is also possible to configure templates via the CLI directly.
-    template {
-      # This is the source file on disk to use as the input template. This is often
-      # called the "Consul Template template". This option is required if not using
-      # the `contents` option.
-      source = "#{consul_template_template_path}/#{telegraf_system_inputs_template_file}"
-
-      # This is the destination path on disk where the source template will render.
-      # If the parent directories do not exist, Consul Template will attempt to
-      # create them, unless create_dest_dirs is false.
-      destination = "#{telegraf_config_directory}/inputs_system.conf"
-
-      # This options tells Consul Template to create the parent directories of the
-      # destination path if they do not exist. The default value is true.
-      create_dest_dirs = false
-
-      # This is the optional command to run when the template is rendered. The
-      # command will only run if the resulting template changes. The command must
-      # return within 30s (configurable), and it must have a successful exit code.
-      # Consul Template is not a replacement for a process monitor or init system.
-      command = "systemctl restart #{telegraf_service}"
-
-      # This is the maximum amount of time to wait for the optional command to
-      # return. Default is 30s.
-      command_timeout = "15s"
-
-      # Exit with an error when accessing a struct or map field/key that does not
-      # exist. The default behavior will print "<no value>" when accessing a field
-      # that does not exist. It is highly recommended you set this to "true" when
-      # retrieving secrets from Vault.
-      error_on_missing_key = false
-
-      # This is the permission to render the file. If this option is left
-      # unspecified, Consul Template will attempt to match the permissions of the
-      # file that already exists at the destination path. If no file exists at that
-      # path, the permissions are 0644.
-      perms = 0755
-
-      # This option backs up the previously rendered template at the destination
-      # path before writing a new one. It keeps exactly one backup. This option is
-      # useful for preventing accidental changes to the data without having a
-      # rollback strategy.
-      backup = true
-
-      # These are the delimiters to use in the template. The default is "{{" and
-      # "}}", but for some templates, it may be easier to use a different delimiter
-      # that does not conflict with the output file itself.
-      left_delimiter  = "{{"
-      right_delimiter = "}}"
-
-      # This is the `minimum(:maximum)` to wait before rendering a new template to
-      # disk and triggering a command, separated by a colon (`:`). If the optional
-      # maximum value is omitted, it is assumed to be 4x the required minimum value.
-      # This is a numeric time with a unit suffix ("5s"). There is no default value.
-      # The wait value for a template takes precedence over any globally-configured
-      # wait.
-      wait {
-        min = "2s"
-        max = "10s"
-      }
-    }
-  HCL
-  mode '755'
-end
-
-telegraf_system_outputs_template_file = node['telegraf']['system']['consul_template_outputs_file']
-file "#{consul_template_template_path}/#{telegraf_system_outputs_template_file}" do
-  action :create
-  content <<~CONF
-    # Telegraf Configuration
-
-    ###############################################################################
-    #                            OUTPUT PLUGINS                                   #
-    ###############################################################################
-
-    {{ if keyExists "config/services/metrics/protocols/opentsdb/host" }}
-    # Configuration for influxdb server to send metrics to
-    [[outputs.influxdb]]
-      ## The full HTTP or UDP URL for your InfluxDB instance.
-      ##
-      ## Multiple urls can be specified as part of the same cluster,
-      ## this means that only ONE of the urls will be written to each interval.
-      # urls = ["udp://127.0.0.1:8089"] # UDP endpoint example
-      urls = ["http://{{ keyOrDefault "config/services/metrics/protocols/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/opentsdb/port" "80" }}"]
-      ## The target database for metrics (telegraf will create it if not exists).
-      database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}" # required
-
-      ## Name of existing retention policy to write to.  Empty string writes to
-      ## the default retention policy.
-      retention_policy = ""
-      ## Write consistency (clusters only), can be: "any", "one", "quorum", "all"
-      write_consistency = "any"
-
-      ## Write timeout (for the InfluxDB client), formatted as a string.
-      ## If not provided, will default to 5s. 0s means no timeout (not recommended).
-      timeout = "5s"
-      # username = "telegraf"
-      # password = "metricsmetricsmetricsmetrics"
-      ## Set the user agent for HTTP POSTs (can be useful for log differentiation)
-      user_agent = "telegraf"
-      ## Set UDP payload size, defaults to InfluxDB UDP Client default (512 bytes)
-      # udp_payload = 512
-
-      ## Optional SSL Config
-      # ssl_ca = "/etc/telegraf/ca.pem"
-      # ssl_cert = "/etc/telegraf/cert.pem"
-      # ssl_key = "/etc/telegraf/key.pem"
-      ## Use SSL but skip chain & host verification
-      # insecure_skip_verify = false
-
-      ## HTTP Proxy Config
-      # http_proxy = "http://corporate.proxy:3128"
-
-      ## Optional HTTP headers
-      # http_headers = {"X-Special-Header" = "Special-Value"}
-
-      ## Compress each HTTP request payload using GZIP.
-      # content_encoding = "gzip"
-      [outputs.influxdb.tagpass]
-        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"]
-    {{ else }}
-    # Send metrics to nowhere at all
-    [[outputs.discard]]
-      # no configuration
-      [outputs.discard.tagpass]
-        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"]
-    {{ end }}
-  CONF
-  mode '755'
-end
-
-file "#{consul_template_config_path}/telegraf_system_outputs.hcl" do
-  action :create
-  content <<~HCL
-    # This block defines the configuration for a template. Unlike other blocks,
-    # this block may be specified multiple times to configure multiple templates.
-    # It is also possible to configure templates via the CLI directly.
-    template {
-      # This is the source file on disk to use as the input template. This is often
-      # called the "Consul Template template". This option is required if not using
-      # the `contents` option.
-      source = "#{consul_template_template_path}/#{telegraf_system_outputs_template_file}"
-
-      # This is the destination path on disk where the source template will render.
-      # If the parent directories do not exist, Consul Template will attempt to
-      # create them, unless create_dest_dirs is false.
-      destination = "#{telegraf_config_directory}/outputs_system.conf"
-
-      # This options tells Consul Template to create the parent directories of the
-      # destination path if they do not exist. The default value is true.
-      create_dest_dirs = false
-
-      # This is the optional command to run when the template is rendered. The
-      # command will only run if the resulting template changes. The command must
-      # return within 30s (configurable), and it must have a successful exit code.
-      # Consul Template is not a replacement for a process monitor or init system.
-      command = "systemctl restart #{telegraf_service}"
-
-      # This is the maximum amount of time to wait for the optional command to
-      # return. Default is 30s.
-      command_timeout = "15s"
-
-      # Exit with an error when accessing a struct or map field/key that does not
-      # exist. The default behavior will print "<no value>" when accessing a field
-      # that does not exist. It is highly recommended you set this to "true" when
-      # retrieving secrets from Vault.
-      error_on_missing_key = false
-
-      # This is the permission to render the file. If this option is left
-      # unspecified, Consul Template will attempt to match the permissions of the
-      # file that already exists at the destination path. If no file exists at that
-      # path, the permissions are 0644.
-      perms = 0755
-
-      # This option backs up the previously rendered template at the destination
-      # path before writing a new one. It keeps exactly one backup. This option is
-      # useful for preventing accidental changes to the data without having a
-      # rollback strategy.
-      backup = true
-
-      # These are the delimiters to use in the template. The default is "{{" and
-      # "}}", but for some templates, it may be easier to use a different delimiter
-      # that does not conflict with the output file itself.
-      left_delimiter  = "{{"
-      right_delimiter = "}}"
-
-      # This is the `minimum(:maximum)` to wait before rendering a new template to
-      # disk and triggering a command, separated by a colon (`:`). If the optional
-      # maximum value is omitted, it is assumed to be 4x the required minimum value.
-      # This is a numeric time with a unit suffix ("5s"). There is no default value.
-      # The wait value for a template takes precedence over any globally-configured
-      # wait.
-      wait {
-        min = "2s"
-        max = "10s"
-      }
-    }
-  HCL
-  mode '755'
-end
-
-#
-# CONFIGURE STATSD METRICS
-#
-
-telegraf_statsd_inputs_template_file = node['telegraf']['statsd']['consul_template_inputs_file']
-file "#{consul_template_template_path}/#{telegraf_statsd_inputs_template_file}" do
-  action :create
-  content <<~CONF
-    # Telegraf Configuration
-
-    ###############################################################################
-    #                            INPUT PLUGINS                                    #
-    ###############################################################################
 
     # Statsd UDP/TCP Server
     [[inputs.statsd]]
@@ -591,227 +281,6 @@ file "#{consul_template_template_path}/#{telegraf_statsd_inputs_template_file}" 
       # percentile_limit = 1000
       [inputs.statsd.tags]
         influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"
-  CONF
-  mode '755'
-end
-
-# Create the consul-template configuration file
-file "#{consul_template_config_path}/telegraf_statsd_inputs.hcl" do
-  action :create
-  content <<~HCL
-    # This block defines the configuration for a template. Unlike other blocks,
-    # this block may be specified multiple times to configure multiple templates.
-    # It is also possible to configure templates via the CLI directly.
-    template {
-      # This is the source file on disk to use as the input template. This is often
-      # called the "Consul Template template". This option is required if not using
-      # the `contents` option.
-      source = "#{consul_template_template_path}/#{telegraf_statsd_inputs_template_file}"
-
-      # This is the destination path on disk where the source template will render.
-      # If the parent directories do not exist, Consul Template will attempt to
-      # create them, unless create_dest_dirs is false.
-      destination = "#{telegraf_config_directory}/inputs_statsd.conf"
-
-      # This options tells Consul Template to create the parent directories of the
-      # destination path if they do not exist. The default value is true.
-      create_dest_dirs = false
-
-      # This is the optional command to run when the template is rendered. The
-      # command will only run if the resulting template changes. The command must
-      # return within 30s (configurable), and it must have a successful exit code.
-      # Consul Template is not a replacement for a process monitor or init system.
-      command = "systemctl restart #{telegraf_service}"
-
-      # This is the maximum amount of time to wait for the optional command to
-      # return. Default is 30s.
-      command_timeout = "15s"
-
-      # Exit with an error when accessing a struct or map field/key that does not
-      # exist. The default behavior will print "<no value>" when accessing a field
-      # that does not exist. It is highly recommended you set this to "true" when
-      # retrieving secrets from Vault.
-      error_on_missing_key = false
-
-      # This is the permission to render the file. If this option is left
-      # unspecified, Consul Template will attempt to match the permissions of the
-      # file that already exists at the destination path. If no file exists at that
-      # path, the permissions are 0644.
-      perms = 0755
-
-      # This option backs up the previously rendered template at the destination
-      # path before writing a new one. It keeps exactly one backup. This option is
-      # useful for preventing accidental changes to the data without having a
-      # rollback strategy.
-      backup = true
-
-      # These are the delimiters to use in the template. The default is "{{" and
-      # "}}", but for some templates, it may be easier to use a different delimiter
-      # that does not conflict with the output file itself.
-      left_delimiter  = "{{"
-      right_delimiter = "}}"
-
-      # This is the `minimum(:maximum)` to wait before rendering a new template to
-      # disk and triggering a command, separated by a colon (`:`). If the optional
-      # maximum value is omitted, it is assumed to be 4x the required minimum value.
-      # This is a numeric time with a unit suffix ("5s"). There is no default value.
-      # The wait value for a template takes precedence over any globally-configured
-      # wait.
-      wait {
-        min = "2s"
-        max = "10s"
-      }
-    }
-  HCL
-  mode '755'
-end
-
-telegraf_statsd_outputs_template_file = node['telegraf']['statsd']['consul_template_outputs_file']
-file "#{consul_template_template_path}/#{telegraf_statsd_outputs_template_file}" do
-  action :create
-  content <<~CONF
-    # Telegraf Configuration
-
-    ###############################################################################
-    #                            OUTPUT PLUGINS                                   #
-    ###############################################################################
-
-    {{ if keyExists "config/services/metrics/protocols/opentsdb/host" }}
-    # Configuration for influxdb server to send metrics to
-    [[outputs.influxdb]]
-      ## The full HTTP or UDP URL for your InfluxDB instance.
-      ##
-      ## Multiple urls can be specified as part of the same cluster,
-      ## this means that only ONE of the urls will be written to each interval.
-      # urls = ["udp://127.0.0.1:8089"] # UDP endpoint example
-      urls = ["http://{{ keyOrDefault "config/services/metrics/protocols/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/opentsdb/port" "80" }}"]
-      ## The target database for metrics (telegraf will create it if not exists).
-      database = "{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}" # required
-
-      ## Name of existing retention policy to write to.  Empty string writes to
-      ## the default retention policy.
-      retention_policy = ""
-      ## Write consistency (clusters only), can be: "any", "one", "quorum", "all"
-      write_consistency = "any"
-
-      ## Write timeout (for the InfluxDB client), formatted as a string.
-      ## If not provided, will default to 5s. 0s means no timeout (not recommended).
-      timeout = "5s"
-      # username = "telegraf"
-      # password = "metricsmetricsmetricsmetrics"
-      ## Set the user agent for HTTP POSTs (can be useful for log differentiation)
-      user_agent = "telegraf"
-      ## Set UDP payload size, defaults to InfluxDB UDP Client default (512 bytes)
-      # udp_payload = 512
-
-      ## Optional SSL Config
-      # ssl_ca = "/etc/telegraf/ca.pem"
-      # ssl_cert = "/etc/telegraf/cert.pem"
-      # ssl_key = "/etc/telegraf/key.pem"
-      ## Use SSL but skip chain & host verification
-      # insecure_skip_verify = false
-
-      ## HTTP Proxy Config
-      # http_proxy = "http://corporate.proxy:3128"
-
-      ## Optional HTTP headers
-      # http_headers = {"X-Special-Header" = "Special-Value"}
-
-      ## Compress each HTTP request payload using GZIP.
-      # content_encoding = "gzip"
-      [outputs.influxdb.tagpass]
-        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"]
-    {{ else }}
-    # Send metrics to nowhere at all
-    [[outputs.discard]]
-      # no configuration
-      [outputs.discard.tagpass]
-        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"]
-    {{ end }}
-  CONF
-  mode '755'
-end
-
-# Create the consul-template configuration file
-file "#{consul_template_config_path}/telegraf_statsd_outputs.hcl" do
-  action :create
-  content <<~HCL
-    # This block defines the configuration for a template. Unlike other blocks,
-    # this block may be specified multiple times to configure multiple templates.
-    # It is also possible to configure templates via the CLI directly.
-    template {
-      # This is the source file on disk to use as the input template. This is often
-      # called the "Consul Template template". This option is required if not using
-      # the `contents` option.
-      source = "#{consul_template_template_path}/#{telegraf_statsd_outputs_template_file}"
-
-      # This is the destination path on disk where the source template will render.
-      # If the parent directories do not exist, Consul Template will attempt to
-      # create them, unless create_dest_dirs is false.
-      destination = "#{telegraf_config_directory}/outputs_statsd.conf"
-
-      # This options tells Consul Template to create the parent directories of the
-      # destination path if they do not exist. The default value is true.
-      create_dest_dirs = false
-
-      # This is the optional command to run when the template is rendered. The
-      # command will only run if the resulting template changes. The command must
-      # return within 30s (configurable), and it must have a successful exit code.
-      # Consul Template is not a replacement for a process monitor or init system.
-      command = "systemctl restart #{telegraf_service}"
-
-      # This is the maximum amount of time to wait for the optional command to
-      # return. Default is 30s.
-      command_timeout = "15s"
-
-      # Exit with an error when accessing a struct or map field/key that does not
-      # exist. The default behavior will print "<no value>" when accessing a field
-      # that does not exist. It is highly recommended you set this to "true" when
-      # retrieving secrets from Vault.
-      error_on_missing_key = false
-
-      # This is the permission to render the file. If this option is left
-      # unspecified, Consul Template will attempt to match the permissions of the
-      # file that already exists at the destination path. If no file exists at that
-      # path, the permissions are 0644.
-      perms = 0755
-
-      # This option backs up the previously rendered template at the destination
-      # path before writing a new one. It keeps exactly one backup. This option is
-      # useful for preventing accidental changes to the data without having a
-      # rollback strategy.
-      backup = true
-
-      # These are the delimiters to use in the template. The default is "{{" and
-      # "}}", but for some templates, it may be easier to use a different delimiter
-      # that does not conflict with the output file itself.
-      left_delimiter  = "{{"
-      right_delimiter = "}}"
-
-      # This is the `minimum(:maximum)` to wait before rendering a new template to
-      # disk and triggering a command, separated by a colon (`:`). If the optional
-      # maximum value is omitted, it is assumed to be 4x the required minimum value.
-      # This is a numeric time with a unit suffix ("5s"). There is no default value.
-      # The wait value for a template takes precedence over any globally-configured
-      # wait.
-      wait {
-        min = "2s"
-        max = "10s"
-      }
-    }
-  HCL
-  mode '755'
-end
-
-#
-# CONFIGURE SERVICE METRICS
-#
-
-telegraf_services_outputs_template_file = node['telegraf']['services']['consul_template_outputs_file']
-file "#{consul_template_template_path}/#{telegraf_services_outputs_template_file}" do
-  action :create
-  content <<~CONF
-    # Telegraf Configuration
 
     ###############################################################################
     #                            OUTPUT PLUGINS                                   #
@@ -861,19 +330,109 @@ file "#{consul_template_template_path}/#{telegraf_services_outputs_template_file
       ## Compress each HTTP request payload using GZIP.
       # content_encoding = "gzip"
       [outputs.influxdb.tagpass]
+        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"]
+
+    # Configuration for influxdb server to send metrics to
+    [[outputs.influxdb]]
+      ## The full HTTP or UDP URL for your InfluxDB instance.
+      ##
+      ## Multiple urls can be specified as part of the same cluster,
+      ## this means that only ONE of the urls will be written to each interval.
+      # urls = ["udp://127.0.0.1:8089"] # UDP endpoint example
+      urls = ["http://{{ keyOrDefault "config/services/metrics/protocols/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/opentsdb/port" "80" }}"]
+      ## The target database for metrics (telegraf will create it if not exists).
+      database = "{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}" # required
+
+      ## Name of existing retention policy to write to.  Empty string writes to
+      ## the default retention policy.
+      retention_policy = ""
+      ## Write consistency (clusters only), can be: "any", "one", "quorum", "all"
+      write_consistency = "any"
+
+      ## Write timeout (for the InfluxDB client), formatted as a string.
+      ## If not provided, will default to 5s. 0s means no timeout (not recommended).
+      timeout = "5s"
+      # username = "telegraf"
+      # password = "metricsmetricsmetricsmetrics"
+      ## Set the user agent for HTTP POSTs (can be useful for log differentiation)
+      user_agent = "telegraf"
+      ## Set UDP payload size, defaults to InfluxDB UDP Client default (512 bytes)
+      # udp_payload = 512
+
+      ## Optional SSL Config
+      # ssl_ca = "/etc/telegraf/ca.pem"
+      # ssl_cert = "/etc/telegraf/cert.pem"
+      # ssl_key = "/etc/telegraf/key.pem"
+      ## Use SSL but skip chain & host verification
+      # insecure_skip_verify = false
+
+      ## HTTP Proxy Config
+      # http_proxy = "http://corporate.proxy:3128"
+
+      ## Optional HTTP headers
+      # http_headers = {"X-Special-Header" = "Special-Value"}
+
+      ## Compress each HTTP request payload using GZIP.
+      # content_encoding = "gzip"
+      [outputs.influxdb.tagpass]
+        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"]
+
+    # Configuration for influxdb server to send metrics to
+    [[outputs.influxdb]]
+      ## The full HTTP or UDP URL for your InfluxDB instance.
+      ##
+      ## Multiple urls can be specified as part of the same cluster,
+      ## this means that only ONE of the urls will be written to each interval.
+      # urls = ["udp://127.0.0.1:8089"] # UDP endpoint example
+      urls = ["http://{{ keyOrDefault "config/services/metrics/protocols/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/opentsdb/port" "80" }}"]
+      ## The target database for metrics (telegraf will create it if not exists).
+      database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}" # required
+
+      ## Name of existing retention policy to write to.  Empty string writes to
+      ## the default retention policy.
+      retention_policy = ""
+      ## Write consistency (clusters only), can be: "any", "one", "quorum", "all"
+      write_consistency = "any"
+
+      ## Write timeout (for the InfluxDB client), formatted as a string.
+      ## If not provided, will default to 5s. 0s means no timeout (not recommended).
+      timeout = "5s"
+      # username = "telegraf"
+      # password = "metricsmetricsmetricsmetrics"
+      ## Set the user agent for HTTP POSTs (can be useful for log differentiation)
+      user_agent = "telegraf"
+      ## Set UDP payload size, defaults to InfluxDB UDP Client default (512 bytes)
+      # udp_payload = 512
+
+      ## Optional SSL Config
+      # ssl_ca = "/etc/telegraf/ca.pem"
+      # ssl_cert = "/etc/telegraf/cert.pem"
+      # ssl_key = "/etc/telegraf/key.pem"
+      ## Use SSL but skip chain & host verification
+      # insecure_skip_verify = false
+
+      ## HTTP Proxy Config
+      # http_proxy = "http://corporate.proxy:3128"
+
+      ## Optional HTTP headers
+      # http_headers = {"X-Special-Header" = "Special-Value"}
+
+      ## Compress each HTTP request payload using GZIP.
+      # content_encoding = "gzip"
+      [outputs.influxdb.tagpass]
         influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/services" "services" }}"]
     {{ else }}
     # Send metrics to nowhere at all
     [[outputs.discard]]
       # no configuration
-      [outputs.discard.tagpass]
-        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/services" "services" }}"]
     {{ end }}
   CONF
   mode '755'
 end
 
-file "#{consul_template_config_path}/telegraf_services_outputs.hcl" do
+# Create the consul-template configuration file
+telegraf_config_file = node['telegraf']['config_file_path']
+file "#{consul_template_config_path}/telegraf.hcl" do
   action :create
   content <<~HCL
     # This block defines the configuration for a template. Unlike other blocks,
@@ -883,12 +442,12 @@ file "#{consul_template_config_path}/telegraf_services_outputs.hcl" do
       # This is the source file on disk to use as the input template. This is often
       # called the "Consul Template template". This option is required if not using
       # the `contents` option.
-      source = "#{consul_template_template_path}/#{telegraf_services_outputs_template_file}"
+      source = "#{consul_template_template_path}/#{telegraf_template_file}"
 
       # This is the destination path on disk where the source template will render.
       # If the parent directories do not exist, Consul Template will attempt to
       # create them, unless create_dest_dirs is false.
-      destination = "#{telegraf_config_directory}/outputs_services.conf"
+      destination = "#{telegraf_config_file}"
 
       # This options tells Consul Template to create the parent directories of the
       # destination path if they do not exist. The default value is true.
@@ -898,7 +457,7 @@ file "#{consul_template_config_path}/telegraf_services_outputs.hcl" do
       # command will only run if the resulting template changes. The command must
       # return within 30s (configurable), and it must have a successful exit code.
       # Consul Template is not a replacement for a process monitor or init system.
-      command = "systemctl restart #{telegraf_service}"
+      command = "systemctl reload #{telegraf_service}"
 
       # This is the maximum amount of time to wait for the optional command to
       # return. Default is 30s.

@@ -96,7 +96,6 @@ default['telegraf']['download_urls'] = 'https://dl.influxdata.com/telegraf/relea
 
 default['telegraf']['consul_template_file'] = 'telegraf.ctmpl'
 default['telegraf']['config_file_path'] = '/etc/telegraf/telegraf.conf'
-default['telegraf']['config_directory'] = '/etc/telegraf/telegraf.d'
 
 default['telegraf']['services']['consul_template_outputs_file'] = 'telegraf_services_outputs.ctmpl'
 
