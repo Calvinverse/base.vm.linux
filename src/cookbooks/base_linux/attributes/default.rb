@@ -101,6 +101,7 @@ default['telegraf']['services']['consul_template_outputs_file'] = 'telegraf_serv
 
 default['telegraf']['statsd']['consul_template_inputs_file'] = 'telegraf_statsd_inputs.ctmpl'
 default['telegraf']['statsd']['consul_template_outputs_file'] = 'telegraf_statsd_outputs.ctmpl'
+default['telegraf']['statsd']['port'] = 8125
 
 default['telegraf']['system']['consul_template_inputs_file'] = 'telegraf_system_inputs.ctmpl'
 default['telegraf']['system']['consul_template_outputs_file'] = 'telegraf_system_outputs.ctmpl'

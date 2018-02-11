@@ -30,6 +30,18 @@ service telegraf_service do
 end
 
 #
+# ALLOW TELEGRAF THROUGH THE FIREWALL
+#
+
+telegraf_statsd_port = node['telegraf']['statsd']['port']
+firewall_rule 'telegraf-statsd' do
+  command :allow
+  description 'Allow Telegraf statsd traffic'
+  dest_port telegraf_statsd_port
+  direction :in
+end
+
+#
 # DEFAULT CONFIGURATION
 #
 
@@ -237,7 +249,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       # max_tcp_connections = 250
 
       ## Address and port to host UDP listener on
-      service_address = ":8125"
+      service_address = ":#{telegraf_statsd_port}"
 
       ## The following configuration options control when telegraf clears it's cache
       ## of previous values. If set to false, then telegraf will only clear it's

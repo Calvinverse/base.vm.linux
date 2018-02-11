@@ -25,6 +25,14 @@ describe 'template_resource_linux_ubuntu_server::system_metrics' do
       expect(chef_run).to enable_service('telegraf')
     end
 
+    it 'opens the Telegraf statsd port' do
+      expect(chef_run).to create_firewall_rule('telegraf-statsd').with(
+        command: :allow,
+        dest_port: 8125,
+        direction: :in
+      )
+    end
+
     telegraf_template_content = <<~CONF
       # Telegraf Configuration
 

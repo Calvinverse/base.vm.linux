@@ -18,7 +18,7 @@ describe 'base_linux::consul' do
       {
           "telemetry": {
               "disable_hostname": true,
-              "statsd_address": "localhost:8125"
+              "statsd_address": "127.0.0.1:8125"
           }
       }
     JSON
