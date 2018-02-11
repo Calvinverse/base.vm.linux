@@ -97,12 +97,12 @@ function Set-ConsulKV
     & consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/datacenter 'test-integration'
     & consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/domain 'integrationtest'
 
-    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/metrics/statsd/rules '"consul.*.*.* .measurement.measurement.field",'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/consul/metrics/statsd/rules '\"consul.*.*.* .measurement.measurement.field\",'
 
     # Explicitly don't provide a metrics address because that means telegraf will just send the metrics to
     # a black hole
     & consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/databases/system 'system'
-    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/databases/statsd 'services'
+    & consul kv put -http-addr=http://127.0.0.1:8550 config/services/metrics/databases/statsd 'statsd'
 
     # load config/services/queue
     & consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/protocols/http/host 'http.queue'
