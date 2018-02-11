@@ -278,7 +278,7 @@ describe 'template_resource_linux_ubuntu_server::system_metrics' do
       #                            OUTPUT PLUGINS                                   #
       ###############################################################################
 
-      {{ if keyExists "config/services/metrics/protocols/opentsdb/host" }}
+      {{ if keyExists "config/services/metrics/protocols/udphost" }}
       # Configuration for influxdb server to send metrics to
       [[outputs.influxdb]]
         ## The full HTTP or UDP URL for your InfluxDB instance.
@@ -286,7 +286,7 @@ describe 'template_resource_linux_ubuntu_server::system_metrics' do
         ## Multiple urls can be specified as part of the same cluster,
         ## this means that only ONE of the urls will be written to each interval.
         # urls = ["udp://127.0.0.1:8089"] # UDP endpoint example
-        urls = ["http://{{ keyOrDefault "config/services/metrics/protocols/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/opentsdb/port" "80" }}"]
+        urls = ["udp://{{ keyOrDefault "config/services/metrics/protocols/udphost" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/udpport" "80" }}"]
         ## The target database for metrics (telegraf will create it if not exists).
         database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}" # required
 
@@ -331,7 +331,7 @@ describe 'template_resource_linux_ubuntu_server::system_metrics' do
         ## Multiple urls can be specified as part of the same cluster,
         ## this means that only ONE of the urls will be written to each interval.
         # urls = ["udp://127.0.0.1:8089"] # UDP endpoint example
-        urls = ["http://{{ keyOrDefault "config/services/metrics/protocols/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/opentsdb/port" "80" }}"]
+        urls = ["udp://{{ keyOrDefault "config/services/metrics/protocols/udphost" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/udpport" "80" }}"]
         ## The target database for metrics (telegraf will create it if not exists).
         database = "{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}" # required
 
@@ -376,7 +376,7 @@ describe 'template_resource_linux_ubuntu_server::system_metrics' do
         ## Multiple urls can be specified as part of the same cluster,
         ## this means that only ONE of the urls will be written to each interval.
         # urls = ["udp://127.0.0.1:8089"] # UDP endpoint example
-        urls = ["http://{{ keyOrDefault "config/services/metrics/protocols/opentsdb/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/opentsdb/port" "80" }}"]
+        urls = ["udp://{{ keyOrDefault "config/services/metrics/protocols/udphost" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/udpport" "80" }}"]
         ## The target database for metrics (telegraf will create it if not exists).
         database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}" # required
 
