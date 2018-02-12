@@ -99,7 +99,6 @@ default['telegraf']['config_file_path'] = '/etc/telegraf/telegraf.conf'
 
 default['telegraf']['statsd']['port'] = 8125
 
-
 #
 # UNBOUND
 #
