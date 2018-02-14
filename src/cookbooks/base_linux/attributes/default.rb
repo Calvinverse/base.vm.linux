@@ -20,7 +20,7 @@ default['consul']['config']['client_addr'] = '127.0.0.1'
 
 # Set the HTTP listener to listen on both the localhost address and the public IP address
 default['consul']['config']['addresses'] = {
-  http: '0.0.0.0 127.0.0.1'
+  http: '0.0.0.0'
 }
 
 # Do not allow consul to use the host information for the node id
