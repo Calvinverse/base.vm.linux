@@ -23,8 +23,16 @@ describe 'base_linux::network' do
       expect(chef_run).to create_directory(unbound_config_directory)
     end
 
-    it 'creates the unbound named pipe directory' do
-      expect(chef_run).to create_directory('/var/run/unbound').with(
+    it 'creates the unbound-control socket directory' do
+      expect(chef_run).to create_directory('/var/unbound-control').with(
+        group: 'unbound',
+        owner: 'unbound',
+        mode: '0775'
+      )
+    end
+
+    it 'creates the unbound-control socket file' do
+      expect(chef_run).to create_file('/var/unbound-control/socket').with(
         group: 'unbound',
         owner: 'unbound',
         mode: '0775'
@@ -318,11 +326,11 @@ describe 'base_linux::network' do
 
           # Set to no and use an absolute path as control-interface to use
           # a unix local named pipe for unbound-control.
-          # control-use-cert: no
+          control-use-cert: no
 
           # what interfaces are listened to for remote control.
           # give 0.0.0.0 and ::0 to listen to all interfaces.
-          control-interface: /var/run/unbound/unbound-control
+          control-interface: /var/unbound-control/socket
           # control-interface: 127.0.0.1
           # control-interface: ::1
 
