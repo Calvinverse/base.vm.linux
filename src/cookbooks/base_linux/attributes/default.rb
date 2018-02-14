@@ -18,6 +18,11 @@ default['consul']['config']['verify_outgoing'] = false
 # will be set in a separate configuration file
 default['consul']['config']['client_addr'] = '127.0.0.1'
 
+# Set the HTTP listener to listen on both the localhost address and the public IP address
+default['consul']['config']['addresses'] = {
+  http: '0.0.0.0 127.0.0.1'
+}
+
 # Do not allow consul to use the host information for the node id
 default['consul']['config']['disable_host_node_id'] = true
 
