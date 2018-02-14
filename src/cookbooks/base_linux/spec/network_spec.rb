@@ -24,7 +24,7 @@ describe 'base_linux::network' do
     end
 
     it 'creates the unbound named pipe directory' do
-      expect(chef_run).to create_directory('var/run/unbound').with(
+      expect(chef_run).to create_directory('/var/run/unbound').with(
         group: 'unbound',
         owner: 'unbound',
         mode: '0775'
