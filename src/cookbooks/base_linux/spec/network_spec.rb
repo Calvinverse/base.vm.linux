@@ -22,6 +22,14 @@ describe 'base_linux::network' do
     it 'creates the unbound config directory' do
       expect(chef_run).to create_directory(unbound_config_directory)
     end
+
+    it 'creates the unbound named pipe directory' do
+      expect(chef_run).to create_directory('var/run/unbound').with(
+        group: 'unbound',
+        owner: 'unbound',
+        mode: '0775'
+      )
+    end
   end
 
   context 'installs unbound' do
@@ -301,6 +309,37 @@ describe 'base_linux::network' do
           # The insecure-lan-zones option disables validation for
           # these zones, as if they were all listed as domain-insecure.
           insecure-lan-zones: yes
+
+      # Remote control config section.
+      remote-control:
+          # Enable remote control with unbound-control(8) here.
+          # set up the keys and certificates with unbound-control-setup.
+          control-enable: yes
+
+          # Set to no and use an absolute path as control-interface to use
+          # a unix local named pipe for unbound-control.
+          # control-use-cert: no
+
+          # what interfaces are listened to for remote control.
+          # give 0.0.0.0 and ::0 to listen to all interfaces.
+          control-interface: /var/run/unbound/unbound-control
+          # control-interface: 127.0.0.1
+          # control-interface: ::1
+
+          # port number for remote control operations.
+          # control-port: 8953
+
+          # unbound server key file.
+          # server-key-file: "@UNBOUND_RUN_DIR@/unbound_server.key"
+
+          # unbound server certificate file.
+          # server-cert-file: "@UNBOUND_RUN_DIR@/unbound_server.pem"
+
+          # unbound-control key file.
+          # control-key-file: "@UNBOUND_RUN_DIR@/unbound_control.key"
+
+          # unbound-control certificate file.
+          # control-cert-file: "@UNBOUND_RUN_DIR@/unbound_control.pem"
     CONF
     it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
       expect(chef_run).to create_file('/etc/unbound/unbound.conf').with_content(unbound_default_config_content)
