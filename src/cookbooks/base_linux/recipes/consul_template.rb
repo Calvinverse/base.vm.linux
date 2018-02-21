@@ -237,3 +237,147 @@ end
 service 'consul-template' do
   action :disable
 end
+
+#
+# VAULT CONFIGURATION
+#
+
+consul_template_vault_template_file = node['consul_template']['vault_template_file']
+file "#{consul_template_template_path}/#{consul_template_vault_template_file}" do
+  action :create
+  content <<~CONF
+    {{ $hostname := (env "HOSTNAME") }}
+    {{ if keyExists "config/services/secrets/protocols/http/host" }}
+    {{ if keyExists (printf "auth/services/templates/%s/secrets" $hostname) }}
+    # This denotes the start of the configuration section for Vault. All values
+    # contained in this section pertain to Vault.
+    vault {
+      # This is the address of the Vault leader. The protocol (http(s)) portion
+      # of the address is required.
+      address = "http://{{ keyOrDefault "config/services/secrets/protocols/http/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "consul" }}:{{ keyOrDefault "config/services/secrets/protocols/http/port" "80" }}"
+
+      # This is the grace period between lease renewal of periodic secrets and secret
+      # re-acquisition. When renewing a secret, if the remaining lease is less than or
+      # equal to the configured grace, Consul Template will request a new credential.
+      # This prevents Vault from revoking the credential at expiration and Consul
+      # Template having a stale credential.
+      #
+      # Note: If you set this to a value that is higher than your default TTL or
+      # max TTL, Consul Template will always read a new secret!
+      grace = "5m"
+
+      # This is the token to use when communicating with the Vault server.
+      # Like other tools that integrate with Vault, Consul Template makes the
+      # assumption that you provide it with a Vault token; it does not have the
+      # incorporated logic to generate tokens via Vault's auth methods.
+      #
+      # This value can also be specified via the environment variable VAULT_TOKEN.
+      token = "{{ keyOrDefault (printf "auth/services/templates/%s/secrets" $hostname) }}"
+
+      # This tells Consul Template that the provided token is actually a wrapped
+      # token that should be unwrapped using Vault's cubbyhole response wrapping
+      # before being used. Please see Vault's cubbyhole response wrapping
+      # documentation for more information.
+      unwrap_token = true
+
+      # This option tells Consul Template to automatically renew the Vault token
+      # given. If you are unfamiliar with Vault's architecture, Vault requires
+      # tokens be renewed at some regular interval or they will be revoked. Consul
+      # Template will automatically renew the token at half the lease duration of
+      # the token. The default value is true, but this option can be disabled if
+      # you want to renew the Vault token using an out-of-band process.
+      #
+      # Note that secrets specified in a template (using {{secret}} for example)
+      # are always renewed, even if this option is set to false. This option only
+      # applies to the top-level Vault token itself.
+      renew_token = true
+
+      # This section details the retry options for connecting to Vault. Please see
+      # the retry options in the Consul section for more information (they are the
+      # same).
+      retry {
+        # ...
+      }
+
+      # This section details the SSL options for connecting to the Vault server.
+      # Please see the SSL options in the Consul section for more information (they
+      # are the same).
+      ssl {
+        # ...
+      }
+    }
+    {{ end }}
+    {{ end }}
+  CONF
+  mode '755'
+end
+
+file "#{consul_template_config_path}/consul_template_vault.hcl" do
+  action :create
+  content <<~HCL
+    # This block defines the configuration for a template. Unlike other blocks,
+    # this block may be specified multiple times to configure multiple templates.
+    # It is also possible to configure templates via the CLI directly.
+    template {
+      # This is the source file on disk to use as the input template. This is often
+      # called the "Consul Template template". This option is required if not using
+      # the `contents` option.
+      source = "#{consul_template_template_path}/#{consul_template_vault_template_file}"
+
+      # This is the destination path on disk where the source template will render.
+      # If the parent directories do not exist, Consul Template will attempt to
+      # create them, unless create_dest_dirs is false.
+      destination = "#{consul_template_config_path}/vault.hcl"
+
+      # This options tells Consul Template to create the parent directories of the
+      # destination path if they do not exist. The default value is true.
+      create_dest_dirs = false
+
+      # This is the optional command to run when the template is rendered. The
+      # command will only run if the resulting template changes. The command must
+      # return within 30s (configurable), and it must have a successful exit code.
+      # Consul Template is not a replacement for a process monitor or init system.
+      command = "systemctl reload #{consul_template_service}"
+
+      # This is the maximum amount of time to wait for the optional command to
+      # return. Default is 30s.
+      command_timeout = "15s"
+
+      # Exit with an error when accessing a struct or map field/key that does not
+      # exist. The default behavior will print "<no value>" when accessing a field
+      # that does not exist. It is highly recommended you set this to "true" when
+      # retrieving secrets from Vault.
+      error_on_missing_key = false
+
+      # This is the permission to render the file. If this option is left
+      # unspecified, Consul Template will attempt to match the permissions of the
+      # file that already exists at the destination path. If no file exists at that
+      # path, the permissions are 0644.
+      perms = 0755
+
+      # This option backs up the previously rendered template at the destination
+      # path before writing a new one. It keeps exactly one backup. This option is
+      # useful for preventing accidental changes to the data without having a
+      # rollback strategy.
+      backup = false
+
+      # These are the delimiters to use in the template. The default is "{{" and
+      # "}}", but for some templates, it may be easier to use a different delimiter
+      # that does not conflict with the output file itself.
+      left_delimiter  = "{{"
+      right_delimiter = "}}"
+
+      # This is the `minimum(:maximum)` to wait before rendering a new template to
+      # disk and triggering a command, separated by a colon (`:`). If the optional
+      # maximum value is omitted, it is assumed to be 4x the required minimum value.
+      # This is a numeric time with a unit suffix ("5s"). There is no default value.
+      # The wait value for a template takes precedence over any globally-configured
+      # wait.
+      wait {
+        min = "2s"
+        max = "10s"
+      }
+    }
+  HCL
+  mode '755'
+end

@@ -61,6 +61,8 @@ default['consul_template']['data_path'] = '/etc/consul-template.d/data'
 default['consul_template']['config_path'] = '/etc/consul-template.d/conf'
 default['consul_template']['template_path'] = '/etc/consul-template.d/templates'
 
+default['consul_template']['vault_template_file'] = 'consul_template_vault.ctmpl'
+
 default['consul_template']['service_user'] = 'consul_template'
 default['consul_template']['service_group'] = 'consul_template'
 

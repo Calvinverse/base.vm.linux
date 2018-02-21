@@ -101,9 +101,6 @@ file '/etc/init.d/provision_consul-template.sh' do
     #!/bin/bash
 
     function f_provisionConsulTemplate {
-      cp -a /mnt/dvd/consul-template/vault.hcl /etc/consul-template.d/conf/vault.hcl
-      dos2unix /etc/consul-template.d/conf/vault.hcl
-
       sudo systemctl enable consul-template.service
     }
   BASH
