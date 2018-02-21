@@ -211,7 +211,8 @@ end
 #
 
 # Create the systemd service for consultemplate.
-systemd_service 'consul-template' do
+consul_template_service = 'consul-template'
+systemd_service consul_template_service do
   action :create
   after %w[multi-user.target]
   description 'Consul Template'
@@ -221,7 +222,11 @@ systemd_service 'consul-template' do
   end
   service do
     environment_file '/etc/environment'
+    exec_reload '/bin/kill -s HUP $MAINPID'
     exec_start "#{consul_template_install_path} -config=#{consul_template_config_path}"
+    kill_mode 'mixed'
+    kill_signal 'SIGQUIT'
+    pid_file "#{consul_template_data_path}/pid"
     restart 'on-failure'
   end
   requires %w[multi-user.target]
