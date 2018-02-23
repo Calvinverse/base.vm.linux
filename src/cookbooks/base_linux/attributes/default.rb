@@ -36,9 +36,9 @@ default['consul']['config']['disable_update_check'] = true
 default['consul']['config']['dns_config'] = {
   allow_stale: true,
   max_stale: '87600h',
-  node_ttl: '10s',
+  node_ttl: '30s',
   service_ttl: {
-    '*': '10s'
+    '*': '30s'
   }
 }
 
