@@ -39,7 +39,7 @@ describe 'base_linux::system_logs' do
       # The RabbitMQ destination
       destination d_rabbit {
         amqp(
-          body("$(format-json date=datetime($ISODATE) pid=int64($PID) program=$PROGRAM message=$MESSAGE facility=$FACILITY host=$FULLHOST priorityNum=int64($LEVEL_NUM) priority=$LEVEL)")
+          body("$(format-json date=datetime($ISODATE) pid=$PID program=$PROGRAM message=$MESSAGE facility=$FACILITY host=$FULLHOST priorityNum=int64($LEVEL_NUM) priority=$LEVEL)")
           exchange("{{ keyOrDefault "config/services/queue/logs/syslog/exchange" "" }}")
           exchange-type("direct")
           host("{{ keyOrDefault "config/services/queue/protocols/amqp/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "consul" }}")
