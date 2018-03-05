@@ -248,7 +248,7 @@ file "#{consul_template_template_path}/#{consul_template_vault_template_file}" d
   content <<~CONF
     #!/bin/sh
 
-    {{ $hostname := (file "/etc/hostname") }}
+    {{ $hostname := (file "/etc/hostname" | trimSpace ) }}
     {{ if keyExists (printf "auth/services/templates/%s/secrets" $hostname) }}
     {{ if keyExists "config/services/secrets/protocols/http/host" }}
     echo 'Write the consul-template configuration file'
