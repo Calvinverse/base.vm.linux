@@ -328,7 +328,7 @@ describe 'base_linux::consul_template' do
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.
-        command_timeout = "60s"
+        command_timeout = "90s"
 
         # Exit with an error when accessing a struct or map field/key that does not
         # exist. The default behavior will print "<no value>" when accessing a field
