@@ -1,2 +1,4 @@
 packages/
 build/
+berks/
+src/cookbooks/base_linux/Gemfile.lock

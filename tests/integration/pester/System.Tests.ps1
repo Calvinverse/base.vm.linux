@@ -13,12 +13,18 @@ Describe 'On the system' {
 
     Context 'the administrator rights' {
         It 'should have default sudo settings' {
-            (Get-FileHash -Path /etc/sudoers -Algorithm SHA256).Hash | Should Be '9dd478d87554b22953bd54cb013fe5c33b9fbc66760c999d7dbfa79c02c0b5a5'
+            (Get-FileHash -Path /etc/sudoers -Algorithm SHA256).Hash | Should Be '1DA6E2BCBBA35669C9EB62370C88F4017686309C9AC4E6458D963321EAD42439'
         }
 
         It 'should not have additional sudo files' {
             '/etc/sudoers.d' | Should Exist
             @( (Get-ChildItem -Path /etc/sudoers.d -File) ).Length | Should Be 1
+        }
+    }
+
+    Context 'the environment variables' {
+        It 'should have a variable indicating which services need a statsd sink' {
+            $env:STATSD_ENABLED_SERVICES | Should Be 'consul'
         }
     }
 
@@ -49,10 +55,10 @@ Describe 'On the system' {
         )
 
         It 'should have a file with updates' {
-            '/tmp/updates.txt' | Should Exist
+            '/test/updates.txt' | Should Exist
         }
 
-        $fileSize = (Get-Item '/tmp/updates.txt').Length
+        $fileSize = (Get-Item '/test/updates.txt').Length
         if ($fileSize -gt 0)
         {
             $updates = Get-Content /tmp/updates.txt
@@ -61,6 +67,26 @@ Describe 'On the system' {
             It 'should all be installed' {
                 $additionalPackages.Length | Should Be 0
             }
+        }
+
+        $systemctlOutput = & systemctl status apt-daily.service
+        It 'has disable the apt-daily service' {
+            $systemctlOutput | Should Not Be $null
+            $systemctlOutput.GetType().FullName | Should Be 'System.Object[]'
+            $systemctlOutput.Length | Should BeGreaterThan 3
+            $systemctlOutput[0] | Should Match 'apt-daily.service - Daily apt download activities'
+            $systemctlOutput[1] | Should Match 'Loaded:\sloaded\s\(.*;\sstatic;.*\)'
+            $systemctlOutput[2] | Should Match 'Active:\sinactive\s\(dead\).*'
+        }
+
+        $systemctlOutput = & systemctl status apt-daily.timer
+        It 'has disable the apt-daily timer' {
+            $systemctlOutput | Should Not Be $null
+            $systemctlOutput.GetType().FullName | Should Be 'System.Object[]'
+            $systemctlOutput.Length | Should Be 3
+            $systemctlOutput[0] | Should Match 'apt-daily.timer - Daily apt download activities'
+            $systemctlOutput[1] | Should Match 'Loaded:\sloaded\s\(.*;\sdisabled;.*\)'
+            $systemctlOutput[2] | Should Match 'Active:\sinactive\s\(dead\).*'
         }
     }
 }
