@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 #
-# Cookbook Name:: template_resource_linux_ubuntu_server
+# Cookbook Name:: base_linux
 # Recipe:: system_metrics
 #
-# Copyright 2018, Vista Entertainment
+# Copyright 2017, P. van der Velde
 #
 
 #
