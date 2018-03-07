@@ -22,6 +22,24 @@ end
 include_recipe 'consul::default'
 
 #
+# CONFIGURATION
+#
+
+telegraf_statsd_port = node['telegraf']['statsd']['port']
+file '/etc/consul/conf.d/metrics.json' do
+  action :create
+  content <<~JSON
+    {
+        "telemetry": {
+            "disable_hostname": true,
+            "statsd_address": "127.0.0.1:#{telegraf_statsd_port}"
+        }
+    }
+  JSON
+  mode '755'
+end
+
+#
 # ALLOW CONSUL THROUGH THE FIREWALL
 #
 

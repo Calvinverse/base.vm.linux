@@ -42,16 +42,13 @@ file '/etc/init.d/provision_helpers.sh' do
         done< <(LANG=C /sbin/ifconfig eth0)
     }
 
-    function setHostName {
-      #Assign existing hostname to $hostn
-      hostn=$(cat /etc/hostname)
-
+    function f_setHostName {
       # Generate a 16 character password
       POSTFIX=$(pwgen --no-capitalize 16 1)
 
-      NAME="cv${RESOURCE_SHORT_NAME}-${RESOURCE_VERSION_MAJOR}-${RESOURCE_VERSION_MINOR}-${RESOURCE_VERSION_PATCH}-${POSTFIX}"
-      sudo sed -i "s/$hostn/$NAME/g" /etc/hosts
-      sudo sed -i "s/$hostn/$NAME/g" /etc/hostname
+      NAME="cv-${RESOURCE_SHORT_NAME}-${RESOURCE_VERSION_MAJOR}-${RESOURCE_VERSION_MINOR}-${RESOURCE_VERSION_PATCH}-${POSTFIX}"
+      sudo sed -i "s/.*127.0.1.1.*/127.0.1.1\t${NAME}/g" /etc/hosts
+      sudo hostnamectl set-hostname $NAME
     }
   BASH
   mode '755'
@@ -63,6 +60,7 @@ file '/etc/init.d/provision_consul.sh' do
     #!/bin/bash
 
     function f_provisionConsul {
+      # Stop the consul service and kill the data directory. It will have the consul node-id in it which must go!
       sudo systemctl stop consul.service
       sudo rm -rfv /var/lib/consul/*
 
@@ -73,20 +71,24 @@ file '/etc/init.d/provision_consul.sh' do
       dos2unix /etc/consul/conf.d/secrets.json
 
       # Copy the consul client files if they exist
-      if [ ! -f /mnt/dvd/consul/client/consul_client_location.json ]; then
+      if [ -f /mnt/dvd/consul/client/consul_client_location.json ]; then
         cp -a /mnt/dvd/consul/client/consul_client_location.json /etc/consul/conf.d/location.json
         dos2unix /etc/consul/conf.d/location.json
+
+        echo 'CONSUL_SERVER_OR_CLIENT=client' >> /etc/environment
       fi
 
       # Copy the consul server files if they exist
-      if [ ! -f /mnt/dvd/consul/server/consul_server_bootstrap.json ]; then
+      if [ -f /mnt/dvd/consul/server/consul_server_bootstrap.json ]; then
         cp -a /mnt/dvd/consul/server/consul_server_bootstrap.json /etc/consul/conf.d/bootstrap.json
         dos2unix /etc/consul/conf.d/bootstrap.json
       fi
 
-      if [ ! -f /mnt/dvd/consul/server/consul_server_location.json ]; then
+      if [ -f /mnt/dvd/consul/server/consul_server_location.json ]; then
         cp -a /mnt/dvd/consul/server/consul_server_location.json /etc/consul/conf.d/location.json
         dos2unix /etc/consul/conf.d/location.json
+
+        echo 'CONSUL_SERVER_OR_CLIENT=server' >> /etc/environment
       fi
     }
   BASH
@@ -99,9 +101,6 @@ file '/etc/init.d/provision_consul-template.sh' do
     #!/bin/bash
 
     function f_provisionConsulTemplate {
-      cp -a /mnt/dvd/consul-template/vault.hcl /etc/consul-template.d/conf/vault.hcl
-      dos2unix /etc/consul-template.d/conf/vault.hcl
-
       sudo systemctl enable consul-template.service
     }
   BASH
@@ -117,7 +116,7 @@ file '/etc/init.d/provision_unbound.sh' do
       cp -a /mnt/dvd/unbound/unbound_zones.conf /etc/unbound.d/unbound_zones.conf
       dos2unix /etc/unbound.d/unbound_zones.conf
 
-      sudo systemctl enable unbound.service
+      sudo systemctl restart unbound.service
     }
   BASH
   mode '755'
@@ -150,14 +149,6 @@ file '/etc/init.d/provision.sh' do
         exit 0
       fi
 
-      IPADDRESS=$(f_getEth0Ip)
-
-      #
-      # CREATE MACHINE SPECIFIC CONFIGURATION FILES
-      #
-      # Create '/etc/consul/conf.d/connections.json'
-      # echo "{ \\"advertise_addr\\": \\"${IPADDRESS}\\", \\"bind_addr\\": \\"${IPADDRESS}\\" }"  > /etc/consul/conf.d/connections.json
-
       #
       # CONFIGURE SSH
       #
@@ -183,6 +174,19 @@ file '/etc/init.d/provision.sh' do
       f_provisionUnbound
 
       #
+      # CUSTOM PROVISIONING
+      #
+      if [ -f /etc/init.d/provision_image.sh ]; then
+        . /etc/init.d/provision_image.sh
+        f_provisionImage
+      fi
+
+      #
+      # SET HOST NAME
+      #
+      f_setHostName
+
+      #
       # UNMOUNT DVD
       #
       umount /dev/dvd
@@ -191,7 +195,7 @@ file '/etc/init.d/provision.sh' do
       # The next line creates an empty file so it won't run the next boot
       touch $FLAG
 
-      # restart the machine so that all configuration settings take hold
+      # restart the machine so that all configuration settings take hold (specifically the change in machine name)
       sudo shutdown -r now
     else
       echo "Provisioning script ran previously so nothing to do"

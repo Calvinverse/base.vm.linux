@@ -5,11 +5,38 @@ require 'spec_helper'
 describe 'base_linux::network' do
   unbound_config_directory = '/etc/unbound.d'
 
+  context 'create users and groups' do
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
+
+    it 'adds the telegraf user to the unbound group' do
+      expect(chef_run).to modify_group('unbound').with(
+        append: true,
+        members: ['telegraf']
+      )
+    end
+  end
+
   context 'create the unbound locations' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
     it 'creates the unbound config directory' do
       expect(chef_run).to create_directory(unbound_config_directory)
+    end
+
+    it 'creates the unbound-control socket directory' do
+      expect(chef_run).to create_directory('/var/unbound-control').with(
+        group: 'unbound',
+        owner: 'unbound',
+        mode: '0775'
+      )
+    end
+
+    it 'creates the unbound-control socket file' do
+      expect(chef_run).to create_file('/var/unbound-control/socket').with(
+        group: 'unbound',
+        owner: 'unbound',
+        mode: '0775'
+      )
     end
   end
 
@@ -20,6 +47,18 @@ describe 'base_linux::network' do
       expect(chef_run).to install_apt_package('unbound').with(
         version: '1.5.8-1ubuntu1'
       )
+    end
+
+    unbound_zones_config_content = <<~CONF
+      #
+      # See unbound.conf(5) man page, version 1.6.3.
+      #
+
+      # This file is an empty file just so that there is a zones file and
+      # unbound will start
+    CONF
+    it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
+      expect(chef_run).to create_file('/etc/unbound.d/unbound_zones.conf').with_content(unbound_zones_config_content)
     end
 
     unbound_default_config_content = <<~CONF
@@ -278,6 +317,37 @@ describe 'base_linux::network' do
           # The insecure-lan-zones option disables validation for
           # these zones, as if they were all listed as domain-insecure.
           insecure-lan-zones: yes
+
+      # Remote control config section.
+      remote-control:
+          # Enable remote control with unbound-control(8) here.
+          # set up the keys and certificates with unbound-control-setup.
+          control-enable: yes
+
+          # Set to no and use an absolute path as control-interface to use
+          # a unix local named pipe for unbound-control.
+          control-use-cert: no
+
+          # what interfaces are listened to for remote control.
+          # give 0.0.0.0 and ::0 to listen to all interfaces.
+          control-interface: /var/unbound-control/socket
+          # control-interface: 127.0.0.1
+          # control-interface: ::1
+
+          # port number for remote control operations.
+          # control-port: 8953
+
+          # unbound server key file.
+          # server-key-file: "@UNBOUND_RUN_DIR@/unbound_server.key"
+
+          # unbound server certificate file.
+          # server-cert-file: "@UNBOUND_RUN_DIR@/unbound_server.pem"
+
+          # unbound-control key file.
+          # control-key-file: "@UNBOUND_RUN_DIR@/unbound_control.key"
+
+          # unbound-control certificate file.
+          # control-cert-file: "@UNBOUND_RUN_DIR@/unbound_control.pem"
     CONF
     it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
       expect(chef_run).to create_file('/etc/unbound/unbound.conf').with_content(unbound_default_config_content)
@@ -297,8 +367,8 @@ describe 'base_linux::network' do
       )
     end
 
-    it 'disables the unbound service' do
-      expect(chef_run).to disable_service('unbound')
+    it 'enables the unbound service' do
+      expect(chef_run).to enable_service('unbound')
     end
   end
 

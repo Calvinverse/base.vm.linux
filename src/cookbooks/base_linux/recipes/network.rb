@@ -15,6 +15,13 @@ poise_service_user node['unbound']['service_user'] do
   group node['unbound']['service_group']
 end
 
+# Grant the telegraf user permission to interact with unbound so that it can get the metrics
+group node['unbound']['service_group'] do
+  action :modify
+  append true
+  members node['telegraf']['service_user']
+end
+
 #
 # DIRECTORIES
 #
@@ -22,6 +29,22 @@ end
 unbound_config_directory = node['paths']['unbound_config']
 directory unbound_config_directory do
   action :create
+end
+
+unbound_control_socket_directory = '/var/unbound-control'
+directory unbound_control_socket_directory do
+  action :create
+  owner node['unbound']['service_user']
+  group node['unbound']['service_group']
+  mode '0775'
+end
+
+unbound_control_socket_path = "#{unbound_control_socket_directory}/socket"
+file unbound_control_socket_path do
+  action :create
+  owner node['unbound']['service_user']
+  group node['unbound']['service_group']
+  mode '0775'
 end
 
 #
@@ -36,6 +59,18 @@ end
 #
 # CONFIGURATION
 #
+
+file "#{unbound_config_directory}/unbound_zones.conf" do
+  action :create
+  content <<~CONF
+    #
+    # See unbound.conf(5) man page, version 1.6.3.
+    #
+
+    # This file is an empty file just so that there is a zones file and
+    # unbound will start
+  CONF
+end
 
 unbound_config_file = node['file_name']['unbound_config_file']
 file "/etc/unbound/#{unbound_config_file}" do
@@ -296,6 +331,37 @@ file "/etc/unbound/#{unbound_config_file}" do
         # The insecure-lan-zones option disables validation for
         # these zones, as if they were all listed as domain-insecure.
         insecure-lan-zones: yes
+
+    # Remote control config section.
+    remote-control:
+        # Enable remote control with unbound-control(8) here.
+        # set up the keys and certificates with unbound-control-setup.
+        control-enable: yes
+
+        # Set to no and use an absolute path as control-interface to use
+        # a unix local named pipe for unbound-control.
+        control-use-cert: no
+
+        # what interfaces are listened to for remote control.
+        # give 0.0.0.0 and ::0 to listen to all interfaces.
+        control-interface: #{unbound_control_socket_path}
+        # control-interface: 127.0.0.1
+        # control-interface: ::1
+
+        # port number for remote control operations.
+        # control-port: 8953
+
+        # unbound server key file.
+        # server-key-file: "@UNBOUND_RUN_DIR@/unbound_server.key"
+
+        # unbound server certificate file.
+        # server-cert-file: "@UNBOUND_RUN_DIR@/unbound_server.pem"
+
+        # unbound-control key file.
+        # control-key-file: "@UNBOUND_RUN_DIR@/unbound_control.key"
+
+        # unbound-control certificate file.
+        # control-cert-file: "@UNBOUND_RUN_DIR@/unbound_control.pem"
   CONF
 end
 
@@ -319,10 +385,10 @@ systemd_service 'unbound' do
   requires %w[multi-user.target]
 end
 
-# Make sure the unbound service doesn't start automatically. This will be changed
-# after we have provisioned the box
+# Make sure the unbound service is running from the start. This is necessary so that when we
+# provision off this base image we will be able to resolve hosts.
 service 'unbound' do
-  action :disable
+  action :enable
 end
 
 #

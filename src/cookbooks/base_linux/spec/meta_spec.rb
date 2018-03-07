@@ -6,8 +6,8 @@ describe 'base_linux::meta' do
   context 'updates the /etc/environment file' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
-    it 'writes the product name to the environment variables' do
-      expect(chef_run).to run_ruby_block('set_base_image_product_name')
+    it 'writes to the environment variables' do
+      expect(chef_run).to run_ruby_block('set_base_image_environment_information')
     end
   end
 end

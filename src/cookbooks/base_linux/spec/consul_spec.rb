@@ -11,6 +11,23 @@ describe 'base_linux::consul' do
     end
   end
 
+  context 'creates the consul configuration files' do
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
+
+    consul_metrics_content = <<~JSON
+      {
+          "telemetry": {
+              "disable_hostname": true,
+              "statsd_address": "127.0.0.1:8125"
+          }
+      }
+    JSON
+    it 'creates consul metrics configuration file in the consul configuration directory' do
+      expect(chef_run).to create_file('/etc/consul/conf.d/metrics.json')
+        .with_content(consul_metrics_content)
+    end
+  end
+
   context 'configures the firewall for consul' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 

@@ -22,6 +22,12 @@ Describe 'On the system' {
         }
     }
 
+    Context 'the environment variables' {
+        It 'should have a variable indicating which services need a statsd sink' {
+            $env:STATSD_ENABLED_SERVICES | Should Be 'consul'
+        }
+    }
+
     Context 'system updates' {
         # split the output which should contain the names of the packages that have not been updated.
         # We allow the following list:
@@ -62,73 +68,25 @@ Describe 'On the system' {
                 $additionalPackages.Length | Should Be 0
             }
         }
-    }
 
-    Context 'system metrics' {
-        It 'with binaries in /usr/local/bin' {
-            '/usr/local/bin/scollector' | Should Exist
-        }
-
-        It 'with default configuration in /etc/scollector.d/scollector.toml' {
-            '/etc/scollector.d/scollector.toml' | Should Exist
-        }
-
-        $expectedContent = @'
-Host = "http://write.metrics.service.integrationtest:4242"
-
-[Tags]
-    environment = "test-integration"
-    os = "linux"
-
-'@
-        $scollectorConfigContent = Get-Content '/etc/scollector.d/scollector.toml' | Out-String
-        It 'with the expected content in the configuration file' {
-            $scollectorConfigContent | Should Be ($expectedContent -replace "`r", "")
-        }
-    }
-
-    Context 'has been daemonized' {
-        $serviceConfigurationPath = '/etc/systemd/system/scollector.service'
-        if (-not (Test-Path $serviceConfigurationPath))
-        {
-            It 'has a systemd configuration' {
-                $false | Should Be $true
-            }
-        }
-
-        $expectedContent = @'
-[Unit]
-Description=SCollector
-Requires=network-online.target
-After=network-online.target
-Documentation=http://bosun.org/scollector/
-
-[Install]
-WantedBy=multi-user.target
-
-[Service]
-ExecStart=/usr/local/bin/scollector -conf /etc/scollector.d/scollector.toml
-Restart=on-failure
-
-'@
-        $serviceFileContent = Get-Content $serviceConfigurationPath | Out-String
-        $systemctlOutput = & systemctl status scollector
-        It 'with a systemd service' {
-            $serviceFileContent | Should Be ($expectedContent -replace "`r", "")
-
+        $systemctlOutput = & systemctl status apt-daily.service
+        It 'has disable the apt-daily service' {
             $systemctlOutput | Should Not Be $null
             $systemctlOutput.GetType().FullName | Should Be 'System.Object[]'
             $systemctlOutput.Length | Should BeGreaterThan 3
-            $systemctlOutput[0] | Should Match 'scollector.service - SCollector'
+            $systemctlOutput[0] | Should Match 'apt-daily.service - Daily apt download activities'
+            $systemctlOutput[1] | Should Match 'Loaded:\sloaded\s\(.*;\sstatic;.*\)'
+            $systemctlOutput[2] | Should Match 'Active:\sinactive\s\(dead\).*'
         }
 
-        It 'that is enabled' {
-            $systemctlOutput[1] | Should Match 'Loaded:\sloaded\s\(.*;\senabled;.*\)'
-
-        }
-
-        It 'and is running' {
-            $systemctlOutput[2] | Should Match 'Active:\sactive\s\(running\).*'
+        $systemctlOutput = & systemctl status apt-daily.timer
+        It 'has disable the apt-daily timer' {
+            $systemctlOutput | Should Not Be $null
+            $systemctlOutput.GetType().FullName | Should Be 'System.Object[]'
+            $systemctlOutput.Length | Should Be 3
+            $systemctlOutput[0] | Should Match 'apt-daily.timer - Daily apt download activities'
+            $systemctlOutput[1] | Should Match 'Loaded:\sloaded\s\(.*;\sdisabled;.*\)'
+            $systemctlOutput[2] | Should Match 'Active:\sinactive\s\(dead\).*'
         }
     }
 }

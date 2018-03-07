@@ -183,7 +183,6 @@
 
         <!-- The directory that will contain all the temporary files needed during the build process -->
         <!-- <DirBuildTemp>$(DirBuild)\temp</DirBuildTemp> -->
-        <DirBuildTempConfig>$(DirBuildTemp)\config</DirBuildTempConfig>
         <DirBuildTempCookbooks>$(DirBuildTemp)\cookbooks</DirBuildTempCookbooks>
         <DirBuildTempIso>$(DirBuildTemp)\iso</DirBuildTempIso>
         <DirBuildTempScripts>$(DirBuildTemp)\scripts</DirBuildTempScripts>
@@ -359,6 +358,9 @@
     -->
     <ItemGroup>
         <!-- General -->
+        <TemplateTokens Include="ProductShortName">
+            <ReplacementValue>$(ProductName.Replace('.', '-').ToLower())</ReplacementValue>
+        </TemplateTokens>
         <TemplateTokens Include="LocalAdministratorName">
             <ReplacementValue>thebigkahuna</ReplacementValue>
         </TemplateTokens>
@@ -452,7 +454,7 @@
             The full path and version to the packer command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
-        <ToolsExternalPackerVersion>1.1.1</ToolsExternalPackerVersion>
+        <ToolsExternalPackerVersion>1.2.0</ToolsExternalPackerVersion>
     </PropertyGroup>
 
 

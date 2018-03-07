@@ -52,10 +52,12 @@
     <ItemGroup Condition=" '$(ShouldLoadHttpFilesToCopy)' == 'true' ">
         <HttpFilesToCopy Include="https://releases.hashicorp.com/consul-template/${VersionConsulTemplate}/consul-template_${VersionConsulTemplate}_linux_amd64.zip">
             <Destination>$(DirBuildTempCookbooks)\$(NameCookbook)\files\ubuntu</Destination>
+            <!-- pgp.mit.edu is too unstable
             <GpgKey>91A6E7F85D05C65630BEF18951852D87348FFC4C</GpgKey>
             <HashAlgorithm>SHA256</HashAlgorithm>
             <HashFile>https://releases.hashicorp.com/consul-template/${VersionConsulTemplate}/consul-template_${VersionConsulTemplate}_SHA256SUMS</HashFile>
             <SignatureFile>https://releases.hashicorp.com/consul-template/${VersionConsulTemplate}/consul-template_${VersionConsulTemplate}_SHA256SUMS.sig</SignatureFile>
+            -->
             <Unzip>true</Unzip>
         </HttpFilesToCopy>
     </ItemGroup>
@@ -65,7 +67,7 @@
             <Destination>$(DirBuildTempIso)\ubuntu</Destination>
         </FilesToCopy>
         <FilesToCopy
-            Exclude="$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb"
+            Exclude="$(DirSrcCookbooks)\$(NameCookbook)\metadata.rb;$(DirBuildTempCookbooks)\$(NameCookbook)\attributes\resource_information.rb"
             Include="$(DirSrcCookbooks)\$(NameCookbook)\**\*.*">
             <Destination>$(DirBuildTempCookbooks)\$(NameCookbook)</Destination>
         </FilesToCopy>
