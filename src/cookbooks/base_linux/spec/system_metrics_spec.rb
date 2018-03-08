@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe 'template_resource_linux_ubuntu_server::system_metrics' do
+describe 'base_linux::system_metrics' do
   context 'installs telegraf' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
