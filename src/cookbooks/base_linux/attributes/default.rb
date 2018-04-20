@@ -56,13 +56,11 @@ default['consul']['config']['owner'] = 'root'
 # CONSULTEMPLATE
 #
 
-default['consul_template']['install_path'] = '/usr/local/bin/consul-template'
+default['consul_template']['install_directory'] = '/usr/local/bin'
+default['consul_template']['install_path'] = "#{node['consul_template']['install_directory']}/consul-template"
 default['consul_template']['data_path'] = '/etc/consul-template.d/data'
 default['consul_template']['config_path'] = '/etc/consul-template.d/conf'
 default['consul_template']['template_path'] = '/etc/consul-template.d/templates'
-
-default['consul_template']['vault_template_file'] = 'consul_template_vault.ctmpl'
-default['consul_template']['script_config_file'] = '/tmp/consul_template_vault.sh'
 
 default['consul_template']['service_user'] = 'consul_template'
 default['consul_template']['service_group'] = 'consul_template'
