@@ -210,6 +210,60 @@ end
 # SERVICE
 #
 
+consul_template_install_directory = node['consul_template']['install_directory']
+run_consul_template_script = "#{consul_template_install_directory}/run_consul-template.sh"
+file run_consul_template_script do
+  action :create
+  content <<~SH
+    #!/bin/sh
+
+    get_key_from_kv() {
+      if result=$(consul kv get "$1"); then
+        echo "$result"
+      else
+        echo ""
+      fi
+    }
+
+    delete_key_from_kv() {
+      if consul kv delete "$1"; then
+        echo "Removed the '$1' key from the consul k-v store"
+      else
+        echo "No key at '$1' found to remove from the consul k-v store"
+      fi
+    }
+
+    startup() {
+      # read the key from the consul k-v
+      hostname="$(hostname -s)"
+      vault_key_path="auth/services/templates/$hostname/secrets"
+      vault_key="$(get_key_from_kv ${vault_key_path})"
+
+      # delete the key from the consul k-v
+      env_vars=""
+      vault_options=""
+      if [ "$vault_key" ]; then
+        delete_key_from_kv "${vault_key_path}"
+
+        env_vars="env VAULT_TOKEN=$vault_key"
+
+        service_name="$(get_key_from_kv config/services/secrets/protocols/http/host)"
+        domain="$(get_key_from_kv config/services/consul/domain)"
+        port="$(get_key_from_kv config/services/secrets/protocols/http/port)"
+        vault_options="-vault-addr=http://${service_name}.service.${domain}:${port} -vault-unwrap-token -vault-renew-token -vault-retry"
+      fi
+
+      echo "$(${env_vars} #{consul_template_install_path} -config=#{consul_template_config_path} ${vault_options})"
+      exec "$(${env_vars} #{consul_template_install_path} -config=#{consul_template_config_path} ${vault_options})"
+    }
+
+    # =============================================================================
+    # Fire up
+    startup
+  SH
+  mode '755'
+end
+
 # Create the systemd service for consultemplate.
 consul_template_service = 'consul-template'
 systemd_service consul_template_service do
@@ -222,11 +276,7 @@ systemd_service consul_template_service do
   end
   service do
     environment_file '/etc/environment'
-    exec_reload '/bin/kill -s HUP $MAINPID'
-    exec_start "#{consul_template_install_path} -config=#{consul_template_config_path}"
-    kill_mode 'mixed'
-    kill_signal 'SIGQUIT'
-    pid_file "#{consul_template_data_path}/pid"
+    exec_start run_consul_template_script
     restart 'on-failure'
   end
   requires %w[multi-user.target]
@@ -242,109 +292,6 @@ end
 # VAULT CONFIGURATION
 #
 
-consul_template_vault_template_file = node['consul_template']['vault_template_file']
-file "#{consul_template_template_path}/#{consul_template_vault_template_file}" do
-  action :create
-  content <<~CONF
-    #!/bin/sh
-
-    {{ $hostname := (file "/etc/hostname" | trimSpace ) }}
-    {{ if keyExists (printf "auth/services/templates/%s/secrets" $hostname) }}
-    {{ if keyExists "config/services/secrets/protocols/http/host" }}
-    echo 'Write the consul-template configuration file'
-    cat <<EOT > #{consul_template_config_path}/vault.hcl
-    # This denotes the start of the configuration section for Vault. All values
-    # contained in this section pertain to Vault.
-    vault {
-      # This is the address of the Vault leader. The protocol (http(s)) portion
-      # of the address is required.
-      address = "http://{{ key "config/services/secrets/protocols/http/host" }}.service.{{ keyOrDefault "config/services/consul/domain" "consul" }}:{{ keyOrDefault "config/services/secrets/protocols/http/port" "80" }}"
-
-      # This is the grace period between lease renewal of periodic secrets and secret
-      # re-acquisition. When renewing a secret, if the remaining lease is less than or
-      # equal to the configured grace, Consul Template will request a new credential.
-      # This prevents Vault from revoking the credential at expiration and Consul
-      # Template having a stale credential.
-      #
-      # Note: If you set this to a value that is higher than your default TTL or
-      # max TTL, Consul Template will always read a new secret!
-      grace = "5m"
-
-      # This is the token to use when communicating with the Vault server.
-      # Like other tools that integrate with Vault, Consul Template makes the
-      # assumption that you provide it with a Vault token; it does not have the
-      # incorporated logic to generate tokens via Vault's auth methods.
-      #
-      # This value can also be specified via the environment variable VAULT_TOKEN.
-      token = "{{ key (printf "auth/services/templates/%s/secrets" $hostname) }}"
-
-      # This tells Consul Template that the provided token is actually a wrapped
-      # token that should be unwrapped using Vault's cubbyhole response wrapping
-      # before being used. Please see Vault's cubbyhole response wrapping
-      # documentation for more information.
-      unwrap_token = true
-
-      # This option tells Consul Template to automatically renew the Vault token
-      # given. If you are unfamiliar with Vault's architecture, Vault requires
-      # tokens be renewed at some regular interval or they will be revoked. Consul
-      # Template will automatically renew the token at half the lease duration of
-      # the token. The default value is true, but this option can be disabled if
-      # you want to renew the Vault token using an out-of-band process.
-      #
-      # Note that secrets specified in a template (using {{secret}} for example)
-      # are always renewed, even if this option is set to false. This option only
-      # applies to the top-level Vault token itself.
-      renew_token = true
-
-      # This section details the retry options for connecting to Vault. Please see
-      # the retry options in the Consul section for more information (they are the
-      # same).
-      retry {
-        # ...
-      }
-
-      # This section details the SSL options for connecting to the Vault server.
-      # Please see the SSL options in the Consul section for more information (they
-      # are the same).
-      ssl {
-        # ...
-      }
-    }
-    EOT
-
-    if ( ! $(systemctl is-enabled --quiet #{consul_template_service}) ); then
-      systemctl enable #{consul_template_service}
-
-      while true; do
-        if ( $(systemctl is-enabled --quiet #{consul_template_service}) ); then
-            break
-        fi
-
-        sleep 1
-      done
-    fi
-
-    systemctl restart #{consul_template_service}
-
-    while true; do
-      if ( $(systemctl is-active --quiet #{consul_template_service}) ); then
-          break
-      fi
-
-      sleep 1
-    done
-
-    {{ else }}
-    echo 'Not all Consul K-V values are available. Will not start Consul-Template.'
-    {{ end }}
-    {{ else }}
-    echo 'Not all Consul K-V values are available. Will not start Consul-Template.'
-    {{ end }}
-  CONF
-  mode '755'
-end
-
-consul_template_config_script_file = node['consul_template']['script_config_file']
 file "#{consul_template_config_path}/consul_template_vault.hcl" do
   action :create
   content <<~HCL
@@ -352,15 +299,16 @@ file "#{consul_template_config_path}/consul_template_vault.hcl" do
     # this block may be specified multiple times to configure multiple templates.
     # It is also possible to configure templates via the CLI directly.
     template {
-      # This is the source file on disk to use as the input template. This is often
-      # called the "Consul Template template". This option is required if not using
-      # the `contents` option.
-      source = "#{consul_template_template_path}/#{consul_template_vault_template_file}"
+      # This option allows embedding the contents of a template in the configuration
+      # file rather then supplying the `source` path to the template file. This is
+      # useful for short templates. This option is mutually exclusive with the
+      # `source` option.
+      contents = "{{ $hostname := (file \\"/etc/hostname\\" | trimSpace ) }}{{ key (printf \\"auth/services/templates/%s/secrets\\" $hostname) }}"
 
       # This is the destination path on disk where the source template will render.
       # If the parent directories do not exist, Consul Template will attempt to
       # create them, unless create_dest_dirs is false.
-      destination = "#{consul_template_config_script_file}"
+      destination = "/tmp/consul_template_donotcare"
 
       # This options tells Consul Template to create the parent directories of the
       # destination path if they do not exist. The default value is true.
@@ -370,7 +318,7 @@ file "#{consul_template_config_path}/consul_template_vault.hcl" do
       # command will only run if the resulting template changes. The command must
       # return within 30s (configurable), and it must have a successful exit code.
       # Consul Template is not a replacement for a process monitor or init system.
-      command = "sh #{consul_template_config_script_file}"
+      command = "systemctl restart #{consul_template_service}"
 
       # This is the maximum amount of time to wait for the optional command to
       # return. Default is 30s.
