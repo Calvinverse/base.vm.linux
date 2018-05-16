@@ -47,7 +47,7 @@ describe 'base_linux::system_logs' do
           routing-key("syslog")
           vhost("{{ keyOrDefault "config/services/queue/logs/syslog/vhost" "logs" }}")
 
-      {{ with secret "rabbitmq/creds/logs.syslog.writer" }}
+      {{ with secret "rabbitmq/creds/write.vhost.logs.syslog" }}
         {{ if .Data.password }}
           password("{{ .Data.password }}")
           username("{{ .Data.username }}")

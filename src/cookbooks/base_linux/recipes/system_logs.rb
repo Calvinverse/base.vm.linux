@@ -60,7 +60,7 @@ file "#{consul_template_template_path}/#{syslog_ng_template_file}" do
         routing-key("syslog")
         vhost("{{ keyOrDefault "config/services/queue/logs/syslog/vhost" "logs" }}")
 
-    {{ with secret "rabbitmq/creds/logs.syslog.writer" }}
+    {{ with secret "rabbitmq/creds/write.vhost.logs.syslog" }}
       {{ if .Data.password }}
         password("{{ .Data.password }}")
         username("{{ .Data.username }}")
