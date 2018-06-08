@@ -268,9 +268,12 @@ end
 consul_template_service = 'consul-template'
 systemd_service consul_template_service do
   action :create
-  after %w[multi-user.target]
-  description 'Consul Template'
-  documentation 'https://github.com/hashicorp/consul-template'
+  unit do
+    after %w[multi-user.target]
+    description 'Consul Template'
+    documentation 'https://github.com/hashicorp/consul-template'
+    requires %w[multi-user.target]
+  end
   install do
     wanted_by %w[multi-user.target]
   end
@@ -279,7 +282,6 @@ systemd_service consul_template_service do
     exec_start run_consul_template_script
     restart 'on-failure'
   end
-  requires %w[multi-user.target]
 end
 
 # Make sure the consultemplate service doesn't start automatically. This will be changed
