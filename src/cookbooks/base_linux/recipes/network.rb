@@ -372,9 +372,12 @@ end
 # Create the systemd service for unbound.
 systemd_service 'unbound' do
   action :create
-  after %w[multi-user.target]
-  description 'Unbound DNS proxy'
-  documentation 'http://www.unbound.net'
+  unit do
+    after %w[multi-user.target]
+    description 'Unbound DNS proxy'
+    documentation 'http://www.unbound.net'
+    requires %w[multi-user.target]
+  end
   install do
     wanted_by %w[multi-user.target]
   end
@@ -382,7 +385,6 @@ systemd_service 'unbound' do
     exec_start "/usr/sbin/unbound -d -c /etc/unbound/#{unbound_config_file}"
     restart 'on-failure'
   end
-  requires %w[multi-user.target]
 end
 
 # Make sure the unbound service is running from the start. This is necessary so that when we
