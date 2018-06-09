@@ -9,7 +9,7 @@ describe 'base_linux::system_logs' do
     it 'installs the syslog-ng-apt-repository apt_repository' do
       expect(chef_run).to add_apt_repository('syslog-ng-apt-repository').with(
         action: [:add],
-        key: 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_16.04/Release.key',
+        key: ['http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_16.04/Release.key'],
         uri: 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_16.04'
       )
     end
@@ -47,7 +47,7 @@ describe 'base_linux::system_logs' do
           routing-key("syslog")
           vhost("{{ keyOrDefault "config/services/queue/logs/syslog/vhost" "logs" }}")
 
-      {{ with secret "rabbitmq/creds/logs.syslog.writer" }}
+      {{ with secret "rabbitmq/creds/write.vhost.logs.syslog" }}
         {{ if .Data.password }}
           password("{{ .Data.password }}")
           username("{{ .Data.username }}")

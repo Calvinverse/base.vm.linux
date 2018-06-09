@@ -360,10 +360,12 @@ describe 'base_linux::network' do
     it 'installs the unbound service' do
       expect(chef_run).to create_systemd_service('unbound').with(
         action: [:create],
-        after: %w[multi-user.target],
-        description: 'Unbound DNS proxy',
-        documentation: 'http://www.unbound.net',
-        requires: %w[multi-user.target]
+        unit_after: %w[multi-user.target],
+        unit_description: 'Unbound DNS proxy',
+        unit_documentation: 'http://www.unbound.net',
+        unit_requires: %w[multi-user.target],
+        service_exec_start: '/usr/sbin/unbound -d -c /etc/unbound/unbound.conf',
+        service_restart: 'on-failure'
       )
     end
 
