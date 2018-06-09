@@ -23,18 +23,18 @@ Describe 'The unbound application' {
         }
 
         $expectedContent = @'
+[Service]
+ExecStart = /usr/sbin/unbound -d -c /etc/unbound/unbound.conf
+Restart = on-failure
+
 [Unit]
-Description=Unbound DNS proxy
-Requires=multi-user.target
-After=multi-user.target
-Documentation=http://www.unbound.net
+Description = Unbound DNS proxy
+Documentation = http://www.unbound.net
+Requires = multi-user.target
+After = multi-user.target
 
 [Install]
-WantedBy=multi-user.target
-
-[Service]
-ExecStart=/usr/sbin/unbound -d -c /etc/unbound/unbound.conf
-Restart=on-failure
+WantedBy = multi-user.target
 
 '@
         $serviceFileContent = Get-Content $serviceConfigurationPath | Out-String
