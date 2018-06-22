@@ -19,6 +19,7 @@ default['consul']['config']['verify_outgoing'] = false
 default['consul']['config']['client_addr'] = '127.0.0.1'
 
 # Set the HTTP listener to listen on both the localhost address and the public IP address
+# so that we can send command to consul from the localhost but also from the outside
 default['consul']['config']['addresses'] = {
   http: '0.0.0.0'
 }
