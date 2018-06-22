@@ -14,8 +14,16 @@ describe 'base_linux::provisioning' do
       expect(chef_run).to install_apt_package('pwgen')
     end
 
+    it 'installs the jq package' do
+      expect(chef_run).to install_apt_package('jq')
+    end
+
     it 'creates provision_helpers.sh in the /etc/init.d directory' do
       expect(chef_run).to create_file('/etc/init.d/provision_helpers.sh')
+    end
+
+    it 'creates provision_network_interfaces.sh in the /etc/init.d directory' do
+      expect(chef_run).to create_file('/etc/init.d/provision_network_interfaces.sh')
     end
 
     it 'creates provision_consul.sh in the /etc/init.d directory' do
