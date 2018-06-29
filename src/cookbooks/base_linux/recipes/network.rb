@@ -112,7 +112,7 @@ file "/etc/unbound/#{unbound_config_file}" do
         # IANA-assigned port numbers.
         # If multiple outgoing-port-permit and outgoing-port-avoid options
         # are present, they are processed in order.
-        outgoing-port-avoid: "4600-4700, 8300-8700"
+        outgoing-port-avoid: "4600-4700, 8200-8700"
 
         # number of outgoing simultaneous tcp buffers to hold per thread.
         outgoing-num-tcp: 10

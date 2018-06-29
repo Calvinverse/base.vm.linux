@@ -8,19 +8,13 @@
 #
 
 #
-# INSTALL DOS2UNIX
+# INSTALL PACKAGES
 #
 
-apt_package 'dos2unix' do
-  action :install
-end
-
-#
-# INSTALL PWGEN
-#
-
-apt_package 'pwgen' do
-  action :install
+%w[dos2unix pwgen jq].each do |pkg|
+  apt_package pkg do
+    action :install
+  end
 end
 
 #
@@ -49,6 +43,38 @@ file '/etc/init.d/provision_helpers.sh' do
       NAME="cv-${RESOURCE_SHORT_NAME}-${RESOURCE_VERSION_MAJOR}-${RESOURCE_VERSION_MINOR}-${RESOURCE_VERSION_PATCH}-${POSTFIX}"
       sudo sed -i "s/.*127.0.1.1.*/127.0.1.1\t${NAME}/g" /etc/hosts
       sudo hostnamectl set-hostname $NAME
+    }
+  BASH
+  mode '755'
+end
+
+file '/etc/init.d/provision_network_interfaces.sh' do
+  action :create
+  content <<~BASH
+    #!/bin/bash
+
+    function f_provisionNetworkInterfaces {
+      cp -a /mnt/dvd/consul/consul_region.json /tmp/region.json
+      dos2unix /tmp/region.json
+      DOMAIN=$(jq -r .domain /tmp/region.json)
+      rm -rf /tmp/region.json
+
+      cat <<EOT > /etc/network/interfaces
+    # This file describes the network interfaces available on your system
+    # and how to activate them. For more information, see interfaces(5).
+
+    source /etc/network/interfaces.d/*
+
+    # The loopback network interface
+    auto lo
+    iface lo inet loopback
+
+    # The primary network interface
+    auto eth0
+    iface eth0 inet dhcp
+        dns-search node.${DOMAIN}
+        pre-up sleep 2
+    EOT
     }
   BASH
   mode '755'
@@ -129,6 +155,7 @@ file '/etc/init.d/provision.sh' do
     #!/bin/bash
 
     . /etc/init.d/provision_helpers.sh
+    . /etc/init.d/provision_network_interfaces.sh
     . /etc/init.d/provision_consul.sh
     . /etc/init.d/provision_consul-template.sh
     . /etc/init.d/provision_unbound.sh
@@ -158,9 +185,13 @@ file '/etc/init.d/provision.sh' do
       fi
 
       #
+      # NETWORK INTERFACE CONFIGURATION
+      #
+      f_provisionNetworkInterfaces
+
+      #
       # CONSUL CONFIGURATION
       #
-      # Stop the consul service and kill the data directory. It will have the consul node-id in it which must go!
       f_provisionConsul
 
       #
