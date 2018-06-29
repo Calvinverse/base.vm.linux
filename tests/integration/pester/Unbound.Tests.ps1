@@ -75,5 +75,11 @@ WantedBy = multi-user.target
             $result | Should Not Be $null
             $result | Should Be $localIpAddress
         }
+
+        It 'should resolve the hostname' {
+            $result = & dig +short +search $(hostname)
+            $result | Should Not Be $null
+            $result | Should Be $localIpAddress
+        }
     }
 }

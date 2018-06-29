@@ -26,5 +26,7 @@ include_recipe 'base_linux::system'
 include_recipe 'base_linux::system_logs'
 include_recipe 'base_linux::system_metrics'
 
-include_recipe 'base_linux::network'
 include_recipe 'base_linux::provisioning'
+
+# Set up the network last because this stuffs around with unbound, potentially breaking DNS
+include_recipe 'base_linux::network'

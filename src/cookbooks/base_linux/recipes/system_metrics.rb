@@ -134,7 +134,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       ## If true, compute and report the sum of all non-idle CPU states.
       report_active = false
       [inputs.cpu.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
 
     # Read metrics about disk usage by mount point
@@ -147,7 +147,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       ## present on /run, /var/run, /dev/shm or /dev).
       ignore_fs = ["tmpfs", "devtmpfs", "devfs"]
       [inputs.disk.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
 
     # Read metrics about disk IO by device
@@ -176,21 +176,21 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       ## the near-meaningless DM-0 name.
       # name_templates = ["$ID_FS_LABEL","$DM_VG_NAME/$DM_LV_NAME"]
       [inputs.diskio.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
 
     # Get kernel statistics from /proc/stat
     [[inputs.kernel]]
       # no configuration
       [inputs.kernel.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
 
     # Read metrics about memory usage
     [[inputs.mem]]
       # no configuration
       [inputs.mem.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
     # Gather metrics about network interfaces
     [[inputs.net]]
@@ -202,28 +202,28 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       # interfaces = ["eth*", "enp0s[0-1]", "lo"]
       ##
       [inputs.net.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
 
     # Get the number of processes and group them by status
     [[inputs.processes]]
       # no configuration
       [inputs.processes.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
 
     # Read metrics about swap memory usage
     [[inputs.swap]]
       # no configuration
       [inputs.swap.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
 
     # Read metrics about system load & uptime
     [[inputs.system]]
       # no configuration
       [inputs.system.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
     # # A plugin to collect stats from Unbound - a validating, recursive, and caching DNS resolver
     [[inputs.unbound]]
@@ -239,7 +239,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       ## Use the builtin fielddrop/fieldpass telegraf filters in order to keep/remove specific fields
       # fieldpass = ["total_*", "num_*","time_up", "mem_*"]
       [inputs.unbound.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"
+        influxdb_database = "system"
 
     # Statsd UDP/TCP Server
     [[inputs.statsd]]
@@ -293,7 +293,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       ## of percentiles but also increases the memory usage and cpu time.
       # percentile_limit = 1000
       [inputs.statsd.tags]
-        influxdb_database = "{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"
+        influxdb_database = "statsd"
 
     ###############################################################################
     #                            OUTPUT PLUGINS                                   #
@@ -343,7 +343,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       ## Compress each HTTP request payload using GZIP.
       # content_encoding = "gzip"
       [outputs.influxdb.tagpass]
-        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/system" "system" }}"]
+        influxdb_database = ["system"]
 
     # Configuration for influxdb server to send metrics to
     [[outputs.influxdb]]
@@ -388,7 +388,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       ## Compress each HTTP request payload using GZIP.
       # content_encoding = "gzip"
       [outputs.influxdb.tagpass]
-        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/statsd" "statsd" }}"]
+        influxdb_database = ["statsd"]
 
     # Configuration for influxdb server to send metrics to
     [[outputs.influxdb]]
@@ -399,7 +399,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       # urls = ["udp://127.0.0.1:8089"] # UDP endpoint example
       urls = ["http://{{ keyOrDefault "config/services/metrics/protocols/http/host" "unknown" }}.service.{{ keyOrDefault "config/services/consul/domain" "unknown" }}:{{ keyOrDefault "config/services/metrics/protocols/http/port" "80" }}"]
       ## The target database for metrics (telegraf will create it if not exists).
-      database = "{{ keyOrDefault "config/services/metrics/databases/system" "system" }}" # required
+      database = "{{ keyOrDefault "config/services/metrics/databases/services" "services" }}" # required
 
       ## Name of existing retention policy to write to.  Empty string writes to
       ## the default retention policy.
@@ -433,7 +433,7 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       ## Compress each HTTP request payload using GZIP.
       # content_encoding = "gzip"
       [outputs.influxdb.tagpass]
-        influxdb_database = ["{{ keyOrDefault "config/services/metrics/databases/services" "services" }}"]
+        influxdb_database = ["services"]
     {{ else }}
     # Send metrics to nowhere at all
     [[outputs.discard]]
