@@ -8,27 +8,13 @@
 #
 
 #
-# INSTALL DOS2UNIX
+# INSTALL PACKAGES
 #
 
-apt_package 'dos2unix' do
-  action :install
-end
-
-#
-# INSTALL PWGEN
-#
-
-apt_package 'pwgen' do
-  action :install
-end
-
-#
-# INSTALL JQ
-#
-
-apt_package 'jq' do
-  action :install
+%w[dos2unix pwgen jq].each do |pkg|
+  apt_package pkg do
+    action :install
+  end
 end
 
 #
