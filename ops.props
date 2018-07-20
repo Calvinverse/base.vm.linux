@@ -378,7 +378,7 @@
         </TemplateTokens>
 
         <TemplateTokens Include="VersionConsulTemplate">
-            <ReplacementValue>0.19.4</ReplacementValue>
+            <ReplacementValue>0.19.5</ReplacementValue>
         </TemplateTokens>
 
         <TemplateTokens
