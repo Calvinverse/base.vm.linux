@@ -6,7 +6,13 @@ describe 'base_linux::consul_template' do
   context 'configures consul-template' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
     it 'installs the consul-template binaries' do
-      expect(chef_run).to create_cookbook_file('/usr/local/bin/consul-template').with_source('consul-template')
+      expect(chef_run).to create_cookbook_file('/usr/local/bin/consul-template')
+        .with_source('consul-template')
+        .with(
+          group: 'root',
+          owner: 'root',
+          mode: '0550'
+        )
     end
 
     consul_template_config_content = <<~SH
@@ -59,6 +65,11 @@ describe 'base_linux::consul_template' do
     it 'creates start script in the consul-template install directory' do
       expect(chef_run).to create_file('/usr/local/bin/run_consul-template.sh')
         .with_content(consul_template_config_content)
+        .with(
+          group: 'root',
+          owner: 'root',
+          mode: '0550'
+        )
     end
 
     it 'installs the consul-template service' do
@@ -82,15 +93,27 @@ describe 'base_linux::consul_template' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
     it 'creates the consul-template config directory' do
-      expect(chef_run).to create_directory('/etc/consul-template.d/conf')
+      expect(chef_run).to create_directory('/etc/consul-template.d/conf').with(
+        group: 'root',
+        owner: 'root',
+        mode: '0550'
+      )
     end
 
     it 'creates the consul-template data directory' do
-      expect(chef_run).to create_directory('/etc/consul-template.d/data')
+      expect(chef_run).to create_directory('/etc/consul-template.d/data').with(
+        group: 'root',
+        owner: 'root',
+        mode: '0550'
+      )
     end
 
     it 'creates the consul-template template directory' do
-      expect(chef_run).to create_directory('/etc/consul-template.d/templates')
+      expect(chef_run).to create_directory('/etc/consul-template.d/templates').with(
+        group: 'root',
+        owner: 'root',
+        mode: '0550'
+      )
     end
 
     consul_template_config_content = <<~HCL
@@ -248,6 +271,11 @@ describe 'base_linux::consul_template' do
     it 'creates base.hcl in the consul-template configuration directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/conf/base.hcl')
         .with_content(consul_template_config_content)
+        .with(
+          group: 'root',
+          owner: 'root',
+          mode: '0550'
+        )
     end
   end
 
@@ -323,6 +351,11 @@ describe 'base_linux::consul_template' do
     it 'creates consul_template_vault.hcl in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/conf/consul_template_vault.hcl')
         .with_content(consul_template_vault_content)
+        .with(
+          group: 'root',
+          owner: 'root',
+          mode: '0550'
+        )
     end
   end
 end

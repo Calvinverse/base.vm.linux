@@ -75,7 +75,9 @@ file "#{consul_template_template_path}/#{syslog_ng_template_file}" do
 
     log { source(s_src); filter(f_syslog3); destination(d_rabbit); };
   CONF
-  mode '755'
+  group 'root'
+  mode '0550'
+  owner 'root'
 end
 
 # Create the consul-template configuration file
@@ -147,5 +149,7 @@ file "#{consul_template_config_path}/syslog-ng.hcl" do
       }
     }
   HCL
-  mode '755'
+  group 'root'
+  mode '0550'
+  owner 'root'
 end

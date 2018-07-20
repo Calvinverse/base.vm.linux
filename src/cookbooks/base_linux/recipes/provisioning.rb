@@ -45,7 +45,9 @@ file '/etc/init.d/provision_helpers.sh' do
       sudo hostnamectl set-hostname $NAME
     }
   BASH
-  mode '755'
+  group 'root'
+  mode '0750'
+  owner 'root'
 end
 
 file '/etc/init.d/provision_network_interfaces.sh' do
@@ -77,7 +79,9 @@ file '/etc/init.d/provision_network_interfaces.sh' do
     EOT
     }
   BASH
-  mode '755'
+  group 'root'
+  mode '0750'
+  owner 'root'
 end
 
 file '/etc/init.d/provision_consul.sh' do
@@ -118,7 +122,9 @@ file '/etc/init.d/provision_consul.sh' do
       fi
     }
   BASH
-  mode '755'
+  group 'root'
+  mode '0750'
+  owner 'root'
 end
 
 file '/etc/init.d/provision_consul-template.sh' do
@@ -130,7 +136,9 @@ file '/etc/init.d/provision_consul-template.sh' do
       sudo systemctl enable consul-template.service
     }
   BASH
-  mode '755'
+  group 'root'
+  mode '0750'
+  owner 'root'
 end
 
 file '/etc/init.d/provision_unbound.sh' do
@@ -145,7 +153,9 @@ file '/etc/init.d/provision_unbound.sh' do
       sudo systemctl restart unbound.service
     }
   BASH
-  mode '755'
+  group 'root'
+  mode '0750'
+  owner 'root'
 end
 
 # Create the provisioning script
@@ -232,7 +242,9 @@ file '/etc/init.d/provision.sh' do
       echo "Provisioning script ran previously so nothing to do"
     fi
   BASH
-  mode '755'
+  group 'root'
+  mode '0750'
+  owner 'root'
 end
 
 # Create the service that is going to run the script

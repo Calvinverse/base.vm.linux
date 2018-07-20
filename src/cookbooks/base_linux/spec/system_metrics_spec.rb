@@ -423,6 +423,11 @@ describe 'base_linux::system_metrics' do
     it 'creates telegraf template file in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/templates/telegraf.ctmpl')
         .with_content(telegraf_template_content)
+        .with(
+          group: 'root',
+          owner: 'root',
+          mode: '0550'
+        )
     end
 
     consul_template_telegraf_content = <<~CONF
@@ -493,6 +498,11 @@ describe 'base_linux::system_metrics' do
     it 'creates telegraf.hcl in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/conf/telegraf.hcl')
         .with_content(consul_template_telegraf_content)
+        .with(
+          group: 'root',
+          owner: 'root',
+          mode: '0550'
+        )
     end
   end
 end

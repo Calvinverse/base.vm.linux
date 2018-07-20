@@ -440,7 +440,9 @@ file "#{consul_template_template_path}/#{telegraf_template_file}" do
       # no configuration
     {{ end }}
   CONF
-  mode '755'
+  group 'root'
+  mode '0550'
+  owner 'root'
 end
 
 # Create the consul-template configuration file
@@ -512,5 +514,7 @@ file "#{consul_template_config_path}/telegraf.hcl" do
       }
     }
   HCL
-  mode '755'
+  group 'root'
+  mode '0550'
+  owner 'root'
 end

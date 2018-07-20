@@ -29,22 +29,25 @@ end
 unbound_config_directory = node['paths']['unbound_config']
 directory unbound_config_directory do
   action :create
+  group node['unbound']['service_group']
+  mode '0750'
+  owner node['unbound']['service_user']
 end
 
 unbound_control_socket_directory = '/var/unbound-control'
 directory unbound_control_socket_directory do
   action :create
-  owner node['unbound']['service_user']
   group node['unbound']['service_group']
-  mode '0775'
+  mode '0750'
+  owner node['unbound']['service_user']
 end
 
 unbound_control_socket_path = "#{unbound_control_socket_directory}/socket"
 file unbound_control_socket_path do
   action :create
-  owner node['unbound']['service_user']
   group node['unbound']['service_group']
-  mode '0775'
+  mode '0750'
+  owner node['unbound']['service_user']
 end
 
 #
@@ -70,6 +73,9 @@ file "#{unbound_config_directory}/unbound_zones.conf" do
     # This file is an empty file just so that there is a zones file and
     # unbound will start
   CONF
+  group node['unbound']['service_group']
+  mode '0750'
+  owner node['unbound']['service_user']
 end
 
 unbound_config_file = node['file_name']['unbound_config_file']
@@ -363,6 +369,9 @@ file "/etc/unbound/#{unbound_config_file}" do
         # unbound-control certificate file.
         # control-cert-file: "@UNBOUND_RUN_DIR@/unbound_control.pem"
   CONF
+  group node['unbound']['service_group']
+  mode '0550'
+  owner node['unbound']['service_user']
 end
 
 #
