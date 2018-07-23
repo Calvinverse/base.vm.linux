@@ -15,7 +15,7 @@ describe 'base_linux::consul_template' do
         )
     end
 
-    consul_template_config_content = <<~SH
+    consul_template_run_script_content = <<~SH
       #!/bin/sh
 
       get_key_from_kv() {
@@ -64,7 +64,7 @@ describe 'base_linux::consul_template' do
     SH
     it 'creates start script in the consul-template install directory' do
       expect(chef_run).to create_file('/usr/local/bin/run_consul-template.sh')
-        .with_content(consul_template_config_content)
+        .with_content(consul_template_run_script_content)
         .with(
           group: 'root',
           owner: 'root',
