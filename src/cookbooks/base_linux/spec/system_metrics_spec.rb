@@ -25,6 +25,22 @@ describe 'base_linux::system_metrics' do
       expect(chef_run).to enable_service('telegraf')
     end
 
+    it 'creates the telegraf config directory' do
+      expect(chef_run).to create_directory('/etc/telegraf').with(
+        group: 'telegraf',
+        owner: 'telegraf',
+        mode: '0550'
+      )
+    end
+
+    it 'creates the telegraf.d config directory' do
+      expect(chef_run).to create_directory('/etc/telegraf/telegraf.d').with(
+        group: 'telegraf',
+        owner: 'telegraf',
+        mode: '0550'
+      )
+    end
+
     it 'opens the Telegraf statsd port' do
       expect(chef_run).to create_firewall_rule('telegraf-statsd').with(
         command: :allow,
@@ -453,7 +469,7 @@ describe 'base_linux::system_metrics' do
         # command will only run if the resulting template changes. The command must
         # return within 30s (configurable), and it must have a successful exit code.
         # Consul Template is not a replacement for a process monitor or init system.
-        command = "systemctl reload telegraf"
+        command = "chown telegraf:telegraf /etc/telegraf/telegraf.conf && systemctl reload telegraf"
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.

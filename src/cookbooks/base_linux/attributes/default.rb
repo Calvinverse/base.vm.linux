@@ -93,6 +93,7 @@ default['syslog_ng']['config_path'] = '/etc/syslog-ng/conf.d'
 
 # Note that this should match whatever the dpkg telegraf sets up the service with
 default['telegraf']['service_user'] = 'telegraf'
+default['telegraf']['service_group'] = 'telegraf'
 
 default['telegraf']['version'] = '1.7.2-1'
 default['telegraf']['shasums'] = '100ecadedf5625af6d5bad31a625ce0e5778baae84c0eb89b3085489365539d8'
