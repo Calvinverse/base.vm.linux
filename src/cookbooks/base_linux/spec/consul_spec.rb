@@ -6,6 +6,22 @@ describe 'base_linux::consul' do
   context 'configures consul' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
+    it 'creates the consul config directory' do
+      expect(chef_run).to create_directory('/etc/consul').with(
+        group: 'consul',
+        owner: 'consul',
+        mode: '0750'
+      )
+    end
+
+    it 'creates the consul additional config directory' do
+      expect(chef_run).to create_directory('/etc/consul/conf.d').with(
+        group: 'consul',
+        owner: 'consul',
+        mode: '0750'
+      )
+    end
+
     it 'imports the consul recipe' do
       expect(chef_run).to include_recipe('consul::default')
     end
@@ -25,6 +41,11 @@ describe 'base_linux::consul' do
     it 'creates consul metrics configuration file in the consul configuration directory' do
       expect(chef_run).to create_file('/etc/consul/conf.d/metrics.json')
         .with_content(consul_metrics_content)
+        .with(
+          group: 'consul',
+          owner: 'consul',
+          mode: '0750'
+        )
     end
   end
 

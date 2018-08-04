@@ -16,6 +16,19 @@ end
 # INSTALL CONSUL
 #
 
+consul_config_path = '/etc/consul'
+consul_additional_config_path = '/etc/consul/conf.d'
+
+%W[#{consul_config_path} #{consul_additional_config_path}].each do |path|
+  directory path do
+    action :create
+    group node['consul']['service_group']
+    mode '0750'
+    owner node['consul']['service_user']
+    recursive true
+  end
+end
+
 # This installs consul as follows
 # - Binaries: /usr/local/bin/consul
 # - Configuration: /etc/consul/consul.json and /etc/consul/conf.d
@@ -36,7 +49,9 @@ file '/etc/consul/conf.d/metrics.json' do
         }
     }
   JSON
-  mode '755'
+  group node['consul']['service_group']
+  mode '0750'
+  owner node['consul']['service_user']
 end
 
 #
