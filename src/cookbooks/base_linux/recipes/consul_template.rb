@@ -7,11 +7,6 @@
 # Copyright 2017, P. van der Velde
 #
 
-# Configure the service user under which consultemplate will be run
-poise_service_user node['consul_template']['service_user'] do
-  group node['consul_template']['service_group']
-end
-
 #
 # INSTALL CONSUL-TEMPLATE
 #
@@ -20,7 +15,7 @@ consul_template_install_path = node['consul_template']['install_path']
 cookbook_file consul_template_install_path do
   action :create
   group 'root'
-  mode '0755'
+  mode '0550'
   owner 'root'
   source 'consul-template'
 end
@@ -36,7 +31,7 @@ consul_template_data_path = node['consul_template']['data_path']
   directory path do
     action :create
     group 'root'
-    mode '0755'
+    mode '0550'
     owner 'root'
     recursive true
   end
@@ -196,13 +191,16 @@ file "#{consul_template_config_path}/base.hcl" do
       # prefix = "data/services/consul-template/dedup/"
     }
   CONF
+  group 'root'
+  mode '0550'
+  owner 'root'
 end
 
 consul_template_template_path = node['consul_template']['template_path']
 directory consul_template_template_path do
   action :create
   group 'root'
-  mode '0755'
+  mode '0550'
   owner 'root'
 end
 
@@ -261,7 +259,9 @@ file run_consul_template_script do
     # Fire up
     startup
   SH
-  mode '755'
+  group 'root'
+  mode '0550'
+  owner 'root'
 end
 
 # Create the systemd service for consultemplate.
@@ -336,7 +336,7 @@ file "#{consul_template_config_path}/consul_template_vault.hcl" do
       # unspecified, Consul Template will attempt to match the permissions of the
       # file that already exists at the destination path. If no file exists at that
       # path, the permissions are 0644.
-      perms = 0755
+      perms = 0550
 
       # This option backs up the previously rendered template at the destination
       # path before writing a new one. It keeps exactly one backup. This option is
@@ -362,5 +362,7 @@ file "#{consul_template_config_path}/consul_template_vault.hcl" do
       }
     }
   HCL
-  mode '755'
+  group 'root'
+  mode '0550'
+  owner 'root'
 end

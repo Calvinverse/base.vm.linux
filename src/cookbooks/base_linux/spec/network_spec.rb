@@ -20,14 +20,18 @@ describe 'base_linux::network' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
     it 'creates the unbound config directory' do
-      expect(chef_run).to create_directory(unbound_config_directory)
+      expect(chef_run).to create_directory(unbound_config_directory).with(
+        group: 'unbound',
+        owner: 'unbound',
+        mode: '0750'
+      )
     end
 
     it 'creates the unbound-control socket directory' do
       expect(chef_run).to create_directory('/var/unbound-control').with(
         group: 'unbound',
         owner: 'unbound',
-        mode: '0775'
+        mode: '0750'
       )
     end
 
@@ -35,7 +39,7 @@ describe 'base_linux::network' do
       expect(chef_run).to create_file('/var/unbound-control/socket').with(
         group: 'unbound',
         owner: 'unbound',
-        mode: '0775'
+        mode: '0750'
       )
     end
   end
@@ -58,7 +62,13 @@ describe 'base_linux::network' do
       # unbound will start
     CONF
     it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
-      expect(chef_run).to create_file('/etc/unbound.d/unbound_zones.conf').with_content(unbound_zones_config_content)
+      expect(chef_run).to create_file('/etc/unbound.d/unbound_zones.conf')
+        .with_content(unbound_zones_config_content)
+        .with(
+          group: 'unbound',
+          owner: 'unbound',
+          mode: '0750'
+        )
     end
 
     unbound_default_config_content = <<~CONF
@@ -350,7 +360,13 @@ describe 'base_linux::network' do
           # control-cert-file: "@UNBOUND_RUN_DIR@/unbound_control.pem"
     CONF
     it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
-      expect(chef_run).to create_file('/etc/unbound/unbound.conf').with_content(unbound_default_config_content)
+      expect(chef_run).to create_file('/etc/unbound/unbound.conf')
+        .with_content(unbound_default_config_content)
+        .with(
+          group: 'unbound',
+          owner: 'unbound',
+          mode: '0550'
+        )
     end
   end
 

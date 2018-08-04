@@ -6,7 +6,7 @@ describe 'base_linux::system_metrics' do
   context 'installs telegraf' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
-    install_version = '1.7.0-1'
+    install_version = '1.7.2-1'
     file_name = "telegraf_#{install_version}_amd64.deb"
     it 'downloads telegraf' do
       expect(chef_run).to create_remote_file("#{Chef::Config[:file_cache_path]}/#{file_name}").with(
@@ -23,6 +23,22 @@ describe 'base_linux::system_metrics' do
 
     it 'enables the telegraf service' do
       expect(chef_run).to enable_service('telegraf')
+    end
+
+    it 'creates the telegraf config directory' do
+      expect(chef_run).to create_directory('/etc/telegraf').with(
+        group: 'telegraf',
+        owner: 'telegraf',
+        mode: '0550'
+      )
+    end
+
+    it 'creates the telegraf.d config directory' do
+      expect(chef_run).to create_directory('/etc/telegraf/telegraf.d').with(
+        group: 'telegraf',
+        owner: 'telegraf',
+        mode: '0550'
+      )
     end
 
     it 'opens the Telegraf statsd port' do
@@ -423,6 +439,11 @@ describe 'base_linux::system_metrics' do
     it 'creates telegraf template file in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/templates/telegraf.ctmpl')
         .with_content(telegraf_template_content)
+        .with(
+          group: 'root',
+          owner: 'root',
+          mode: '0550'
+        )
     end
 
     consul_template_telegraf_content = <<~CONF
@@ -448,7 +469,7 @@ describe 'base_linux::system_metrics' do
         # command will only run if the resulting template changes. The command must
         # return within 30s (configurable), and it must have a successful exit code.
         # Consul Template is not a replacement for a process monitor or init system.
-        command = "systemctl reload telegraf"
+        command = "chown telegraf:telegraf /etc/telegraf/telegraf.conf && systemctl reload telegraf"
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.
@@ -464,7 +485,7 @@ describe 'base_linux::system_metrics' do
         # unspecified, Consul Template will attempt to match the permissions of the
         # file that already exists at the destination path. If no file exists at that
         # path, the permissions are 0644.
-        perms = 0755
+        perms = 0550
 
         # This option backs up the previously rendered template at the destination
         # path before writing a new one. It keeps exactly one backup. This option is
@@ -493,6 +514,11 @@ describe 'base_linux::system_metrics' do
     it 'creates telegraf.hcl in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/conf/telegraf.hcl')
         .with_content(consul_template_telegraf_content)
+        .with(
+          group: 'root',
+          owner: 'root',
+          mode: '0550'
+        )
     end
   end
 end

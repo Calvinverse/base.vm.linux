@@ -4,7 +4,7 @@
 # CONSUL
 #
 
-default['consul']['version'] = '1.1.0'
+default['consul']['version'] = '1.2.0'
 default['consul']['config']['domain'] = 'consulverse'
 
 # This is not a consul server node
@@ -63,9 +63,6 @@ default['consul_template']['data_path'] = '/etc/consul-template.d/data'
 default['consul_template']['config_path'] = '/etc/consul-template.d/conf'
 default['consul_template']['template_path'] = '/etc/consul-template.d/templates'
 
-default['consul_template']['service_user'] = 'consul_template'
-default['consul_template']['service_group'] = 'consul_template'
-
 #
 # FIREWALL
 #
@@ -96,9 +93,10 @@ default['syslog_ng']['config_path'] = '/etc/syslog-ng/conf.d'
 
 # Note that this should match whatever the dpkg telegraf sets up the service with
 default['telegraf']['service_user'] = 'telegraf'
+default['telegraf']['service_group'] = 'telegraf'
 
-default['telegraf']['version'] = '1.7.0-1'
-default['telegraf']['shasums'] = '11c6122141a10fbda6d3c0e49442bde831ea576639d0175ff41c66e061110a98'
+default['telegraf']['version'] = '1.7.2-1'
+default['telegraf']['shasums'] = '100ecadedf5625af6d5bad31a625ce0e5778baae84c0eb89b3085489365539d8'
 default['telegraf']['download_urls'] = 'https://dl.influxdata.com/telegraf/releases'
 
 default['telegraf']['consul_template_file'] = 'telegraf.ctmpl'
