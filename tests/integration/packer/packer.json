@@ -16,7 +16,7 @@
     },
     "builders": [
         {
-            "boot_wait": "90s",
+            "boot_wait": "45s",
             "boot_command": [],
             "clone_from_vmxc_path": "{{ user `dir_temp` }}/{{ user `vm_name` }}",
             "communicator": "ssh",
