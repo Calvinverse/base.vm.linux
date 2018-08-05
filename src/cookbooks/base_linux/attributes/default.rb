@@ -112,6 +112,7 @@ default['telegraf']['statsd']['port'] = 8125
 default['unbound']['service_user'] = 'unbound'
 default['unbound']['service_group'] = 'unbound'
 
-default['paths']['unbound_config'] = '/etc/unbound.d'
+default['unbound']['config_path'] = '/etc/unbound.d'
+default['unbound']['install_path'] = '/etc/unbound'
 
-default['file_name']['unbound_config_file'] = 'unbound.conf'
+default['unbound']['config_file'] = 'unbound.conf'

@@ -26,7 +26,7 @@ end
 # DIRECTORIES
 #
 
-unbound_config_directory = node['paths']['unbound_config']
+unbound_config_directory = node['unbound']['config_path']
 directory unbound_config_directory do
   action :create
   group node['unbound']['service_group']
@@ -63,7 +63,10 @@ end
 # CONFIGURATION
 #
 
-file "#{unbound_config_directory}/unbound_zones.conf" do
+unbound_install_directory = node['unbound']['install_path']
+unbound_config_zones_file = node['unbound']['unbound_config_zones_file']
+
+file "#{unbound_config_directory}/#{unbound_config_zones_file}" do
   action :create
   content <<~CONF
     #
@@ -78,8 +81,8 @@ file "#{unbound_config_directory}/unbound_zones.conf" do
   owner node['unbound']['service_user']
 end
 
-unbound_config_file = node['file_name']['unbound_config_file']
-file "/etc/unbound/#{unbound_config_file}" do
+unbound_config_file = node['unbound']['config_file']
+file "#{unbound_install_directory}/#{unbound_config_file}" do
   action :create
   content <<~CONF
     #
