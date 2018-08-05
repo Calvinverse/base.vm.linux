@@ -23,7 +23,7 @@ end
 %w[syslog-ng-core syslog-ng-mod-amqp syslog-ng-mod-json].each do |pkg|
   apt_package pkg do
     action :install
-    version '3.13.2-1'
+    version '3.16.1-1'
   end
 end
 
