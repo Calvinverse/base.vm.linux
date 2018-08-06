@@ -44,7 +44,7 @@ syslog_ng_template_file = node['syslog_ng']['consul_template_file']
 file "#{consul_template_template_path}/#{syslog_ng_template_file}" do
   action :create
   content <<~CONF
-    @version: 3.13
+    @version: 3.16
 
     ########################
     # Destinations
