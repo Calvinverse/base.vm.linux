@@ -52,6 +52,10 @@ describe 'base_linux::network' do
         version: '1.5.8-1ubuntu1'
       )
     end
+  end
+
+  context 'create the unbound configuration files' do
+    let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
     unbound_zones_config_content = <<~CONF
       #
@@ -359,7 +363,7 @@ describe 'base_linux::network' do
           # unbound-control certificate file.
           # control-cert-file: "@UNBOUND_RUN_DIR@/unbound_control.pem"
     CONF
-    it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
+    it 'creates unbound_conf in the /etc/unbound directory' do
       expect(chef_run).to create_file('/etc/unbound/unbound.conf')
         .with_content(unbound_default_config_content)
         .with(
