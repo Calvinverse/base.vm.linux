@@ -63,10 +63,7 @@ end
 # CONFIGURATION
 #
 
-unbound_install_directory = node['unbound']['install_path']
-unbound_config_zones_file = node['unbound']['unbound_config_zones_file']
-
-file "#{unbound_config_directory}/#{unbound_config_zones_file}" do
+file "#{unbound_config_directory}/unbound_zones.conf" do
   action :create
   content <<~CONF
     #
@@ -81,6 +78,7 @@ file "#{unbound_config_directory}/#{unbound_config_zones_file}" do
   owner node['unbound']['service_user']
 end
 
+unbound_install_directory = node['unbound']['install_path']
 unbound_config_file = node['unbound']['config_file']
 file "#{unbound_install_directory}/#{unbound_config_file}" do
   action :create
