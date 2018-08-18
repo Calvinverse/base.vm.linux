@@ -19,6 +19,8 @@ end
 consul_config_path = '/etc/consul'
 consul_additional_config_path = '/etc/consul/conf.d'
 
+# Set the permissions on the consul configuration paths so that consul can read and write
+# It will later write the data folder to this location so it needs access
 %W[#{consul_config_path} #{consul_additional_config_path}].each do |path|
   directory path do
     action :create
