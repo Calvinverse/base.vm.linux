@@ -11,6 +11,11 @@
 # INSTALL SYSLOG-NG
 #
 
+# For some reason gpg doesn't exist, so we install it?
+apt_package 'gpg-agent' do
+  action :install
+end
+
 apt_repository 'syslog-ng-apt-repository' do
   action :add
   distribution './'
