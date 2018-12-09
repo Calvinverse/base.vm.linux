@@ -4,7 +4,7 @@
 # CONSUL
 #
 
-default['consul']['version'] = '1.2.2'
+default['consul']['version'] = '1.4.0'
 default['consul']['config']['domain'] = 'consulverse'
 
 # This is not a consul server node
