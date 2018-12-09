@@ -14,8 +14,8 @@
 apt_repository 'syslog-ng-apt-repository' do
   action :add
   distribution './'
-  key 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_16.04/Release.key'
-  uri 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_16.04'
+  key 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_18.04/Release.key'
+  uri 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_18.04'
 end
 
 # Installing the syslog-ng package automatically creates a systemd daemon and replaces the other
