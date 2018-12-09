@@ -2,14 +2,9 @@ function Get-IpAddress
 {
     $ErrorActionPreference = 'Stop'
 
-    $output = & /sbin/ifconfig eth0
-    $line = $output |
-        Where-Object { $_.Contains('inet addr:') } |
-        Select-Object -First 1
+    $output = & ip a show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1
 
-    $line = $line.Trim()
-    $line = $line.SubString('inet addr:'.Length)
-    return $line.SubString(0, $line.IndexOf(' '))
+    return $output.Trim()
 }
 
 function Initialize-Environment
