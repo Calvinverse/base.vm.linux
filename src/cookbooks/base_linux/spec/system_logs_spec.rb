@@ -31,7 +31,7 @@ describe 'base_linux::system_logs' do
     end
 
     syslog_template_content = <<~CONF
-      @version: 3.16
+      @version: 3.18
 
       ########################
       # Destinations
