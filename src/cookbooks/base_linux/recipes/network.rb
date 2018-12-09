@@ -56,7 +56,7 @@ end
 
 apt_package 'unbound' do
   action :install
-  version '1.5.8-1ubuntu1'
+  version '1.6.7-1ubuntu1'
 end
 
 #
@@ -67,7 +67,7 @@ file "#{unbound_config_directory}/unbound_zones.conf" do
   action :create
   content <<~CONF
     #
-    # See unbound.conf(5) man page, version 1.6.3.
+    # See unbound.conf(5) man page, version 1.6.7.
     #
 
     # This file is an empty file just so that there is a zones file and
@@ -84,7 +84,7 @@ file "#{unbound_install_directory}/#{unbound_config_file}" do
   action :create
   content <<~CONF
     #
-    # See unbound.conf(5) man page, version 1.6.3.
+    # See unbound.conf(5) man page, version 1.6.7.
     #
 
     # Use this to include other text into the file.

@@ -49,7 +49,7 @@ describe 'base_linux::network' do
 
     it 'installs the unbound binaries' do
       expect(chef_run).to install_apt_package('unbound').with(
-        version: '1.5.8-1ubuntu1'
+        version: '1.6.7-1ubuntu1'
       )
     end
   end
@@ -59,7 +59,7 @@ describe 'base_linux::network' do
 
     unbound_zones_config_content = <<~CONF
       #
-      # See unbound.conf(5) man page, version 1.6.3.
+      # See unbound.conf(5) man page, version 1.6.7.
       #
 
       # This file is an empty file just so that there is a zones file and
@@ -77,7 +77,7 @@ describe 'base_linux::network' do
 
     unbound_default_config_content = <<~CONF
       #
-      # See unbound.conf(5) man page, version 1.6.3.
+      # See unbound.conf(5) man page, version 1.6.7.
       #
 
       # Use this to include other text into the file.
