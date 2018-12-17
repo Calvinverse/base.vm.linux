@@ -18,11 +18,19 @@
 end
 
 #
+# DIRECTORIES
+#
+provision_config_path = node['provision']['config_path']
+directory provision_config_path do
+  action :create
+end
+
+#
 # CONFIGURE THE PROVISIONING SCRIPT
 #
 
 # Create the script containing the helper functions
-file '/etc/init.d/provision_helpers.sh' do
+file "#{provision_config_path}/provision_helpers.sh" do
   action :create
   content <<~BASH
     #!/bin/bash
@@ -50,7 +58,7 @@ file '/etc/init.d/provision_helpers.sh' do
   owner 'root'
 end
 
-file '/etc/init.d/provision_network_interfaces.sh' do
+file "#{provision_config_path}/provision_network_interfaces.sh" do
   action :create
   content <<~BASH
     #!/bin/bash
@@ -84,7 +92,7 @@ file '/etc/init.d/provision_network_interfaces.sh' do
   owner 'root'
 end
 
-file '/etc/init.d/provision_consul.sh' do
+file "#{provision_config_path}/provision_consul.sh" do
   action :create
   content <<~BASH
     #!/bin/bash
@@ -127,7 +135,7 @@ file '/etc/init.d/provision_consul.sh' do
   owner 'root'
 end
 
-file '/etc/init.d/provision_consul-template.sh' do
+file "#{provision_config_path}/provision_consul-template.sh" do
   action :create
   content <<~BASH
     #!/bin/bash
@@ -141,7 +149,7 @@ file '/etc/init.d/provision_consul-template.sh' do
   owner 'root'
 end
 
-file '/etc/init.d/provision_unbound.sh' do
+file "#{provision_config_path}/provision_unbound.sh" do
   action :create
   content <<~BASH
     #!/bin/bash
@@ -159,16 +167,16 @@ file '/etc/init.d/provision_unbound.sh' do
 end
 
 # Create the provisioning script
-file '/etc/init.d/provision.sh' do
+file "#{provision_config_path}/provision.sh" do
   action :create
   content <<~BASH
     #!/bin/bash
 
-    . /etc/init.d/provision_helpers.sh
-    . /etc/init.d/provision_network_interfaces.sh
-    . /etc/init.d/provision_consul.sh
-    . /etc/init.d/provision_consul-template.sh
-    . /etc/init.d/provision_unbound.sh
+    . #{provision_config_path}/provision_helpers.sh
+    . #{provision_config_path}/provision_network_interfaces.sh
+    . #{provision_config_path}/provision_consul.sh
+    . #{provision_config_path}/provision_consul-template.sh
+    . #{provision_config_path}/provision_unbound.sh
 
     FLAG="/var/log/firstboot.log"
     if [ ! -f $FLAG ]; then
@@ -217,8 +225,8 @@ file '/etc/init.d/provision.sh' do
       #
       # CUSTOM PROVISIONING
       #
-      if [ -f /etc/init.d/provision_image.sh ]; then
-        . /etc/init.d/provision_image.sh
+      if [ -f #{provision_config_path}/provision_image.sh ]; then
+        . #{provision_config_path}/provision_image.sh
         f_provisionImage
       fi
 
@@ -258,7 +266,7 @@ file '/etc/systemd/system/provision.service' do
 
     [Service]
     Type=oneshot
-    ExecStart=/etc/init.d/provision.sh
+    ExecStart=#{provision_config_path}/provision.sh
     RemainAfterExit=true
     EnvironmentFile=-/etc/environment
 

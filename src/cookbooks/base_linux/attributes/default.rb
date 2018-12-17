@@ -81,6 +81,12 @@ default['firewall']['allow_winrm'] = false
 default['firewall']['ipv6_enabled'] = false
 
 #
+# PROVISIONING
+#
+
+default['provision']['config_path'] = '/etc/provision.d'
+
+#
 # SYSLOG-NG
 #
 
