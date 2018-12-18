@@ -350,6 +350,9 @@
     </PropertyGroup>
     <PropertyGroup>
         <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-16.04.1</LinuxImage>
+
+        <IsoFile>$(IsoDirectory)\$(LinuxImage)-server-amd64.iso</IsoFile>
+        <IsoHash>29A8B9009509B39D542ECB229787CDF48F05E739A932289DE9E9858D7C487C80</IsoHash>
     </PropertyGroup>
 
     <!--
@@ -391,7 +394,7 @@
             <ReplacementValue>$(IsoFile.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
         <TemplateTokens Include="IsoFileHash">
-            <ReplacementValue>29A8B9009509B39D542ECB229787CDF48F05E739A932289DE9E9858D7C487C80</ReplacementValue>
+            <ReplacementValue>$(IsoHash)</ReplacementValue>
         </TemplateTokens>
 
         <TemplateTokens Include="NameCookbook">
