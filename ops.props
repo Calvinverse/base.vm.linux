@@ -349,7 +349,10 @@
         <!-- <TemplateTokenGenerators>UNDEFINED</TemplateTokenGenerators> -->
     </PropertyGroup>
     <PropertyGroup>
-        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-16.04.1</LinuxImage>
+        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-16.04.5</LinuxImage>
+
+        <IsoFile>$(IsoDirectory)\$(LinuxImage)-server-amd64.iso</IsoFile>
+        <IsoHash>C94DE1CC2E10160F325EB54638A5B5AA38F181D60EE33DAE9578D96D932EE5F8</IsoHash>
     </PropertyGroup>
 
     <!--
@@ -383,7 +386,7 @@
 
         <TemplateTokens
             Include="NetworkHostIpAddressForPreseed">
-            <ReplacementValue>192.168.3.25</ReplacementValue>
+            <ReplacementValue>192.168.3.73</ReplacementValue>
         </TemplateTokens>
 
         <!-- For the Packer config -->
@@ -391,7 +394,7 @@
             <ReplacementValue>$(IsoFile.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
         <TemplateTokens Include="IsoFileHash">
-            <ReplacementValue>29A8B9009509B39D542ECB229787CDF48F05E739A932289DE9E9858D7C487C80</ReplacementValue>
+            <ReplacementValue>$(IsoHash)</ReplacementValue>
         </TemplateTokens>
 
         <TemplateTokens Include="NameCookbook">
@@ -454,7 +457,7 @@
             The full path and version to the packer command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
-        <ToolsExternalPackerVersion>1.2.5</ToolsExternalPackerVersion>
+        <ToolsExternalPackerVersion>1.3.4</ToolsExternalPackerVersion>
     </PropertyGroup>
 
 
