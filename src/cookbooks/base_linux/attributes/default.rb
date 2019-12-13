@@ -85,7 +85,8 @@ default['firewall']['ipv6_enabled'] = false
 
 default['syslog_ng']['config_file'] = 'syslog-ng-rabbitmq.conf'
 default['syslog_ng']['consul_template_file'] = 'syslog-ng.ctmpl'
-default['syslog_ng']['config_path'] = '/etc/syslog-ng/conf.d'
+default['syslog_ng']['config_path'] = '/etc/syslog-ng'
+default['syslog_ng']['custom_config_path'] = '/etc/syslog-ng/conf.d'
 
 #
 # TELEGRAF
