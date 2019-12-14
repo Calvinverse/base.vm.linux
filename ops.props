@@ -416,7 +416,7 @@
             <ReplacementValue>$(DirBuildDeploy.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
         <TemplateTokens Include="VmSwitch">
-            <ReplacementValue>External switch</ReplacementValue>
+            <ReplacementValue>VM-LAN</ReplacementValue>
         </TemplateTokens>
         <TemplateTokens Include="VmSwitchVlan">
             <ReplacementValue></ReplacementValue>
