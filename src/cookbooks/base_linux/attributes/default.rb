@@ -4,7 +4,7 @@
 # CONSUL
 #
 
-default['consul']['version'] = '1.4.0'
+default['consul']['version'] = '1.6.2'
 default['consul']['config']['domain'] = 'consulverse'
 
 # This is not a consul server node
@@ -43,8 +43,9 @@ default['consul']['config']['dns_config'] = {
   }
 }
 
-# Never leave the cluster if we are terminated
-default['consul']['config']['leave_on_terminate'] = false
+# Use the default behaviour for leave-on-terminate which is:
+# - Leave when client
+# - Do not leave when server
 default['consul']['config']['skip_leave_on_interrupt'] = true
 
 # Send all logs to syslog
