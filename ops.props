@@ -349,10 +349,10 @@
         <!-- <TemplateTokenGenerators>UNDEFINED</TemplateTokenGenerators> -->
     </PropertyGroup>
     <PropertyGroup>
-        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-18.04.1</LinuxImage>
+        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-18.04.3</LinuxImage>
 
         <IsoFile>$(IsoDirectory)\$(LinuxImage.ToLower())-server-amd64.iso</IsoFile>
-        <IsoHash>A5B0EA5918F850124F3D72EF4B85BDA82F0FCD02EC721BE19C1A6952791C8EE8</IsoHash>
+        <IsoHash>B9BEAC143E36226AA8A0B03FC1CBB5921CFF80123866E718AAEBA4EDB81CFA63</IsoHash>
     </PropertyGroup>
 
     <!--
