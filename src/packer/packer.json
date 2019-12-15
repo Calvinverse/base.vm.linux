@@ -64,24 +64,6 @@
     ],
     "provisioners": [
         {
-            "execute_command": ["powershell.exe", "{{.Vars}} {{.Script}}"],
-            "env_var_format": "$env:%s=\"%s\"; ",
-            "inline": [
-                "Set-VM -Name {{ user `vm_name` }} -AutomaticCheckpointsEnabled $false"
-            ],
-            "tempfile_extension": ".ps1",
-            "type": "shell-local"
-        },
-        {
-            "execute_command": ["powershell.exe", "{{.Vars}} {{.Script}}"],
-            "env_var_format": "$env:%s=\"%s\"; ",
-            "inline": [
-                "Get-VMSnapshot -VMName {{ user `vm_name` }} | Remove-VMSnapshot"
-            ],
-            "tempfile_extension": ".ps1",
-            "type": "shell-local"
-        },
-        {
             "type": "shell",
             "execute_command": "echo '{{user `admin_password`}}' | sudo -S sh {{.Path}}",
             "scripts": [
