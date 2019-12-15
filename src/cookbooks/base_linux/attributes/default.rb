@@ -4,7 +4,7 @@
 # CONSUL
 #
 
-default['consul']['version'] = '1.4.0'
+default['consul']['version'] = '1.6.2'
 default['consul']['config']['domain'] = 'consulverse'
 
 # This is not a consul server node
@@ -43,8 +43,9 @@ default['consul']['config']['dns_config'] = {
   }
 }
 
-# Never leave the cluster if we are terminated
-default['consul']['config']['leave_on_terminate'] = false
+# Use the default behaviour for leave-on-terminate which is:
+# - Leave when client
+# - Do not leave when server
 default['consul']['config']['skip_leave_on_interrupt'] = true
 
 # Send all logs to syslog
@@ -85,7 +86,8 @@ default['firewall']['ipv6_enabled'] = false
 
 default['syslog_ng']['config_file'] = 'syslog-ng-rabbitmq.conf'
 default['syslog_ng']['consul_template_file'] = 'syslog-ng.ctmpl'
-default['syslog_ng']['config_path'] = '/etc/syslog-ng/conf.d'
+default['syslog_ng']['config_path'] = '/etc/syslog-ng'
+default['syslog_ng']['custom_config_path'] = '/etc/syslog-ng/conf.d'
 
 #
 # TELEGRAF
@@ -95,8 +97,8 @@ default['syslog_ng']['config_path'] = '/etc/syslog-ng/conf.d'
 default['telegraf']['service_user'] = 'telegraf'
 default['telegraf']['service_group'] = 'telegraf'
 
-default['telegraf']['version'] = '1.9.0-1'
-default['telegraf']['shasums'] = '41dc716380f6aa00c1f06e2aaec37d1f6dfbcee00970feecc4bbc6c351e3d525'
+default['telegraf']['version'] = '1.12.6-1'
+default['telegraf']['shasums'] = 'f936d2954631fbe14f30958768ad2163a1547792487ff7a3efc5291d9ef68ef8'
 default['telegraf']['download_urls'] = 'https://dl.influxdata.com/telegraf/releases'
 
 default['telegraf']['consul_template_file'] = 'telegraf.ctmpl'

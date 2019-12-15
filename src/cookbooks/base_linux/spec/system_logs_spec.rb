@@ -37,7 +37,7 @@ describe 'base_linux::system_logs' do
       # Destinations
       ########################
       # The RabbitMQ destination
-      destination d_rabbit {
+      destination d_rabbit_syslog {
         amqp(
           body("$(format-json date=datetime($ISODATE) pid=$PID program=$PROGRAM message=$MESSAGE facility=$FACILITY host=$FULLHOST priorityNum=int64($LEVEL_NUM) priority=$LEVEL)")
           exchange("{{ keyOrDefault "config/services/queue/logs/syslog/exchange" "" }}")
@@ -47,7 +47,7 @@ describe 'base_linux::system_logs' do
           routing-key("syslog")
           vhost("{{ keyOrDefault "config/services/queue/logs/syslog/vhost" "logs" }}")
 
-      {{ with secret "rabbitmq/creds/write.vhost.logs.syslog" }}
+      {{ with secret "secret/services/queue/users/logs/syslog" }}
         {{ if .Data.password }}
           password("{{ .Data.password }}")
           username("{{ .Data.username }}")
@@ -60,7 +60,7 @@ describe 'base_linux::system_logs' do
       # Log paths
       ########################
 
-      log { source(s_src); filter(f_syslog3); destination(d_rabbit); };
+      log { source(s_src); filter(f_syslog3); destination(d_rabbit_syslog); };
     CONF
     it 'creates syslog-ng template in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/templates/syslog-ng.ctmpl')
