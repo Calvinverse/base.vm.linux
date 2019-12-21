@@ -35,15 +35,6 @@ file "#{provision_config_path}/provision_helpers.sh" do
   content <<~BASH
     #!/bin/bash
 
-    function f_getEth0Ip {
-      local _ip _line
-      while IFS=$': \t' read -a _line ;do
-          [ -z "${_line%inet}" ] &&
-            _ip=${_line[${#_line[1]}>4?1:2]} &&
-            [ "${_ip#127.0.0.1}" ] && echo $_ip && return 0
-        done< <(LANG=C /sbin/ifconfig eth0)
-    }
-
     function f_setHostName {
       # Generate a 16 character password
       POSTFIX=$(pwgen --no-capitalize 16 1)
