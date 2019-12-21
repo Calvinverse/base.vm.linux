@@ -252,8 +252,8 @@ file '/etc/systemd/system/provision.service' do
   content <<~SYSTEMD
     [Unit]
     Description=Provision the environment
-    Requires=network-online.target
-    After=network-online.target
+    Requires=network.target
+    After=network.target
 
     [Service]
     Type=oneshot
@@ -262,7 +262,7 @@ file '/etc/systemd/system/provision.service' do
     EnvironmentFile=-/etc/environment
 
     [Install]
-    WantedBy=network-online.target
+    WantedBy=network.target
   SYSTEMD
 end
 
