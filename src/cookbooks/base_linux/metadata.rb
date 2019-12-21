@@ -13,6 +13,7 @@ version '${VersionSemantic}'
 
 supports 'ubuntu', '>= 18.04'
 
+depends 'apparmor', '= 3.1.0'
 depends 'consul', '= 3.1.0'
 depends 'firewall', '= 2.6.2'
 depends 'systemd', '= 3.2.3'

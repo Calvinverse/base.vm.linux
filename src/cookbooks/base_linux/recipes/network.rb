@@ -52,6 +52,15 @@ apt_package 'unbound' do
 end
 
 #
+# DISABLE APPARMOR FOR UNBOUND
+#
+
+# Stop apparmor from blocking unbound
+apparmor_policy 'usr.sbin.unbound' do
+  action  :remove
+end
+
+#
 # CONFIGURATION
 #
 
