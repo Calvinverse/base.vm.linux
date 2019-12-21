@@ -83,10 +83,11 @@ Describe 'On the system' {
         It 'has disable the apt-daily timer' {
             $systemctlOutput | Should Not Be $null
             $systemctlOutput.GetType().FullName | Should Be 'System.Object[]'
-            $systemctlOutput.Length | Should Be 3
+            $systemctlOutput.Length | Should Be 4
             $systemctlOutput[0] | Should Match 'apt-daily.timer - Daily apt download activities'
             $systemctlOutput[1] | Should Match 'Loaded:\sloaded\s\(.*;\sdisabled;.*\)'
             $systemctlOutput[2] | Should Match 'Active:\sinactive\s\(dead\).*'
+            $systemctlOutput[3] | Should Match 'Trigger:\sn/a'
         }
 
         $aptPeriodicPath = '/etc/apt/apt.conf.d/10periodic'
