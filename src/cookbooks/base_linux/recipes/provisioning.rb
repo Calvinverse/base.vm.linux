@@ -155,8 +155,8 @@ file "#{provision_config_path}/provision_unbound.sh" do
     #!/bin/bash
 
     function f_provisionUnbound {
-      cp -a /mnt/dvd/unbound/unbound_zones.conf /etc/unbound.d/unbound_zones.conf
-      dos2unix /etc/unbound.d/unbound_zones.conf
+      cp -a /mnt/dvd/unbound/unbound_zones.conf /etc/unbound/unbound.conf.d/unbound_zones.conf
+      dos2unix /etc/unbound/unbound.conf.d/unbound_zones.conf
 
       sudo systemctl restart unbound.service
     }

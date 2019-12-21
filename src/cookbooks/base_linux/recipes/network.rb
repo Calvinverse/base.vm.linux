@@ -26,14 +26,6 @@ end
 # DIRECTORIES
 #
 
-unbound_config_directory = node['unbound']['config_path']
-directory unbound_config_directory do
-  action :create
-  group node['unbound']['service_group']
-  mode '0750'
-  owner node['unbound']['service_user']
-end
-
 unbound_control_socket_directory = '/var/unbound-control'
 directory unbound_control_socket_directory do
   action :create
@@ -56,13 +48,14 @@ end
 
 apt_package 'unbound' do
   action :install
-  version '1.6.7-1ubuntu2.1'
+  version '1.6.7-1ubuntu2.2'
 end
 
 #
 # CONFIGURATION
 #
 
+unbound_config_directory = node['unbound']['config_path']
 file "#{unbound_config_directory}/unbound_zones.conf" do
   action :create
   content <<~CONF
@@ -73,9 +66,9 @@ file "#{unbound_config_directory}/unbound_zones.conf" do
     # This file is an empty file just so that there is a zones file and
     # unbound will start
   CONF
-  group node['unbound']['service_group']
-  mode '0750'
-  owner node['unbound']['service_user']
+  group 'root'
+  mode '0555'
+  owner 'root'
 end
 
 unbound_install_directory = node['unbound']['install_path']
@@ -370,9 +363,9 @@ file "#{unbound_install_directory}/#{unbound_config_file}" do
         # unbound-control certificate file.
         # control-cert-file: "@UNBOUND_RUN_DIR@/unbound_control.pem"
   CONF
-  group node['unbound']['service_group']
-  mode '0550'
-  owner node['unbound']['service_user']
+  group 'root'
+  mode '0555'
+  owner 'root'
 end
 
 #
@@ -382,18 +375,18 @@ end
 # Create the systemd service for unbound.
 systemd_service 'unbound' do
   action :create
-  unit do
-    after %w[multi-user.target]
-    description 'Unbound DNS proxy'
-    documentation 'http://www.unbound.net'
-    requires %w[multi-user.target]
-  end
   install do
     wanted_by %w[multi-user.target]
   end
   service do
     exec_start "/usr/sbin/unbound -d -c /etc/unbound/#{unbound_config_file}"
     restart 'on-failure'
+  end
+  unit do
+    after %w[multi-user.target]
+    description 'Unbound DNS proxy'
+    documentation 'http://www.unbound.net'
+    requires %w[multi-user.target]
   end
 end
 

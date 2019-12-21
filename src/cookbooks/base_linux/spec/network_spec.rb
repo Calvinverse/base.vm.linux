@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe 'base_linux::network' do
-  unbound_config_directory = '/etc/unbound.d'
+  unbound_config_directory = '/etc/unbound/unbound.conf.d'
 
   context 'create users and groups' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
@@ -18,14 +18,6 @@ describe 'base_linux::network' do
 
   context 'create the unbound locations' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
-
-    it 'creates the unbound config directory' do
-      expect(chef_run).to create_directory(unbound_config_directory).with(
-        group: 'unbound',
-        owner: 'unbound',
-        mode: '0750'
-      )
-    end
 
     it 'creates the unbound-control socket directory' do
       expect(chef_run).to create_directory('/var/unbound-control').with(
@@ -49,7 +41,7 @@ describe 'base_linux::network' do
 
     it 'installs the unbound binaries' do
       expect(chef_run).to install_apt_package('unbound').with(
-        version: '1.6.7-1ubuntu2.1'
+        version: '1.6.7-1ubuntu2.2'
       )
     end
   end
@@ -65,13 +57,13 @@ describe 'base_linux::network' do
       # This file is an empty file just so that there is a zones file and
       # unbound will start
     CONF
-    it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
-      expect(chef_run).to create_file('/etc/unbound.d/unbound_zones.conf')
+    it 'creates unboundconfiguration.ini in the /etc/unbound/unbound.conf.d directory' do
+      expect(chef_run).to create_file('/etc/unbound/unbound.conf.d/unbound_zones.conf')
         .with_content(unbound_zones_config_content)
         .with(
-          group: 'unbound',
-          owner: 'unbound',
-          mode: '0750'
+          group: 'root',
+          owner: 'root',
+          mode: '0555'
         )
     end
 
@@ -367,9 +359,9 @@ describe 'base_linux::network' do
       expect(chef_run).to create_file('/etc/unbound/unbound.conf')
         .with_content(unbound_default_config_content)
         .with(
-          group: 'unbound',
-          owner: 'unbound',
-          mode: '0550'
+          group: 'root',
+          owner: 'root',
+          mode: '0555'
         )
     end
   end
