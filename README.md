@@ -7,8 +7,8 @@ base operating system and tools that are required by all Linux resources.
 
 ### Contents
 
-The current process will install Ubuntu 16.04.6 Server, i.e. without UI, on the disk and will then configure
-the following tools and services:
+The current process will install Ubuntu 18.04.2 Server, i.e. without UI, on  the disk and will then
+configure the following tools and services:
 
 * [Consul](https://consul.io) - Provides service discovery for the environment as well as a distributed
   key-value store.
@@ -78,11 +78,11 @@ Metrics are collected through different means.
 
 ## Build, test and release
 
-The build process follows the standard procedure for building infrastructure images. Because the
-base image is build during this process the following differences exist.
+The build process follows the standard procedure for building Calvinverse images. Because the base
+image is build during this process the following differences exist.
 
-* The Ubuntu Server 16.04.6 ISO is obtained from the directory as defined by the property
-  `IsoDirectory`.
+* The Ubuntu Server 18.04.2 ISO is obtained from the internal storage as defined by the MsBuild
+  property `IsoDirectory`.
 * A number of additional scripts and configuration files have to be gathered. Amongst these files is
   the Ubuntu `preseed.cfg` file. The preseed file contains the OS configuration and it is provided
   to the machine when booting from the ISO initially.

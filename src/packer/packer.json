@@ -22,7 +22,7 @@
     },
     "builders": [
         {
-            "boot_wait": "5s",
+            "boot_wait": "1s",
             "boot_command": [
                 "<esc><wait10><esc><esc><enter><wait>",
                 "set gfxpayload=1024x768<enter>",

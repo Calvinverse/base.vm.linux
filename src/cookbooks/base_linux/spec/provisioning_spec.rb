@@ -18,48 +18,48 @@ describe 'base_linux::provisioning' do
       expect(chef_run).to install_apt_package('jq')
     end
 
-    it 'creates provision_helpers.sh in the /etc/init.d directory' do
-      expect(chef_run).to create_file('/etc/init.d/provision_helpers.sh').with(
+    it 'creates provision_helpers.sh in the /etc/provision.d directory' do
+      expect(chef_run).to create_file('/etc/provision.d/provision_helpers.sh').with(
         group: 'root',
         owner: 'root',
         mode: '0750'
       )
     end
 
-    it 'creates provision_network_interfaces.sh in the /etc/init.d directory' do
-      expect(chef_run).to create_file('/etc/init.d/provision_network_interfaces.sh').with(
+    it 'creates provision_network_interfaces.sh in the /etc/provision.d directory' do
+      expect(chef_run).to create_file('/etc/provision.d/provision_network_interfaces.sh').with(
         group: 'root',
         owner: 'root',
         mode: '0750'
       )
     end
 
-    it 'creates provision_consul.sh in the /etc/init.d directory' do
-      expect(chef_run).to create_file('/etc/init.d/provision_consul.sh').with(
+    it 'creates provision_consul.sh in the /etc/provision.d directory' do
+      expect(chef_run).to create_file('/etc/provision.d/provision_consul.sh').with(
         group: 'root',
         owner: 'root',
         mode: '0750'
       )
     end
 
-    it 'creates provision_consul-template.sh in the /etc/init.d directory' do
-      expect(chef_run).to create_file('/etc/init.d/provision_consul-template.sh').with(
+    it 'creates provision_consul-template.sh in the /etc/provision.d directory' do
+      expect(chef_run).to create_file('/etc/provision.d/provision_consul-template.sh').with(
         group: 'root',
         owner: 'root',
         mode: '0750'
       )
     end
 
-    it 'creates provision_unbound.sh in the /etc/init.d directory' do
-      expect(chef_run).to create_file('/etc/init.d/provision_unbound.sh').with(
+    it 'creates provision_unbound.sh in the /etc/provision.d directory' do
+      expect(chef_run).to create_file('/etc/provision.d/provision_unbound.sh').with(
         group: 'root',
         owner: 'root',
         mode: '0750'
       )
     end
 
-    it 'creates provision.sh in the /etc/init.d directory' do
-      expect(chef_run).to create_file('/etc/init.d/provision.sh').with(
+    it 'creates provision.sh in the /etc/provision.d directory' do
+      expect(chef_run).to create_file('/etc/provision.d/provision.sh').with(
         group: 'root',
         owner: 'root',
         mode: '0750'

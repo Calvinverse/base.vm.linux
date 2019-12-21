@@ -81,6 +81,12 @@ default['firewall']['allow_winrm'] = false
 default['firewall']['ipv6_enabled'] = false
 
 #
+# PROVISIONING
+#
+
+default['provision']['config_path'] = '/etc/provision.d'
+
+#
 # SYSLOG-NG
 #
 
@@ -114,7 +120,7 @@ default['telegraf']['statsd']['port'] = 8125
 default['unbound']['service_user'] = 'unbound'
 default['unbound']['service_group'] = 'unbound'
 
-default['unbound']['config_path'] = '/etc/unbound.d'
+default['unbound']['config_path'] = '/etc/unbound/unbound.conf.d'
 default['unbound']['install_path'] = '/etc/unbound'
 
 default['unbound']['config_file'] = 'unbound.conf'
