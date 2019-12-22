@@ -78,7 +78,8 @@ Metrics are collected through different means.
 
 ## Build, test and release
 
-The build process follows the standard procedure for building Calvinverse images. Because the base
+The build process follows the standard procedure for
+[building Calvinverse images](https://www.calvinverse.net/documentation/how-to-build). Because the base
 image is build during this process the following differences exist.
 
 * The Ubuntu Server 18.04.2 ISO is obtained from the internal storage as defined by the MsBuild
