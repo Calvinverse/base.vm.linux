@@ -15,15 +15,11 @@ function Initialize-Environment
     {
         Start-TestConsul
 
-        Install-Vault -vaultVersion '0.9.1'
-        Start-TestVault
-
         Write-Output "Waiting for 10 seconds for consul and vault to start ..."
         Start-Sleep -Seconds 10
 
         Join-Cluster
 
-        Set-VaultSecrets
         Set-ConsulKV
 
         Write-Output "Giving consul-template 30 seconds to process the data ..."
@@ -48,19 +44,6 @@ function Initialize-Environment
         # rethrow the error
         throw $_.Exception
     }
-}
-
-function Install-Vault
-{
-    [CmdletBinding()]
-    param(
-        [string] $vaultVersion
-    )
-
-    $ErrorActionPreference = 'Stop'
-
-    & wget "https://releases.hashicorp.com/vault/$($vaultVersion)/vault_$($vaultVersion)_linux_amd64.zip" --output-document /test/vault.zip
-    & unzip /test/vault.zip -d /test/vault
 }
 
 function Join-Cluster
@@ -109,15 +92,6 @@ function Set-ConsulKV
     & consul kv put -http-addr=http://127.0.0.1:8550 config/services/queue/logs/syslog/vhost 'testlogs'
 }
 
-function Set-VaultSecrets
-{
-    $ErrorActionPreference = 'Stop'
-
-    Write-Output 'Setting vault secrets ...'
-
-    # secret/services/queue/logs/syslog
-}
-
 function Start-TestConsul
 {
     $ErrorActionPreference = 'Stop'
@@ -134,21 +108,4 @@ function Start-TestConsul
         -PassThru `
         -RedirectStandardOutput /test/consul/output.out `
         -RedirectStandardError /test/consul/error.out
-}
-
-function Start-TestVault
-{
-    [CmdletBinding()]
-    param(
-    )
-
-    $ErrorActionPreference = 'Stop'
-
-    Write-Output "Starting vault ..."
-    $process = Start-Process `
-        -FilePath '/test/vault/vault' `
-        -ArgumentList "-dev" `
-        -PassThru `
-        -RedirectStandardOutput /test/vault/vaultoutput.out `
-        -RedirectStandardError /test/vault/vaulterror.out
 }
