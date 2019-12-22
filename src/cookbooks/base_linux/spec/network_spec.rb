@@ -470,5 +470,33 @@ describe 'base_linux::network' do
     it 'adds localhost to the resolvconf base file' do
       expect(chef_run).to create_file('/etc/dhcp/dhclient.conf').with_content(dhcpconf_content)
     end
+
+    resolved_content = <<~CONF
+      #  This file is part of systemd.
+      #
+      #  systemd is free software; you can redistribute it and/or modify it
+      #  under the terms of the GNU Lesser General Public License as published by
+      #  the Free Software Foundation; either version 2.1 of the License, or
+      #  (at your option) any later version.
+      #
+      # Entries in this file show the compile time defaults.
+      # You can change settings by editing this file.
+      # Defaults can be restored by simply deleting this file.
+      #
+      # See resolved.conf(5) for details
+
+      [Resolve]
+      DNS=127.0.0.1
+      #FallbackDNS=
+      #Domains=
+      #LLMNR=no
+      #MulticastDNS=no
+      #DNSSEC=no
+      Cache=no
+      #DNSStubListener=no
+    CONF
+    it 'sets the resolved service to not handle DNS' do
+      expect(chef_run).to create_file('/etc/systemd/resolved.conf').with_content(resolved_content)
+    end
   end
 end
