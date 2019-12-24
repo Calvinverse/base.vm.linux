@@ -316,8 +316,15 @@ describe 'base_linux::system_metrics' do
         ## Write timeout (for the InfluxDB client), formatted as a string.
         ## If not provided, will default to 5s. 0s means no timeout (not recommended).
         timeout = "5s"
+      {{ with secret "secret/services/metrics/users/system" }}
+        {{ if .Data.password }}
+        username = "{{ .Data.username }}"
+        password = "{{ .Data.password }}"
+        {{ else }}
         # username = "telegraf"
         # password = "metricsmetricsmetricsmetrics"
+        {{ end }}
+      {{ end }}
         ## Set the user agent for HTTP POSTs (can be useful for log differentiation)
         user_agent = "telegraf"
         ## Set UDP payload size, defaults to InfluxDB UDP Client default (512 bytes)
@@ -361,8 +368,15 @@ describe 'base_linux::system_metrics' do
         ## Write timeout (for the InfluxDB client), formatted as a string.
         ## If not provided, will default to 5s. 0s means no timeout (not recommended).
         timeout = "5s"
+      {{ with secret "secret/services/metrics/users/statsd" }}
+        {{ if .Data.password }}
+        username = "{{ .Data.username }}"
+        password = "{{ .Data.password }}"
+        {{ else }}
         # username = "telegraf"
         # password = "metricsmetricsmetricsmetrics"
+        {{ end }}
+      {{ end }}
         ## Set the user agent for HTTP POSTs (can be useful for log differentiation)
         user_agent = "telegraf"
         ## Set UDP payload size, defaults to InfluxDB UDP Client default (512 bytes)
@@ -406,8 +420,15 @@ describe 'base_linux::system_metrics' do
         ## Write timeout (for the InfluxDB client), formatted as a string.
         ## If not provided, will default to 5s. 0s means no timeout (not recommended).
         timeout = "5s"
+      {{ with secret "secret/services/metrics/users/services" }}
+        {{ if .Data.password }}
+        username = "{{ .Data.username }}"
+        password = "{{ .Data.password }}"
+        {{ else }}
         # username = "telegraf"
         # password = "metricsmetricsmetricsmetrics"
+        {{ end }}
+      {{ end }}
         ## Set the user agent for HTTP POSTs (can be useful for log differentiation)
         user_agent = "telegraf"
         ## Set UDP payload size, defaults to InfluxDB UDP Client default (512 bytes)
