@@ -268,19 +268,21 @@ end
 consul_template_service = 'consul-template'
 systemd_service consul_template_service do
   action :create
-  unit do
-    after %w[multi-user.target]
-    description 'Consul Template'
-    documentation 'https://github.com/hashicorp/consul-template'
-    requires %w[multi-user.target]
-  end
   install do
     wanted_by %w[multi-user.target]
   end
   service do
     environment_file '/etc/environment'
     exec_start run_consul_template_script
-    restart 'on-failure'
+    restart 'always'
+    restart_sec 5
+  end
+  unit do
+    after %w[multi-user.target]
+    description 'Consul Template'
+    documentation 'https://github.com/hashicorp/consul-template'
+    requires %w[multi-user.target]
+    start_limit_interval_sec 0
   end
 end
 

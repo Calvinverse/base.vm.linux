@@ -75,12 +75,14 @@ describe 'base_linux::consul_template' do
     it 'installs the consul-template service' do
       expect(chef_run).to create_systemd_service('consul-template').with(
         action: [:create],
+        service_exec_start: '/usr/local/bin/run_consul-template.sh',
+        service_restart: 'always',
+        service_restart_sec: 5,
         unit_after: %w[multi-user.target],
         unit_description: 'Consul Template',
         unit_documentation: 'https://github.com/hashicorp/consul-template',
         unit_requires: %w[multi-user.target],
-        service_exec_start: '/usr/local/bin/run_consul-template.sh',
-        service_restart: 'on-failure'
+        unit_start_limit_interval_sec: 0
       )
     end
 
