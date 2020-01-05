@@ -87,6 +87,15 @@ default['firewall']['ipv6_enabled'] = false
 default['provision']['config_path'] = '/etc/provision.d'
 
 #
+# SSH
+#
+
+# For the time being, don't turn this off until we get certs to work
+default['ssh']['consul_template_file'] = 'ssh-host-certificate.ctmpl'
+default['ssh']['host_certificate'] = '/etc/ssh/ssh_host_rsa_key-cert.pub'
+default['ssh-hardening']['ssh']['server']['password_authentication'] = true
+
+#
 # SYSLOG-NG
 #
 

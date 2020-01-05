@@ -20,6 +20,8 @@ include_recipe 'base_linux::firewall'
 include_recipe 'base_linux::meta'
 
 include_recipe 'base_linux::certificates'
+include_recipe 'base_linux::authentication_ssh'
+# include_recipe 'base_linux::authentication_pki'
 
 include_recipe 'base_linux::consul'
 include_recipe 'base_linux::consul_template'

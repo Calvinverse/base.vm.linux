@@ -532,7 +532,7 @@ describe 'base_linux::system_metrics' do
         }
       }
     CONF
-    it 'creates telegraf.hcl in the consul-template template directory' do
+    it 'creates telegraf.hcl in the consul-template configuration directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/conf/telegraf.hcl')
         .with_content(consul_template_telegraf_content)
         .with(
