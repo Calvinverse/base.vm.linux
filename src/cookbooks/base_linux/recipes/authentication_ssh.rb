@@ -100,7 +100,7 @@ ssh_host_key_certificate_template_file = node['ssh']['consul_template_file']
 file "#{consul_template_template_path}/#{ssh_host_key_certificate_template_file}" do
   action :create
   content <<~CONF
-    {{ with secret "ssh-host/sign/ROLE_HERE" "cert_type=host" "public_key=@"#{ssh_host_key} }}{{ .Data.signed_key }}{{ end }}
+    {{ with secret "ssh-host/sign/ssh.host.linux" "cert_type=host" "public_key=@#{ssh_host_key}" }}{{ .Data.signed_key }}{{ end }}
   CONF
   group 'root'
   mode '0550'

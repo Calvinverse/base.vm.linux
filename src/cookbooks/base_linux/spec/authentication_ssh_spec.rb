@@ -93,7 +93,7 @@ describe 'base_linux::authentication_ssh' do
     ssh_host_key = '/etc/ssh/ssh_host_rsa_key.pub'
 
     consul_template_ssh_host_certificate_template_content = <<~CONF
-      {{ with secret "ssh-host/sign/ROLE_HERE" "cert_type=host" "public_key=@"#{ssh_host_key} }}{{ .Data.signed_key }}{{ end }}
+      {{ with secret "ssh-host/sign/ssh.host.linux" "cert_type=host" "public_key=@#{ssh_host_key}" }}{{ .Data.signed_key }}{{ end }}
     CONF
     it 'creates ssh-host-certificate.ctmpl in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/templates/ssh-host-certificate.ctmpl')
