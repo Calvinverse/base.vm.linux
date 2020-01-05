@@ -3,6 +3,10 @@
 require 'spec_helper'
 
 describe 'base_linux::authentication_ssh' do
+  before do
+    stub_command("test $(awk '$5 < 2047 && $5 ~ /^[0-9]+$/ { print $5 }' /etc/ssh/moduli | uniq | wc -c) -eq 0").and_return(true)
+  end
+
   context 'configures the user certificate' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
