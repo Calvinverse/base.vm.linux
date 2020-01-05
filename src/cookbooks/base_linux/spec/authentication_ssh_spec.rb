@@ -15,7 +15,7 @@ describe 'base_linux::authentication_ssh' do
         # file rather then supplying the `source` path to the template file. This is
         # useful for short templates. This option is mutually exclusive with the
         # `source` option.
-        contents = "{{ key 'auth/ssh/client/ca/public' }}"
+        contents = "{{ key \\"auth/ssh/client/ca/public\\" }}"
 
         # This is the destination path on disk where the source template will render.
         # If the parent directories do not exist, Consul Template will attempt to
@@ -30,7 +30,7 @@ describe 'base_linux::authentication_ssh' do
         # command will only run if the resulting template changes. The command must
         # return within 30s (configurable), and it must have a successful exit code.
         # Consul Template is not a replacement for a process monitor or init system.
-        command = "/bin/bash -c 'echo "TrustedUserCAKeys /etc/ssh/trusted-client-ca-keys.pem" >> /etc/ssh/sshd_config && systemctl restart ssh'"
+        command = "/bin/bash -c 'echo \\"TrustedUserCAKeys /etc/ssh/trusted-client-ca-keys.pem\\" >> /etc/ssh/sshd_config && systemctl restart ssh'"
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.
@@ -101,7 +101,7 @@ describe 'base_linux::authentication_ssh' do
         )
     end
 
-    consul_template_ssh_user_certificate_content = <<~CONF
+    consul_template_ssh_host_certificate_content = <<~CONF
       # This block defines the configuration for a template. Unlike other blocks,
       # this block may be specified multiple times to configure multiple templates.
       # It is also possible to configure templates via the CLI directly.
@@ -124,7 +124,7 @@ describe 'base_linux::authentication_ssh' do
         # command will only run if the resulting template changes. The command must
         # return within 30s (configurable), and it must have a successful exit code.
         # Consul Template is not a replacement for a process monitor or init system.
-        command = "/bin/bash -c 'echo "HostKey #{ssh_host_key}" >> /etc/ssh/sshd_config && echo "HostCertificate /etc/ssh/ssh_host_rsa_key-cert.pub" >> /etc/ssh/sshd_config && systemctl restart ssh'"
+        command = "/bin/bash -c 'echo \\"HostKey #{ssh_host_key}\\" >> /etc/ssh/sshd_config && echo \\"HostCertificate /etc/ssh/ssh_host_rsa_key-cert.pub\\" >> /etc/ssh/sshd_config && systemctl restart ssh'"
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.
@@ -166,9 +166,9 @@ describe 'base_linux::authentication_ssh' do
         }
       }
     CONF
-    it 'creates ssh_client.hcl in the consul-template template directory' do
-      expect(chef_run).to create_file('/etc/consul-template.d/conf/ssh_client.hcl')
-        .with_content(consul_template_ssh_user_certificate_content)
+    it 'creates ssh_host.hcl in the consul-template template directory' do
+      expect(chef_run).to create_file('/etc/consul-template.d/conf/ssh_host.hcl')
+        .with_content(consul_template_ssh_host_certificate_content)
         .with(
           group: 'root',
           owner: 'root',
