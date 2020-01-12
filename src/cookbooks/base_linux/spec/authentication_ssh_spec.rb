@@ -91,13 +91,32 @@ describe 'base_linux::authentication_ssh' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
     ssh_host_key = '/etc/ssh/ssh_host_rsa_key.pub'
+    ssh_host_key_certificate_file = '/etc/ssh/ssh_host_rsa_key-cert.pub'
 
     consul_template_ssh_host_certificate_template_content = <<~CONF
-      {{ with secret "ssh-host/sign/ssh.host.linux" "cert_type=host" "public_key=@#{ssh_host_key}" }}{{ .Data.signed_key }}{{ end }}
+      {{ $contents := file "#{ssh_host_key}" | trimSpace }}{{ $pair := printf "public_key=%s" $contents }}{{ with secret "ssh-host/sign/ssh.host.linux" "cert_type=host" $pair }}{{ .Data.signed_key }}{{ end }}
     CONF
     it 'creates ssh-host-certificate.ctmpl in the consul-template template directory' do
       expect(chef_run).to create_file('/etc/consul-template.d/templates/ssh-host-certificate.ctmpl')
         .with_content(consul_template_ssh_host_certificate_template_content)
+        .with(
+          group: 'root',
+          owner: 'root',
+          mode: '0550'
+        )
+    end
+
+    update_sshd_config_script_content = <<~CONF
+      sshd_config='/etc/ssh/sshd_config'
+      sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' $sshd_config
+
+      grep -qxF 'HostKey #{ssh_host_key}' $sshd_config || echo "HostKey #{ssh_host_key}" >> $sshd_config
+      grep -qxF 'HostCertificate #{ssh_host_key_certificate_file}' $sshd_config || echo "HostCertificate #{ssh_host_key_certificate_file}" >> $sshd_config
+      systemctl restart ssh
+    CONF
+    it 'creates update_sshd_config.sh in the /etc/ssh directory' do
+      expect(chef_run).to create_file('/etc/ssh/update_sshd_config.sh')
+        .with_content(update_sshd_config_script_content)
         .with(
           group: 'root',
           owner: 'root',
@@ -128,7 +147,7 @@ describe 'base_linux::authentication_ssh' do
         # command will only run if the resulting template changes. The command must
         # return within 30s (configurable), and it must have a successful exit code.
         # Consul Template is not a replacement for a process monitor or init system.
-        command = "/bin/bash -c 'echo \\"HostKey #{ssh_host_key}\\" >> /etc/ssh/sshd_config && echo \\"HostCertificate /etc/ssh/ssh_host_rsa_key-cert.pub\\" >> /etc/ssh/sshd_config && systemctl restart ssh'"
+        command = "/bin/bash /etc/ssh/update_sshd_config.sh"
 
         # This is the maximum amount of time to wait for the optional command to
         # return. Default is 30s.
