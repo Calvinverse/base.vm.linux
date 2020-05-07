@@ -134,9 +134,9 @@
     <ItemGroup Condition=" '$(ShouldLoadPackerImagesToBuild)' == 'true' ">
         <PackerImagesToBuild
             Condition=" '$(IsBuild)' == 'true'  "
-            Include="$(DirBuildTempBuildPacker)\packer.json">
+            Include="$(DirBuildTempBuildPacker)\hyperv.json">
             <Variables>
-                $(DirBuildTempBuildPacker)\packer_variables.json
+                $(DirBuildTempBuildPacker)\hyperv_variables.json
             </Variables>
         </PackerImagesToBuild>
     </ItemGroup>

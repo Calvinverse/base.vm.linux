@@ -130,12 +130,12 @@
             <Encoding></Encoding>
         </BuildFilesToGenerate>
 
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\build\packer.json">
-            <Template>$(DirSrcPacker)\packer.json</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\build\hyperv.json">
+            <Template>$(DirSrcPacker)\hyperv.json</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
-        <BuildFilesToGenerate Include="$(DirBuildTemp)\build\packer_variables.json">
-            <Template>$(DirSrcPacker)\packer_variables.json</Template>
+        <BuildFilesToGenerate Include="$(DirBuildTemp)\build\hyperv_variables.json">
+            <Template>$(DirSrcPacker)\hyperv_variables.json</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
         <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu\http\preseed.cfg">

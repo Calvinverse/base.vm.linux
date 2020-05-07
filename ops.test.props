@@ -85,8 +85,8 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPacker)\packer.json">
-            <Template>$(DirTestsIntegrationPacker)\packer.json</Template>
+        <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPacker)\hyperv.json">
+            <Template>$(DirTestsIntegrationPacker)\hyperv.json</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
         <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPacker)\packer_variables.json">
@@ -151,7 +151,7 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadPackerImagesToTest)' == 'true' ">
         <PackerImagesToTest
-            Include="$(DirBuildTempTestsIntegrationPacker)\packer.json">
+            Include="$(DirBuildTempTestsIntegrationPacker)\hyperv.json">
             <Variables>
                 $(DirBuildTempTestsIntegrationPacker)\packer_variables.json
             </Variables>
