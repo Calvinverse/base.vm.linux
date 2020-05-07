@@ -85,12 +85,16 @@
         Additional parameters can be provided through the 'TemplateTokens' ItemGroup below.
     -->
     <ItemGroup>
-        <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPacker)\hyperv.json">
+        <TestFilesToGenerate
+            Condition=" '$(ShouldCreateHyperVImage)' == 'true' "
+            Include="$(DirBuildTempTestsIntegrationPacker)\hyperv.json">
             <Template>$(DirTestsIntegrationPacker)\hyperv.json</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
-        <TestFilesToGenerate Include="$(DirBuildTempTestsIntegrationPacker)\packer_variables.json">
-            <Template>$(DirTestsIntegrationPacker)\packer_variables.json</Template>
+        <TestFilesToGenerate
+            Condition=" '$(ShouldCreateHyperVImage)' == 'true' "
+            Include="$(DirBuildTempTestsIntegrationPacker)\hyperv_variables.json">
+            <Template>$(DirTestsIntegrationPacker)\hyperv_variables.json</Template>
             <Encoding></Encoding>
         </TestFilesToGenerate>
 
@@ -151,9 +155,10 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadPackerImagesToTest)' == 'true' ">
         <PackerImagesToTest
+            Condition=" '$(ShouldCreateHyperVImage)' == 'true' "
             Include="$(DirBuildTempTestsIntegrationPacker)\hyperv.json">
             <Variables>
-                $(DirBuildTempTestsIntegrationPacker)\packer_variables.json
+                $(DirBuildTempTestsIntegrationPacker)\hyperv_variables.json
             </Variables>
         </PackerImagesToTest>
     </ItemGroup>
