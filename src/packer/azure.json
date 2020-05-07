@@ -1,0 +1,98 @@
+{
+    "variables": {
+        "admin_username": "admin",
+        "admin_password": "admin",
+
+        "azure_image_storage_type": "Standard_LRS",
+        "azure_location": "australiaeast",
+        "azure_resource_group": "",
+        "azure_subscription_id": "not_really_an_azure_subscription_id",
+        "azure_vm_size": "Standard_A1",
+
+        "cookbook_name": "not_realy_a_cookbook_name",
+
+        "dir_cookbooks_src": "src/cookbooks",
+        "dir_cookbooks_vendors": "packages/vendor/cookbooks",
+        "dir_deploy": null,
+        "dir_http_user": null,
+        "dir_scripts_user": null,
+        "dir_temp": null,
+
+        "image_sku": "18.04-LTS",
+
+        "vm_name": "not_really_a_vm_name"
+    },
+    "builders": [
+        {
+            "boot_wait": "1s",
+            "boot_command": [],
+            "communicator": "ssh",
+            "image_offer": "UbuntuServer",
+            "image_publisher": "Canonical",
+            "image_sku": "{{ user `image_sku` }}",
+            "location": "{{ user `azure_location` }}",
+            "managed_image_name": "{{ user `vm_name` }}",
+            "managed_image_resource_group_name": " {{ user `azure_resource_group` }}",
+            "managed_image_storage_account_type" : "{{ user `azure_image_storage_type` }}",
+            "os_type": "linux",
+            "shutdown_command": "echo '{{user `admin_password`}}' | sudo -S -E shutdown -P now",
+            "ssh_password": "{{user `admin_password`}}",
+            "ssh_timeout": "4h",
+            "ssh_username": "{{user `admin_username`}}",
+            "subscription_id": "{{ user `azure_subscription_id` }}",
+            "type": "azure-arm",
+            "vm_size" : "{{ user `azure_vm_size` }}"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "execute_command": "echo '{{user `admin_password`}}' | sudo -S sh {{.Path}}",
+            "scripts": [
+                "{{ user `dir_scripts_user` }}/ubuntu/update.sh"
+            ]
+        },
+        {
+            "expect_disconnect": false,
+            "inline": [
+                "echo '{{user `admin_password`}}' | sudo -S -E bash -c 'echo \"{{user `admin_username`}} ALL=(ALL:ALL) NOPASSWD: ALL\" | (EDITOR=\"tee -a\" visudo)'"
+            ],
+            "type": "shell"
+        },
+        {
+            "expect_disconnect": false,
+            "inline": [
+                "sudo -E apt-get install --assume-yes curl"
+            ],
+            "type": "shell"
+        },
+        {
+            "cookbook_paths": [
+                "{{ user `dir_cookbooks_vendors` }}"
+            ],
+            "execute_command": "sudo -E chef-solo --no-color -c {{.ConfigPath}} -j {{.JsonPath}} --chef-license accept-no-persist --log_level info",
+            "guest_os_type": "unix",
+            "install_command": "curl -LO https://omnitruck.chef.io/install.sh && {{if .Sudo}}sudo{{end}} bash ./install.sh -v 15.0.300 && rm install.sh",
+            "run_list": [
+                "{{ user `cookbook_name` }}::default"
+            ],
+            "type": "chef-solo"
+        },
+        {
+            "type": "shell",
+            "execute_command": "sudo -E sh {{.Path}}",
+            "scripts": [
+                "{{ user `dir_scripts_user` }}/ubuntu/network.sh",
+                "{{ user `dir_scripts_user` }}/ubuntu/cleanup.sh"
+            ]
+        },
+        {
+            "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+            "inline": [
+                "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+            ],
+            "inline_shebang": "/bin/sh -x",
+            "type": "shell"
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "admin_username": "${LocalAdministratorName}",
+    "admin_password": "${LocalAdministratorPassword}",
+
+    "azure_image_storage_type": "Standard_LRS",
+    "azure_location": "australiaeast",
+    "azure_resource_group": "",
+    "azure_subscription_id": "not_really_an_azure_subscription_id",
+    "azure_vm_size": "Standard_A1",
+
+    "cookbook_name": "${NameCookbook}",
+
+    "dir_cookbooks_src": "${DirSrcCookbooksJsonEscaped}",
+    "dir_cookbooks_vendors": "${DirVendorCookbooksJsonEscaped}",
+    "dir_deploy": "${DirDeployJsonEscaped}",
+    "dir_http_user": "${DirTempJsonEscaped}/ubuntu/http",
+    "dir_scripts_user": "${DirTempJsonEscaped}/scripts",
+    "dir_temp": "${DirTempJsonEscaped}",
+
+    "image_sku": "18.04-LTS",
+
+    "vm_name": "${ImageName}"
+}
