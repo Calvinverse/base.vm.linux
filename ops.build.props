@@ -131,6 +131,19 @@
         </BuildFilesToGenerate>
 
         <BuildFilesToGenerate
+            Condition=" '$(ShouldCreateAzureImage)' == 'true' "
+            Include="$(DirBuildTemp)\build\azure.json">
+            <Template>$(DirSrcPacker)\azure.json</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
+        <BuildFilesToGenerate
+            Condition=" '$(ShouldCreateAzureImage)' == 'true' "
+            Include="$(DirBuildTemp)\build\azure_variables.json">
+            <Template>$(DirSrcPacker)\azure_variables.json</Template>
+            <Encoding></Encoding>
+        </BuildFilesToGenerate>
+
+        <BuildFilesToGenerate
             Condition=" '$(ShouldCreateHyperVImage)' == 'true' "
             Include="$(DirBuildTemp)\build\hyperv.json">
             <Template>$(DirSrcPacker)\hyperv.json</Template>
@@ -142,6 +155,7 @@
             <Template>$(DirSrcPacker)\hyperv_variables.json</Template>
             <Encoding></Encoding>
         </BuildFilesToGenerate>
+
         <BuildFilesToGenerate Include="$(DirBuildTemp)\ubuntu\http\preseed.cfg">
             <Template>$(DirBuildTemp)\scripts\ubuntu\http\preseed.cfg</Template>
             <Encoding></Encoding>

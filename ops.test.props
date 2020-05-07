@@ -86,6 +86,19 @@
     -->
     <ItemGroup>
         <TestFilesToGenerate
+            Condition=" '$(ShouldCreateAzureImage)' == 'true' "
+            Include="$(DirBuildTempTestsIntegrationPacker)\azure.json">
+            <Template>$(DirTestsIntegrationPacker)\azure.json</Template>
+            <Encoding></Encoding>
+        </TestFilesToGenerate>
+        <TestFilesToGenerate
+            Condition=" '$(ShouldCreateAzureImage)' == 'true' "
+            Include="$(DirBuildTempTestsIntegrationPacker)\azure_variables.json">
+            <Template>$(DirTestsIntegrationPacker)\azure_variables.json</Template>
+            <Encoding></Encoding>
+        </TestFilesToGenerate>
+
+        <TestFilesToGenerate
             Condition=" '$(ShouldCreateHyperVImage)' == 'true' "
             Include="$(DirBuildTempTestsIntegrationPacker)\hyperv.json">
             <Template>$(DirTestsIntegrationPacker)\hyperv.json</Template>
@@ -154,6 +167,13 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup Condition=" '$(ShouldLoadPackerImagesToTest)' == 'true' ">
+        <PackerImagesToTest
+            Condition=" '$(ShouldCreateAzureImage)' == 'true' "
+            Include="$(DirBuildTempTestsIntegrationPacker)\azure.json">
+            <Variables>
+                $(DirBuildTempTestsIntegrationPacker)\azure_variables.json
+            </Variables>
+        </PackerImagesToTest>
         <PackerImagesToTest
             Condition=" '$(ShouldCreateHyperVImage)' == 'true' "
             Include="$(DirBuildTempTestsIntegrationPacker)\hyperv.json">

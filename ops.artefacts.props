@@ -133,7 +133,14 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadPackerImagesToBuild)' == 'true' ">
         <PackerImagesToBuild
-            Condition=" '$(IsBuild)' == 'true'  "
+            Condition=" '$(IsBuild)' == 'true' AND '$(ShouldCreateAzureImage)' == 'true' "
+            Include="$(DirBuildTempBuildPacker)\azure.json">
+            <Variables>
+                $(DirBuildTempBuildPacker)\azure_variables.json
+            </Variables>
+        </PackerImagesToBuild>
+        <PackerImagesToBuild
+            Condition=" '$(IsBuild)' == 'true' AND '$(ShouldCreateHyperVImage)' == 'true' "
             Include="$(DirBuildTempBuildPacker)\hyperv.json">
             <Variables>
                 $(DirBuildTempBuildPacker)\hyperv_variables.json
