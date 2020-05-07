@@ -60,6 +60,12 @@
             -->
             <Unzip>true</Unzip>
         </HttpFilesToCopy>
+        <HttpFilesToCopy
+            Condition=" '$(UriCertificateStore)' != '' "
+            Include="$(UriCertificateStore)/calvinverse.certificates.zip">
+            <Destination>$(DirBuildTempCookbooks)\$(NameCookbook)\files\default\certificates</Destination>
+            <Unzip>true</Unzip>
+        </HttpFilesToCopy>
     </ItemGroup>
     <ItemGroup Condition=" '$(ShouldLoadFilesToCopy)' == 'true' ">
         <FilesToCopy

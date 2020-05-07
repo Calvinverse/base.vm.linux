@@ -5,6 +5,7 @@ require 'spec_helper'
 describe 'base_linux::consul' do
   context 'configures consul' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
+    let(:node) { chef_run.node }
 
     it 'creates the consul config directory' do
       expect(chef_run).to create_directory('/etc/consul').with(
@@ -24,6 +25,19 @@ describe 'base_linux::consul' do
 
     it 'imports the consul recipe' do
       expect(chef_run).to include_recipe('consul::default')
+    end
+
+    it 'updates the consul service definition' do
+      expect(chef_run).to create_systemd_service('consul').with(
+        action: [:create],
+        service_exec_start: "/opt/consul/#{node['consul']['version']}/consul agent -config-file=/etc/consul/consul.json -config-dir=/etc/consul/conf.d",
+        service_restart: 'always',
+        service_restart_sec: 5,
+        unit_after: %w[network.target],
+        unit_description: 'consul',
+        unit_wants: %w[network.target],
+        unit_start_limit_interval_sec: 0
+      )
     end
   end
 
