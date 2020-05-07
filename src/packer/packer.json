@@ -22,7 +22,7 @@
     },
     "builders": [
         {
-            "boot_wait": "5s",
+            "boot_wait": "1s",
             "boot_command": [
                 "<esc><wait10><esc><esc><enter><wait>",
                 "set gfxpayload=1024x768<enter>",
@@ -46,6 +46,8 @@
             "guest_additions_mode": "disable",
             "headless": true,
             "http_directory": "{{ user `dir_http_user` }}",
+            "http_port_min": 8150,
+            "http_port_max": 8160,
             "iso_url": "{{user `iso_url`}}",
             "iso_checksum_type": "sha256",
             "iso_checksum": "{{user `iso_checksum`}}",
@@ -88,7 +90,7 @@
             "cookbook_paths": [
                 "{{ user `dir_cookbooks_vendors` }}"
             ],
-            "execute_command": "sudo -E chef-solo --no-color -c {{.ConfigPath}} -j {{.JsonPath}} --chef-license accept-no-persist",
+            "execute_command": "sudo -E chef-solo --no-color -c {{.ConfigPath}} -j {{.JsonPath}} --chef-license accept-no-persist --log_level info",
             "guest_os_type": "unix",
             "install_command": "curl -LO https://omnitruck.chef.io/install.sh && {{if .Sudo}}sudo{{end}} bash ./install.sh -v 15.0.300 && rm install.sh",
             "run_list": [

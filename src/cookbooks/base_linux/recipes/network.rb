@@ -26,14 +26,6 @@ end
 # DIRECTORIES
 #
 
-unbound_config_directory = node['unbound']['config_path']
-directory unbound_config_directory do
-  action :create
-  group node['unbound']['service_group']
-  mode '0750'
-  owner node['unbound']['service_user']
-end
-
 unbound_control_socket_directory = '/var/unbound-control'
 directory unbound_control_socket_directory do
   action :create
@@ -56,26 +48,36 @@ end
 
 apt_package 'unbound' do
   action :install
-  version '1.5.8-1ubuntu1'
+  version '1.6.7-1ubuntu2.2'
+end
+
+#
+# DISABLE APPARMOR FOR UNBOUND
+#
+
+# Stop apparmor from blocking unbound
+apparmor_policy 'usr.sbin.unbound' do
+  action  :remove
 end
 
 #
 # CONFIGURATION
 #
 
+unbound_config_directory = node['unbound']['config_path']
 file "#{unbound_config_directory}/unbound_zones.conf" do
   action :create
   content <<~CONF
     #
-    # See unbound.conf(5) man page, version 1.6.3.
+    # See unbound.conf(5) man page, version 1.6.7.
     #
 
     # This file is an empty file just so that there is a zones file and
     # unbound will start
   CONF
-  group node['unbound']['service_group']
-  mode '0750'
-  owner node['unbound']['service_user']
+  group 'root'
+  mode '0555'
+  owner 'root'
 end
 
 unbound_install_directory = node['unbound']['install_path']
@@ -84,7 +86,7 @@ file "#{unbound_install_directory}/#{unbound_config_file}" do
   action :create
   content <<~CONF
     #
-    # See unbound.conf(5) man page, version 1.6.3.
+    # See unbound.conf(5) man page, version 1.6.7.
     #
 
     # Use this to include other text into the file.
@@ -370,9 +372,9 @@ file "#{unbound_install_directory}/#{unbound_config_file}" do
         # unbound-control certificate file.
         # control-cert-file: "@UNBOUND_RUN_DIR@/unbound_control.pem"
   CONF
-  group node['unbound']['service_group']
-  mode '0550'
-  owner node['unbound']['service_user']
+  group 'root'
+  mode '0555'
+  owner 'root'
 end
 
 #
@@ -382,18 +384,18 @@ end
 # Create the systemd service for unbound.
 systemd_service 'unbound' do
   action :create
-  unit do
-    after %w[multi-user.target]
-    description 'Unbound DNS proxy'
-    documentation 'http://www.unbound.net'
-    requires %w[multi-user.target]
-  end
   install do
     wanted_by %w[multi-user.target]
   end
   service do
     exec_start "/usr/sbin/unbound -d -c /etc/unbound/#{unbound_config_file}"
     restart 'on-failure'
+  end
+  unit do
+    after %w[multi-user.target]
+    description 'Unbound DNS proxy'
+    documentation 'http://www.unbound.net'
+    requires %w[multi-user.target]
   end
 end
 
@@ -484,5 +486,33 @@ file '/etc/dhcp/dhclient.conf' do
     #  rebind 2 2000/1/12 00:00:01;
     #  expire 2 2000/1/12 00:00:01;
     #}
+  SCRIPT
+end
+
+file '/etc/systemd/resolved.conf' do
+  action :create
+  content <<~SCRIPT
+    #  This file is part of systemd.
+    #
+    #  systemd is free software; you can redistribute it and/or modify it
+    #  under the terms of the GNU Lesser General Public License as published by
+    #  the Free Software Foundation; either version 2.1 of the License, or
+    #  (at your option) any later version.
+    #
+    # Entries in this file show the compile time defaults.
+    # You can change settings by editing this file.
+    # Defaults can be restored by simply deleting this file.
+    #
+    # See resolved.conf(5) for details
+
+    [Resolve]
+    DNS=127.0.0.1
+    #FallbackDNS=
+    #Domains=
+    #LLMNR=no
+    #MulticastDNS=no
+    #DNSSEC=no
+    Cache=no
+    #DNSStubListener=no
   SCRIPT
 end

@@ -2,4 +2,6 @@
 
 source 'https://supermarket.chef.io'
 
+cookbook 'trusted_certificate', github: 'chef-cookbooks/trusted_certificate', ref: 'c97f38d1a9a3ca5a0fd6ab92bcc3ed48d647897c'
+
 metadata

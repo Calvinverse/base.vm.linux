@@ -11,11 +11,16 @@
 # INSTALL SYSLOG-NG
 #
 
+# For some reason gpg doesn't exist, so we install it?
+apt_package 'gpg-agent' do
+  action :install
+end
+
 apt_repository 'syslog-ng-apt-repository' do
   action :add
   distribution './'
-  key 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_16.04/Release.key'
-  uri 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_16.04'
+  key 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_18.04/Release.key'
+  uri 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_18.04'
 end
 
 # Installing the syslog-ng package automatically creates a systemd daemon and replaces the other
@@ -23,7 +28,7 @@ end
 %w[syslog-ng-core syslog-ng-mod-amqp syslog-ng-mod-json].each do |pkg|
   apt_package pkg do
     action :install
-    version '3.16.1-1'
+    version '3.18.1-1'
   end
 end
 
@@ -215,7 +220,7 @@ syslog_ng_template_file = node['syslog_ng']['consul_template_file']
 file "#{consul_template_template_path}/#{syslog_ng_template_file}" do
   action :create
   content <<~CONF
-    @version: 3.16
+    @version: 3.18
 
     ########################
     # Destinations

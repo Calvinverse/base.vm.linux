@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe 'base_linux::network' do
-  unbound_config_directory = '/etc/unbound.d'
+  unbound_config_directory = '/etc/unbound/unbound.conf.d'
 
   context 'create users and groups' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
@@ -18,14 +18,6 @@ describe 'base_linux::network' do
 
   context 'create the unbound locations' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
-
-    it 'creates the unbound config directory' do
-      expect(chef_run).to create_directory(unbound_config_directory).with(
-        group: 'unbound',
-        owner: 'unbound',
-        mode: '0750'
-      )
-    end
 
     it 'creates the unbound-control socket directory' do
       expect(chef_run).to create_directory('/var/unbound-control').with(
@@ -49,7 +41,7 @@ describe 'base_linux::network' do
 
     it 'installs the unbound binaries' do
       expect(chef_run).to install_apt_package('unbound').with(
-        version: '1.5.8-1ubuntu1'
+        version: '1.6.7-1ubuntu2.2'
       )
     end
   end
@@ -59,25 +51,25 @@ describe 'base_linux::network' do
 
     unbound_zones_config_content = <<~CONF
       #
-      # See unbound.conf(5) man page, version 1.6.3.
+      # See unbound.conf(5) man page, version 1.6.7.
       #
 
       # This file is an empty file just so that there is a zones file and
       # unbound will start
     CONF
-    it 'creates unboundconfiguration.ini in the /etc/unbound directory' do
-      expect(chef_run).to create_file('/etc/unbound.d/unbound_zones.conf')
+    it 'creates unboundconfiguration.ini in the /etc/unbound/unbound.conf.d directory' do
+      expect(chef_run).to create_file('/etc/unbound/unbound.conf.d/unbound_zones.conf')
         .with_content(unbound_zones_config_content)
         .with(
-          group: 'unbound',
-          owner: 'unbound',
-          mode: '0750'
+          group: 'root',
+          owner: 'root',
+          mode: '0555'
         )
     end
 
     unbound_default_config_content = <<~CONF
       #
-      # See unbound.conf(5) man page, version 1.6.3.
+      # See unbound.conf(5) man page, version 1.6.7.
       #
 
       # Use this to include other text into the file.
@@ -367,9 +359,9 @@ describe 'base_linux::network' do
       expect(chef_run).to create_file('/etc/unbound/unbound.conf')
         .with_content(unbound_default_config_content)
         .with(
-          group: 'unbound',
-          owner: 'unbound',
-          mode: '0550'
+          group: 'root',
+          owner: 'root',
+          mode: '0555'
         )
     end
   end
@@ -477,6 +469,34 @@ describe 'base_linux::network' do
     CONF
     it 'adds localhost to the resolvconf base file' do
       expect(chef_run).to create_file('/etc/dhcp/dhclient.conf').with_content(dhcpconf_content)
+    end
+
+    resolved_content = <<~CONF
+      #  This file is part of systemd.
+      #
+      #  systemd is free software; you can redistribute it and/or modify it
+      #  under the terms of the GNU Lesser General Public License as published by
+      #  the Free Software Foundation; either version 2.1 of the License, or
+      #  (at your option) any later version.
+      #
+      # Entries in this file show the compile time defaults.
+      # You can change settings by editing this file.
+      # Defaults can be restored by simply deleting this file.
+      #
+      # See resolved.conf(5) for details
+
+      [Resolve]
+      DNS=127.0.0.1
+      #FallbackDNS=
+      #Domains=
+      #LLMNR=no
+      #MulticastDNS=no
+      #DNSSEC=no
+      Cache=no
+      #DNSStubListener=no
+    CONF
+    it 'sets the resolved service to not handle DNS' do
+      expect(chef_run).to create_file('/etc/systemd/resolved.conf').with_content(resolved_content)
     end
   end
 end

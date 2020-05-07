@@ -4,7 +4,7 @@
 # CONSUL
 #
 
-default['consul']['version'] = '1.6.2'
+default['consul']['version'] = '1.6.3'
 default['consul']['config']['domain'] = 'consulverse'
 
 # This is not a consul server node
@@ -81,6 +81,21 @@ default['firewall']['allow_winrm'] = false
 default['firewall']['ipv6_enabled'] = false
 
 #
+# PROVISIONING
+#
+
+default['provision']['config_path'] = '/etc/provision.d'
+
+#
+# SSH
+#
+
+# For the time being, don't turn this off until we get certs to work
+default['ssh']['consul_template_file'] = 'ssh-host-certificate.ctmpl'
+default['ssh']['host_certificate'] = '/etc/ssh/ssh_host_rsa_key-cert.pub'
+default['ssh-hardening']['ssh']['server']['password_authentication'] = true
+
+#
 # SYSLOG-NG
 #
 
@@ -114,7 +129,7 @@ default['telegraf']['statsd']['port'] = 8125
 default['unbound']['service_user'] = 'unbound'
 default['unbound']['service_group'] = 'unbound'
 
-default['unbound']['config_path'] = '/etc/unbound.d'
+default['unbound']['config_path'] = '/etc/unbound/unbound.conf.d'
 default['unbound']['install_path'] = '/etc/unbound'
 
 default['unbound']['config_file'] = 'unbound.conf'

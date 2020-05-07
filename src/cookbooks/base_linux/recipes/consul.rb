@@ -37,6 +37,34 @@ end
 include_recipe 'consul::default'
 
 #
+# SERVICE
+#
+
+# Redo the service definition because it has no auto restart option
+systemd_service 'consul' do
+  action :create
+  install do
+    wanted_by %w[multi-user.target]
+  end
+  service do
+    environment '"GOMAXPROCS=2" "PATH=/usr/local/bin:/usr/bin:/bin"'
+    exec_reload '/bin/kill -HUP $MAINPID'
+    exec_start "/opt/consul/#{node['consul']['version']}/consul agent -config-file=#{consul_config_path}/consul.json -config-dir=#{consul_additional_config_path}"
+    kill_signal 'TERM'
+    restart 'always'
+    restart_sec 5
+    user 'consul'
+    working_directory '/var/lib/consul'
+  end
+  unit do
+    after %w[network.target]
+    description 'consul'
+    start_limit_interval_sec 0
+    wants %w[network.target]
+  end
+end
+
+#
 # CONFIGURATION
 #
 

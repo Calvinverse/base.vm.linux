@@ -9,8 +9,8 @@ describe 'base_linux::system_logs' do
     it 'installs the syslog-ng-apt-repository apt_repository' do
       expect(chef_run).to add_apt_repository('syslog-ng-apt-repository').with(
         action: [:add],
-        key: ['http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_16.04/Release.key'],
-        uri: 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_16.04'
+        key: ['http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_18.04/Release.key'],
+        uri: 'http://download.opensuse.org/repositories/home:/laszlo_budai:/syslog-ng/xUbuntu_18.04'
       )
     end
 
@@ -31,7 +31,7 @@ describe 'base_linux::system_logs' do
     end
 
     syslog_template_content = <<~CONF
-      @version: 3.16
+      @version: 3.18
 
       ########################
       # Destinations
