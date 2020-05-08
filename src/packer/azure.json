@@ -5,8 +5,8 @@
 
         "azure_image_storage_type": "Standard_LRS",
         "azure_location": "australiaeast",
-        "azure_resource_group": "",
-        "azure_subscription_id": "not_really_an_azure_subscription_id",
+        "azure_resource_group": "_not_really_a_resource_group_name",
+        "azure_subscription_id": "not_really_a_subscription_id",
         "azure_vm_size": "Standard_A1",
 
         "cookbook_name": "not_realy_a_cookbook_name",
@@ -24,18 +24,15 @@
     },
     "builders": [
         {
-            "boot_wait": "1s",
-            "boot_command": [],
             "communicator": "ssh",
             "image_offer": "UbuntuServer",
             "image_publisher": "Canonical",
             "image_sku": "{{ user `image_sku` }}",
             "location": "{{ user `azure_location` }}",
             "managed_image_name": "{{ user `vm_name` }}",
-            "managed_image_resource_group_name": " {{ user `azure_resource_group` }}",
+            "managed_image_resource_group_name": "{{ user `azure_resource_group` }}",
             "managed_image_storage_account_type" : "{{ user `azure_image_storage_type` }}",
             "os_type": "linux",
-            "shutdown_command": "echo '{{user `admin_password`}}' | sudo -S -E shutdown -P now",
             "ssh_password": "{{user `admin_password`}}",
             "ssh_timeout": "4h",
             "ssh_username": "{{user `admin_username`}}",
