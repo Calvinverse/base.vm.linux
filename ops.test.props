@@ -43,7 +43,7 @@
     <ItemGroup Condition=" '$(ShouldLoadHttpFilesToCopy)' == 'true' ">
         <!-- If the archive file with the exported VM does not exist in the deploy directory then download it from the archive server and unzip it -->
         <HttpFilesToCopy
-            Condition=" '$(IsTest)' == 'true' AND !Exists('$(DirBuildDeploy)') "
+            Condition=" '$(IsTest)' == 'true' AND !Exists('$(DirBuildDeploy)') AND '$(ShouldCreateHyperVImage)' == 'true' "
             Include="$(ArtefactRepositoryToPullFrom)/${ProductNameInFilePath}/${VersionSemantic}/${ProductName}-${VersionSemantic}.zip">
             <Destination>$(DirBuildTemp)\$(ImageName)</Destination>
             <UseDefaultCredentials>false</UseDefaultCredentials>
@@ -61,7 +61,7 @@
     <ItemGroup Condition=" '$(ShouldLoadArchiveFilesToCopy)' == 'true' ">
         <!-- If the archive file with the exported VM exists in the deploy directory unzip it from there -->
         <ArchiveFilesToCopy
-            Condition=" '$(IsTest)' == 'true' AND Exists('$(DirBuildDeploy)') "
+            Condition=" '$(IsTest)' == 'true' AND Exists('$(DirBuildDeploy)') AND '$(ShouldCreateHyperVImage)' == 'true' "
             Include="$(DirBuildDeploy)\${ProductName}-${VersionSemantic}.zip">
             <Destination>$(DirBuildTemp)\${ImageName}</Destination>
         </ArchiveFilesToCopy>

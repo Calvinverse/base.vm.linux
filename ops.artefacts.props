@@ -104,7 +104,9 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirSrc)\**\*.zipspec" />
+        <ArchivePackageSpecs
+            Condition=" '$(ShouldCreateHyperVImage)' == 'true' "
+            Include="$(DirSrcPacker)\hyperv.zipspec" />
     </ItemGroup>
 
 
