@@ -349,10 +349,9 @@
         <!-- <TemplateTokenGenerators>UNDEFINED</TemplateTokenGenerators> -->
     </PropertyGroup>
     <PropertyGroup>
+        <LinuxMajorVersion Condition=" '$(LinuxMajorVersion)' == '' ">18</LinuxMajorVersion>
+        <LinuxMinorVersion Condition=" '$(LinuxMinorVersion)' == '' ">04</LinuxMinorVersion>
         <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-18.04.3</LinuxImage>
-
-        <IsoFile>$(IsoDirectory)\$(LinuxImage.ToLower())-server-amd64.iso</IsoFile>
-        <IsoHash>7d8e0055d663bffa27c1718685085626cb59346e7626ba3d3f476322271f573e</IsoHash>
     </PropertyGroup>
 
     <!--
@@ -364,12 +363,21 @@
         <TemplateTokens Include="ProductShortName">
             <ReplacementValue>$(ProductName.Replace('.', '-').ToLower())</ReplacementValue>
         </TemplateTokens>
+
         <TemplateTokens Include="LocalAdministratorName">
             <ReplacementValue>thebigkahuna</ReplacementValue>
         </TemplateTokens>
         <TemplateTokens Include="LocalAdministratorPassword">
             <ReplacementValue>TheB1gK@huna</ReplacementValue>
         </TemplateTokens>
+
+        <TemplateTokens Include="ImageMajorVersion">
+            <ReplacementValue>$(LinuxMajorVersion)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="ImageMinorVersion">
+            <ReplacementValue>$(LinuxMinorVersion)</ReplacementValue>
+        </TemplateTokens>
+
         <TemplateTokens Include="LinuxImage">
             <ReplacementValue>$(LinuxImage)</ReplacementValue>
         </TemplateTokens>
@@ -384,19 +392,8 @@
             <ReplacementValue>0.19.5</ReplacementValue>
         </TemplateTokens>
 
-        <TemplateTokens
-            Include="NetworkHostIpAddressForPreseed">
-            <ReplacementValue>192.168.3.73</ReplacementValue>
-        </TemplateTokens>
 
         <!-- For the Packer config -->
-        <TemplateTokens Include="IsoFileEscaped">
-            <ReplacementValue>$(IsoFile.Replace('\', '/'))</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="IsoFileHash">
-            <ReplacementValue>$(IsoHash)</ReplacementValue>
-        </TemplateTokens>
-
         <TemplateTokens Include="NameCookbook">
             <ReplacementValue>$(NameCookbook)</ReplacementValue>
         </TemplateTokens>
@@ -413,12 +410,7 @@
         <TemplateTokens Include="DirDeployJsonEscaped">
             <ReplacementValue>$(DirBuildDeploy.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
-        <TemplateTokens Include="VmSwitch">
-            <ReplacementValue>VM-LAN</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="VmSwitchVlan">
-            <ReplacementValue></ReplacementValue>
-        </TemplateTokens>
+
 
         <!-- For the .isospec file -->
         <TemplateTokens Include="DirBuildTempIso">
@@ -428,6 +420,16 @@
             <ReplacementValue>$(DirTestsIntegration)</ReplacementValue>
         </TemplateTokens>
     </ItemGroup>
+
+    <Import
+        Condition="Exists('$(MSBuildThisFileDirectory)packer.azure.props') AND '$(ShouldCreateAzureImage)' == 'true' "
+        Project="$(MSBuildThisFileDirectory)packer.azure.props" />
+
+    <Import
+        Condition="Exists('$(MSBuildThisFileDirectory)packer.hyperv.props') AND '$(ShouldCreateHyperVImage)' == 'true' "
+        Project="$(MSBuildThisFileDirectory)packer.hyperv.props" />
+
+
 
 
 
