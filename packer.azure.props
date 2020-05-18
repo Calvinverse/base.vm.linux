@@ -12,6 +12,13 @@
     <ItemGroup
         Condition=" '$(ShouldCreateAzureImage)' == 'true' ">
 
+        <!-- FOR CHEF -->
+        <TemplateTokens
+            Include="ProvisioningFromCloudInit">
+            <ReplacementValue>true</ReplacementValue>
+        </TemplateTokens>
+
+        <!-- FOR PACKER -->
         <TemplateTokens
             Include="AzureClientCertPathEscaped">
             <ReplacementValue>$(AzureClientCertPath.Replace('\', '/'))</ReplacementValue>
