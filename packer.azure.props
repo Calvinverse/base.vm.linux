@@ -39,5 +39,10 @@
             Include="AzureSubscriptionId">
             <ReplacementValue>$(AzureSubscriptionId)</ReplacementValue>
         </TemplateTokens>
+        <TemplateTokens
+            Condition=" '$(IsTest)' == 'true' "
+            Include="AzureTestImageResourceGroup">
+            <ReplacementValue>$(AzureTestImageResourceGroup)</ReplacementValue>
+        </TemplateTokens>
     </ItemGroup>
 </Project>

@@ -34,5 +34,13 @@
         <TemplateTokens Include="VmSwitchVlan">
             <ReplacementValue></ReplacementValue>
         </TemplateTokens>
+
+        <!-- For the .isospec file -->
+        <TemplateTokens Include="DirBuildTempIso">
+            <ReplacementValue>$(DirBuildTempIso)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="DirTestsIntegration">
+            <ReplacementValue>$(DirTestsIntegration)</ReplacementValue>
+        </TemplateTokens>
     </ItemGroup>
 </Project>

@@ -209,6 +209,7 @@
         <DirTestsIntegration>$(DirTests)\integration</DirTestsIntegration>
         <DirTestsIntegrationPacker>$(DirTestsIntegration)\packer</DirTestsIntegrationPacker>
         <DirTestsIntegrationPester>$(DirTestsIntegration)\pester</DirTestsIntegrationPester>
+        <DirTestsIntegrationProvision>$(DirTestsIntegration)\provision</DirTestsIntegrationProvision>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -403,14 +404,8 @@
         <TemplateTokens Include="DirDeployJsonEscaped">
             <ReplacementValue>$(DirBuildDeploy.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
-
-
-        <!-- For the .isospec file -->
-        <TemplateTokens Include="DirBuildTempIso">
-            <ReplacementValue>$(DirBuildTempIso)</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="DirTestsIntegration">
-            <ReplacementValue>$(DirTestsIntegration)</ReplacementValue>
+        <TemplateTokens Include="DirTestsIntegrationProvisionJsonEscaped">
+            <ReplacementValue>$(DirTestsIntegrationProvision.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
     </ItemGroup>
 
