@@ -26,22 +26,29 @@
     },
     "builders": [
         {
+            "azure_tags": {
+                "stage": "qa"
+            },
+
             "client_cert_path": "{{ user `azure_client_cert_path` }}",
             "client_id": "{{ user `azure_client_id` }}",
-            "communicator": "ssh",
+
             "image_offer": "UbuntuServer",
             "image_publisher": "Canonical",
             "image_sku": "{{ user `image_sku` }}",
+
             "location": "{{ user `azure_location` }}",
+
             "managed_image_name": "{{ user `vm_name` }}",
             "managed_image_resource_group_name": "{{ user `azure_resource_group` }}",
             "managed_image_storage_account_type" : "{{ user `azure_image_storage_type` }}",
+
             "os_type": "linux",
-            "ssh_password": "{{user `admin_password`}}",
-            "ssh_timeout": "4h",
-            "ssh_username": "{{user `admin_username`}}",
+
             "subscription_id": "{{ user `azure_subscription_id` }}",
+
             "type": "azure-arm",
+
             "vm_size" : "{{ user `azure_vm_size` }}"
         }
     ],

@@ -14,6 +14,13 @@
     <ItemGroup
         Condition=" '$(ShouldCreateHyperVImage)' == 'true' ">
 
+        <TemplateTokens Include="LocalAdministratorName">
+            <ReplacementValue>thebigkahuna</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="LocalAdministratorPassword">
+            <ReplacementValue>TheB1gK@huna</ReplacementValue>
+        </TemplateTokens>
+
         <TemplateTokens Include="IsoFileEscaped">
             <ReplacementValue>$(IsoFile.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>

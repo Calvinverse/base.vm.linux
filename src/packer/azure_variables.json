@@ -1,7 +1,4 @@
 {
-    "admin_username": "${LocalAdministratorName}",
-    "admin_password": "${LocalAdministratorPassword}",
-
     "azure_client_cert_path": "${AzureClientCertPathEscaped}",
     "azure_client_id": "${AzureClientId}",
     "azure_image_storage_type": "Standard_LRS",

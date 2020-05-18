@@ -351,7 +351,7 @@
     <PropertyGroup>
         <LinuxMajorVersion Condition=" '$(LinuxMajorVersion)' == '' ">18</LinuxMajorVersion>
         <LinuxMinorVersion Condition=" '$(LinuxMinorVersion)' == '' ">04</LinuxMinorVersion>
-        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-18.04.3</LinuxImage>
+        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-$(LinuxMajorVersion).$(LinuxMinorVersion).3</LinuxImage>
     </PropertyGroup>
 
     <!--
@@ -362,13 +362,6 @@
         <!-- General -->
         <TemplateTokens Include="ProductShortName">
             <ReplacementValue>$(ProductName.Replace('.', '-').ToLower())</ReplacementValue>
-        </TemplateTokens>
-
-        <TemplateTokens Include="LocalAdministratorName">
-            <ReplacementValue>thebigkahuna</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="LocalAdministratorPassword">
-            <ReplacementValue>TheB1gK@huna</ReplacementValue>
         </TemplateTokens>
 
         <TemplateTokens Include="ImageMajorVersion">
