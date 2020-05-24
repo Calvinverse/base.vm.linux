@@ -1,8 +1,5 @@
 {
     "variables": {
-        "admin_username": "admin",
-        "admin_password": "admin",
-
         "azure_client_cert_path": "_not_really_a_client_cert_path",
         "azure_client_id": "_not_really_a_client_id",
         "azure_image_storage_type": "Standard_LRS",
@@ -13,12 +10,8 @@
 
         "cookbook_name": "not_realy_a_cookbook_name",
 
-        "dir_cookbooks_src": "src/cookbooks",
         "dir_cookbooks_vendors": "packages/vendor/cookbooks",
-        "dir_deploy": null,
-        "dir_http_user": null,
         "dir_scripts_user": null,
-        "dir_temp": null,
 
         "image_sku": "18.04-LTS",
 
