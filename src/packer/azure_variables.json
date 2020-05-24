@@ -18,5 +18,5 @@
 
     "image_sku": "${ImageMajorVersion}.${ImageMinorVersion}-LTS",
 
-    "vm_name": "${ImageName}"
+    "vm_name": "${LinuxImage}-${VersionMajor}.${VersionMinor}.${VersionPatch}"
 }

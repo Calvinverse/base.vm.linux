@@ -352,7 +352,6 @@
     <PropertyGroup>
         <LinuxMajorVersion Condition=" '$(LinuxMajorVersion)' == '' ">18</LinuxMajorVersion>
         <LinuxMinorVersion Condition=" '$(LinuxMinorVersion)' == '' ">04</LinuxMinorVersion>
-        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-$(LinuxMajorVersion).$(LinuxMinorVersion).3</LinuxImage>
     </PropertyGroup>
 
     <!--
@@ -372,12 +371,6 @@
             <ReplacementValue>$(LinuxMinorVersion)</ReplacementValue>
         </TemplateTokens>
 
-        <TemplateTokens Include="LinuxImage">
-            <ReplacementValue>$(LinuxImage)</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="ImageName">
-            <ReplacementValue>$(LinuxImage.Replace(' ', '-').Replace('.', '-').ToLower())</ReplacementValue>
-        </TemplateTokens>
         <TemplateTokens Include="SysprepHostName">
             <ReplacementValue>UbuntuTemplate_$([System.DateTime]::Now.ToString('yyyyMMdd'))</ReplacementValue>
         </TemplateTokens>

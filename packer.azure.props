@@ -8,9 +8,14 @@
     -->
     <PropertyGroup
         Condition=" '$(ShouldCreateAzureImage)' == 'true' ">
+        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu</LinuxImage>
     </PropertyGroup>
     <ItemGroup
         Condition=" '$(ShouldCreateAzureImage)' == 'true' ">
+
+        <TemplateTokens Include="LinuxImage">
+            <ReplacementValue>$(LinuxImage.ToLower())</ReplacementValue>
+        </TemplateTokens>
 
         <!-- FOR CHEF -->
         <TemplateTokens
