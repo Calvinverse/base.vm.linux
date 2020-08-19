@@ -15,12 +15,22 @@
 
         "image_sku": "18.04-LTS",
 
+        "metadata_category": "CATEGORY_DEFINED_IN_VAR_FILE",
+        "metadata_commit_sha": "COMMIT_SHA_DEFINED_IN_VAR_FILE",
+        "metadata_date": "DATE_DEFINED_IN_VAR_FILE",
+        "metadata_version": "VERSION_DEFINED_IN_VAR_FILE",
+
         "vm_name": "not_really_a_vm_name"
     },
     "builders": [
         {
             "azure_tags": {
-                "stage": "qa"
+                "category": "{{ user `metadata_category` }}",
+                "commit": "{{ user `metadata_commit_sha` }}",
+                "date": "{{ user `metadata_date` }}",
+                "createdby": "packer",
+                "stage": "qa",
+                "version": "{{ user `metadata_version` }}"
             },
 
             "client_cert_path": "{{ user `azure_client_cert_path` }}",
@@ -73,7 +83,7 @@
             ],
             "execute_command": "sudo -E chef-solo --no-color -c {{.ConfigPath}} -j {{.JsonPath}} --chef-license accept-no-persist --log_level info",
             "guest_os_type": "unix",
-            "install_command": "curl -LO https://omnitruck.chef.io/install.sh && {{if .Sudo}}sudo{{end}} bash ./install.sh -v 15.0.300 && rm install.sh",
+            "install_command": "curl -LO https://omnitruck.chef.io/install.sh && {{if .Sudo}}sudo{{end}} bash ./install.sh -v 16.3.45 && rm install.sh",
             "run_list": [
                 "{{ user `cookbook_name` }}::default"
             ],

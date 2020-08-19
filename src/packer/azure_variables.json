@@ -14,5 +14,10 @@
 
     "image_sku": "${ImageMajorVersion}.${ImageMinorVersion}-LTS",
 
+    "metadata_category": "${ProductShortName}",
+    "metadata_commit_sha": "${VcsRevision}",
+    "metadata_date": "${Now}",
+    "metadata_version": "${VersionMajor}.${VersionMinor}.${VersionPatch}",
+
     "vm_name": "${LinuxImage}-${VersionMajor}.${VersionMinor}.${VersionPatch}"
 }
