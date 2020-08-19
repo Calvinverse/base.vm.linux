@@ -14,7 +14,7 @@ version '${VersionSemantic}'
 supports 'ubuntu', '>= 18.04'
 
 depends 'apparmor', '= 3.1.0'
-depends 'consul', '= 3.1.0'
+depends 'consul', '= 4.0.3'
 depends 'firewall', '= 2.7.0'
 depends 'ssh-hardening', '= 2.9.0'
 depends 'systemd', '= 3.2.4'
