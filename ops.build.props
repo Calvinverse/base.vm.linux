@@ -385,8 +385,10 @@
             <!--
                 Ignore:
                 FC071 - Missing LICENSE file: because it's there, just not in the expected directory
+                FC123 - Content of a cookbook is larger than 1Mb: The consul-template binary is in the cookbook because
+                        that is the easy way to get it on the VM
             -->
-            <RulesToExclude>FC071</RulesToExclude>
+            <RulesToExclude>FC071;FC123</RulesToExclude>
         </ChefCookbooksToAnalyze>
     </ItemGroup>
 
