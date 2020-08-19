@@ -6,7 +6,7 @@ describe 'base_linux::system_metrics' do
   context 'installs telegraf' do
     let(:chef_run) { ChefSpec::SoloRunner.converge(described_recipe) }
 
-    install_version = '1.12.6-1'
+    install_version = '1.15.2-1'
     file_name = "telegraf_#{install_version}_amd64.deb"
     it 'downloads telegraf' do
       expect(chef_run).to create_remote_file("#{Chef::Config[:file_cache_path]}/#{file_name}").with(
