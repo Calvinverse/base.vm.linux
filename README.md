@@ -1,7 +1,7 @@
 # base.linux
 
-This repository contains the code used to build an Ubuntu Hyper-V VM hard disk containing the
-base operating system and tools that are required by all Linux resources.
+This repository contains the code used to build images containing the base operating system and tools
+that are required by all Linux resources. Images can be created for Hyper-V or Azure.
 
 ## Image
 
@@ -41,9 +41,10 @@ configure the following tools and services:
 For provisoning reasons a [systemd](https://wiki.ubuntu.com/systemd) [daemon](https://en.wikipedia.org/wiki/Daemon_(computing))
 called `provision` is added which:
 
-* Read the files on the DVD drive and:
+* Read the files on the DVD drive (for Hyper-V) or from the `/run/cloud-init` directory (for Azure
+  using [cloud-init](https://cloudinit.readthedocs.io/en/latest/)) and:
   * Disable SSH if the `allow_ssh.json` file does not exist
-  * Copy the configuration files for consul, syslog-ng, telegraf and unbound
+  * Copy the configuration files and certificates for consul, syslog-ng, telegraf and unbound
   * Enable all the deamons for the afore mentioned services
   * Execute the resource specific provisioning steps found in the `f_provisionImage` function in
     `/etc/init.d/provision_image.sh` file.
@@ -82,8 +83,14 @@ The build process follows the standard procedure for
 [building Calvinverse images](https://www.calvinverse.net/documentation/how-to-build). Because the base
 image is build during this process the following differences exist.
 
-* The Ubuntu Server 18.04.3 ISO is obtained from the internal storage as defined by the MsBuild
-  property `IsoDirectory`.
+### Hyper-V images
+
+* In order to build a Hyper-V image the following properties need to be specified as part of the
+  command line used to build the image:
+  * `ShouldCreateHyperVImage` should be set to `true`
+  * The Ubuntu Server 18.04.3 ISO is obtained from the internal storage as defined by the MsBuild
+    property `IsoDirectory`.
+
 * A number of additional scripts and configuration files have to be gathered. Amongst these files is
   the Ubuntu `preseed.cfg` file. The preseed file contains the OS configuration and it is provided
   to the machine when booting from the ISO initially.
@@ -103,6 +110,21 @@ image is build during this process the following differences exist.
       * General use (mounted as `/`)
     * The Hyper-V packages necessary for Hyper-V to connect to Linux
   * Once the OS is installed the standard process will be followed
+
+### Azure images
+
+* In order to build an Azure image the following properties need to be specified as part of the
+  command line used to build the image:
+  * `ShouldCreateAzureImage` should be set to `true`
+  * `AzureClientId` - The client ID of the [service principal](https://www.packer.io/docs/builders/azure/#authentication-for-azure)
+  * `AzureClientCertPath` - The path to the [certificate](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli?view=azure-cli-latest) for the service principal
+  * `AzureLocation` - The name of the Azure region in which the image should be created
+  * `AzureImageResourceGroup` - The name of the resource group into which the image should be stored
+  * `AzureSubscriptionId` - The subscription ID
+
+
+* For testing
+  * `AzureTestImageResourceGroup` -
 
 ## Deploy
 
