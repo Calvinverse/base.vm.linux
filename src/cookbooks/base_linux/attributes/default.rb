@@ -42,6 +42,15 @@ default['consul']['config']['dns_config'] = {
   }
 }
 
+default['consul']['config']['ports'] = {
+  'dns' => 8600,
+  'https' => 8501,
+  'http' => 8500,
+  'serf_lan' => 8301,
+  'serf_wan' => 8302,
+  'server' => 8300
+}
+
 # Use the default behaviour for leave-on-terminate which is:
 # - Leave when client
 # - Do not leave when server
