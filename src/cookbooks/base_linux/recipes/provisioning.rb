@@ -101,12 +101,40 @@ file "#{provision_config_path}/provision_consul.sh" do
       cp -a #{provisioning_source_path}/consul/consul_secrets.json /etc/consul/conf.d/secrets.json
       dos2unix /etc/consul/conf.d/secrets.json
 
+      # TLS files
+      if [ -f #{provisioning_source_path}/consul/certs/consul_cert.key ]; then
+        cp -a #{provisioning_source_path}/consul/certs/consul_cert.key /etc/consul/conf.d/certs/cert.key
+        dos2unix /etc/consul/conf.d/certs/cert.key
+      fi
+
+      if [ -f #{provisioning_source_path}/consul/certs/consul_cert.crt ]; then
+        cp -a #{provisioning_source_path}/consul/consul_cert.crt /etc/consul/conf.d/certs/cert.crt
+        dos2unix /etc/consul/conf.d/certs/cert.crt
+      fi
+
+      if [ -f #{provisioning_source_path}/consul/certs/consul_cert_bundle.crt ]; then
+        cp -a #{provisioning_source_path}/consul/consul_cert_bundle.crt /etc/consul/conf.d/certs/bundle.crt
+        dos2unix /etc/consul/conf.d/certs/bundle.crt
+      fi
+
       # Copy the consul client files if they exist
       if [ -f #{provisioning_source_path}/consul/client/consul_client_location.json ]; then
         cp -a #{provisioning_source_path}/consul/client/consul_client_location.json /etc/consul/conf.d/location.json
         dos2unix /etc/consul/conf.d/location.json
 
         echo 'CONSUL_SERVER_OR_CLIENT=client' >> /etc/environment
+
+        cat <<JSON >> /etc/consul/conf.d/tls.json
+    {
+      "verify_incoming": true,
+      "verify_outgoing": true,
+      "verify_server_hostname": true,
+      "ca_file": "/etc/consul/conf.d/certs/bundle.crt",
+      "auto_encrypt": {
+        "allow_tls": true
+      }
+    }
+    JSON
       fi
 
       # Copy the consul server files if they exist
@@ -120,6 +148,20 @@ file "#{provision_config_path}/provision_consul.sh" do
         dos2unix /etc/consul/conf.d/location.json
 
         echo 'CONSUL_SERVER_OR_CLIENT=server' >> /etc/environment
+
+        cat <<JSON >> /etc/consul/conf.d/tls.json
+    {
+      "verify_incoming": true,
+      "verify_outgoing": true,
+      "verify_server_hostname": true,
+      "key_file": "/etc/consul/conf.d/certs/cert.key",
+      "cert_file": "/etc/consul/conf.d/certs/cert.crt",
+      "ca_file": "/etc/consul/conf.d/certs/bundle.crt",
+      "auto_encrypt": {
+        "allow_tls": true
+      }
+    }
+    JSON
       fi
     }
   BASH
@@ -234,8 +276,10 @@ file "#{provision_config_path}/provision.sh" do
       #
       # UNMOUNT DVD
       #
-      umount /dev/dvd
-      eject -T /dev/dvd
+      if [ $SHOULD_MOUNT_DVD == 'true' ]; then
+        umount /dev/dvd
+        eject -T /dev/dvd
+      fi
 
       # The next line creates an empty file so it won't run the next boot
       touch $FLAG
