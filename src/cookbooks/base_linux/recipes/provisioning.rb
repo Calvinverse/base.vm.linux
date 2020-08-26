@@ -114,12 +114,12 @@ file "#{provision_config_path}/provision_consul.sh" do
       fi
 
       if [ -f #{provisioning_source_path}/consul/certs/consul_cert.crt ]; then
-        cp -a #{provisioning_source_path}/consul/consul_cert.crt /etc/consul/conf.d/certs/cert.crt
+        cp -a #{provisioning_source_path}/consul/certs/consul_cert.crt /etc/consul/conf.d/certs/cert.crt
         dos2unix /etc/consul/conf.d/certs/cert.crt
       fi
 
       if [ -f #{provisioning_source_path}/consul/certs/consul_cert_bundle.crt ]; then
-        cp -a #{provisioning_source_path}/consul/consul_cert_bundle.crt /etc/consul/conf.d/certs/bundle.crt
+        cp -a #{provisioning_source_path}/consul/certs/consul_cert_bundle.crt /etc/consul/conf.d/certs/bundle.crt
         dos2unix /etc/consul/conf.d/certs/bundle.crt
       fi
 
@@ -135,10 +135,7 @@ file "#{provision_config_path}/provision_consul.sh" do
       "verify_incoming": true,
       "verify_outgoing": true,
       "verify_server_hostname": true,
-      "ca_file": "/etc/consul/conf.d/certs/bundle.crt",
-      "auto_encrypt": {
-        "allow_tls": true
-      }
+      "ca_file": "/etc/consul/conf.d/certs/bundle.crt"
     }
     JSON
       fi
@@ -222,7 +219,7 @@ file "#{provision_config_path}/provision.sh" do
     FLAG="/var/log/firstboot.log"
     if [ ! -f $FLAG ]; then
       SHOULD_MOUNT_DVD='#{node['provision']['use_dvd']}'
-      if [ $SHOULD_MOUNT_DVD == 'true' ]; then
+      if [ "$SHOULD_MOUNT_DVD" == 'true' ]; then
         #
         # MOUNT THE DVD WITH THE CONFIGURATION FILES
         #
@@ -282,7 +279,7 @@ file "#{provision_config_path}/provision.sh" do
       #
       # UNMOUNT DVD
       #
-      if [ $SHOULD_MOUNT_DVD == 'true' ]; then
+      if [ "$SHOULD_MOUNT_DVD" == 'true' ]; then
         umount /dev/dvd
         eject -T /dev/dvd
       fi
