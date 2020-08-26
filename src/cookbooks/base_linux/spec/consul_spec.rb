@@ -90,6 +90,14 @@ describe 'base_linux::consul' do
       )
     end
 
+    it 'opens the Consul GRPC port' do
+      expect(chef_run).to create_firewall_rule('consul-grpc').with(
+        command: :allow,
+        dest_port: 8502,
+        direction: :in
+      )
+    end
+
     it 'opens the Consul DNS port' do
       expect(chef_run).to create_firewall_rule('consul-dns').with(
         command: :allow,

@@ -45,6 +45,7 @@ default['consul']['config']['dns_config'] = {
 default['consul']['config']['ports'] = {
   'dns' => 8600,
   'https' => 8501,
+  'grpc' => 8502,
   'http' => 8500,
   'serf_lan' => 8301,
   'serf_wan' => 8302,
@@ -58,6 +59,8 @@ default['consul']['config']['skip_leave_on_interrupt'] = true
 
 # Send all logs to syslog
 default['consul']['config']['log_level'] = 'INFO'
+
+default['consul']['config']['enable_central_service_config'] = true
 default['consul']['config']['enable_syslog'] = true
 
 default['consul']['config']['owner'] = 'root'

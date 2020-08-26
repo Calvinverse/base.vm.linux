@@ -101,6 +101,12 @@ file "#{provision_config_path}/provision_consul.sh" do
       cp -a #{provisioning_source_path}/consul/consul_secrets.json /etc/consul/conf.d/secrets.json
       dos2unix /etc/consul/conf.d/secrets.json
 
+      # Connect
+      if [ -f #{provisioning_source_path}/consul//consul_connect.json ]; then
+        cp -a #{provisioning_source_path}/consul//consul_connect.json /etc/consul/conf.d/connect.json
+        dos2unix /etc/consul/conf.d/connect.json
+      fi
+
       # TLS files
       if [ -f #{provisioning_source_path}/consul/certs/consul_cert.key ]; then
         cp -a #{provisioning_source_path}/consul/certs/consul_cert.key /etc/consul/conf.d/certs/cert.key

@@ -103,6 +103,13 @@ firewall_rule 'consul-https' do
   direction :in
 end
 
+firewall_rule 'consul-grpc' do
+  command :allow
+  description 'Allow Consul GRPC traffic'
+  dest_port 8502
+  direction :in
+end
+
 firewall_rule 'consul-dns' do
   command :allow
   description 'Allow Consul DNS traffic'
