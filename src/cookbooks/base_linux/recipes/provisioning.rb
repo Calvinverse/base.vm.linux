@@ -132,10 +132,13 @@ file "#{provision_config_path}/provision_consul.sh" do
 
         cat <<JSON >> /etc/consul/conf.d/tls.json
     {
-      "verify_incoming": true,
+      "verify_incoming": false,
       "verify_outgoing": true,
       "verify_server_hostname": true,
-      "ca_file": "/etc/consul/conf.d/certs/bundle.crt"
+      "ca_file": "/etc/consul/conf.d/certs/bundle.crt",
+      "auto_encrypt": {
+        "allow_tls": true
+      }
     }
     JSON
       fi
