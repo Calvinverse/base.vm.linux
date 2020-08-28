@@ -137,7 +137,7 @@ file "#{provision_config_path}/provision_consul.sh" do
       "verify_server_hostname": true,
       "ca_file": "/etc/consul/conf.d/certs/bundle.crt",
       "auto_encrypt": {
-        "allow_tls": true
+        "tls": true
       }
     }
     JSON
