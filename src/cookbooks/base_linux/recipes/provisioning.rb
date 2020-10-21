@@ -102,8 +102,8 @@ file "#{provision_config_path}/provision_consul.sh" do
       dos2unix /etc/consul/conf.d/secrets.json
 
       # Connect
-      if [ -f #{provisioning_source_path}/consul//consul_connect.json ]; then
-        cp -a #{provisioning_source_path}/consul//consul_connect.json /etc/consul/conf.d/connect.json
+      if [ -f #{provisioning_source_path}/consul/consul_connect.json ]; then
+        cp -a #{provisioning_source_path}/consul/consul_connect.json /etc/consul/conf.d/connect.json
         dos2unix /etc/consul/conf.d/connect.json
       fi
 
