@@ -23,6 +23,14 @@ describe 'base_linux::consul' do
       )
     end
 
+    it 'creates the consul cert directory' do
+      expect(chef_run).to create_directory('/etc/consul/conf.d/certs').with(
+        group: 'consul',
+        owner: 'consul',
+        mode: '0750'
+      )
+    end
+
     it 'imports the consul recipe' do
       expect(chef_run).to include_recipe('consul::default')
     end
@@ -70,6 +78,22 @@ describe 'base_linux::consul' do
       expect(chef_run).to create_firewall_rule('consul-http').with(
         command: :allow,
         dest_port: 8500,
+        direction: :in
+      )
+    end
+
+    it 'opens the Consul HTTPS port' do
+      expect(chef_run).to create_firewall_rule('consul-https').with(
+        command: :allow,
+        dest_port: 8501,
+        direction: :in
+      )
+    end
+
+    it 'opens the Consul GRPC port' do
+      expect(chef_run).to create_firewall_rule('consul-grpc').with(
+        command: :allow,
+        dest_port: 8502,
         direction: :in
       )
     end

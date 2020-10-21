@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project
+    DefaultTargets="Run"
+    ToolsVersion="14.0"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+        **** PREPARE - GENERATE FILES ****
+    -->
+    <PropertyGroup
+        Condition=" '$(ShouldCreateHyperVImage)' == 'true' ">
+        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-$(LinuxMajorVersion).$(LinuxMinorVersion).3</LinuxImage>
+        <IsoFile>$(IsoDirectory)\$(LinuxImage.ToLower())-server-amd64.iso</IsoFile>
+        <IsoHash>7d8e0055d663bffa27c1718685085626cb59346e7626ba3d3f476322271f573e</IsoHash>
+    </PropertyGroup>
+    <ItemGroup
+        Condition=" '$(ShouldCreateHyperVImage)' == 'true' ">
+
+        <TemplateTokens Include="ImageName">
+            <ReplacementValue>$(LinuxImage.Replace(' ', '-').Replace('.', '-').ToLower())</ReplacementValue>
+        </TemplateTokens>
+
+        <TemplateTokens Include="LocalAdministratorName">
+            <ReplacementValue>thebigkahuna</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="LocalAdministratorPassword">
+            <ReplacementValue>TheB1gK@huna</ReplacementValue>
+        </TemplateTokens>
+
+        <TemplateTokens Include="IsoFileEscaped">
+            <ReplacementValue>$(IsoFile.Replace('\', '/'))</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="IsoFileHash">
+            <ReplacementValue>$(IsoHash)</ReplacementValue>
+        </TemplateTokens>
+
+        <TemplateTokens Include="VmSwitch">
+            <ReplacementValue>VM-LAN</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="VmSwitchVlan">
+            <ReplacementValue></ReplacementValue>
+        </TemplateTokens>
+
+        <!-- For the .isospec file -->
+        <TemplateTokens Include="DirBuildTempIso">
+            <ReplacementValue>$(DirBuildTempIso)</ReplacementValue>
+        </TemplateTokens>
+        <TemplateTokens Include="DirTestsIntegration">
+            <ReplacementValue>$(DirTestsIntegration)</ReplacementValue>
+        </TemplateTokens>
+    </ItemGroup>
+</Project>

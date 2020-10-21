@@ -1,7 +1,7 @@
-# base.linux
+# base.vm.linux
 
-This repository contains the code used to build an Ubuntu Hyper-V VM hard disk containing the
-base operating system and tools that are required by all Linux resources.
+This repository contains the code used to build images containing the base operating system and tools
+that are required by all Linux resources. Images can be created for Hyper-V or Azure.
 
 ## Image
 
@@ -41,9 +41,10 @@ configure the following tools and services:
 For provisoning reasons a [systemd](https://wiki.ubuntu.com/systemd) [daemon](https://en.wikipedia.org/wiki/Daemon_(computing))
 called `provision` is added which:
 
-* Read the files on the DVD drive and:
+* Read the files on the DVD drive (for Hyper-V) or from the `/run/cloud-init` directory (for Azure
+  using [cloud-init](https://cloudinit.readthedocs.io/en/latest/)) and:
   * Disable SSH if the `allow_ssh.json` file does not exist
-  * Copy the configuration files for consul, syslog-ng, telegraf and unbound
+  * Copy the configuration files and certificates for consul, syslog-ng, telegraf and unbound
   * Enable all the deamons for the afore mentioned services
   * Execute the resource specific provisioning steps found in the `f_provisionImage` function in
     `/etc/init.d/provision_image.sh` file.
@@ -53,9 +54,47 @@ called `provision` is added which:
   * `<MINOR>` - The minor version number
   * `<PATCH>` - The patch version number
   * `<16_CHARACTER_RANDOM_STRING>` - A cryptographically random string of 16 characters
-* Eject the DVD
+* Eject the DVD if the provisioning files were obtained from DVD
 * Restart the machine to ensure that all changes are locked in and so that the machine comes up
   with the new machine name
+
+#### Consul config files
+
+For Consul there are a number of configuration files that are expected in the provisioning location.
+For server and client nodes they are:
+
+* **consul/consul_region.json** - Contains the Consul datacenter and domain information
+* **consul/consul_secrets.json** - Contains the [gossip encrypt](https://www.consul.io/docs/security/encryption#gossip-encryption) key
+* [Optional] **consul/consul_connect.json** - Contains the configuration for Consul Connect
+* [Optional] **consul/certs/consul_cert.key** - The key file for the certificate that Consul is going
+  to use to encrypt node to node communication.
+* [Optional] **consul/certs/consul_cert.crt** - The certificate file for the certificate that Consul
+  is going to use to encrypt node to node communication
+* [Optional] **consul/certs/consul_cert_bundle.crt** - The certificate bundle containing the root
+  certificates for the node to node communication encryption
+
+For client nodes also provide:
+
+* **consul/client/consul_client_location.json** - Contains the configuration entries that tell Consul
+  how to connect to the cluster
+
+For server nodes specifically also provide:
+
+* **consul/server/consul_server_bootstrap.json** - Contains the Consul bootstrap information
+* **consul/server/consul_server_location.json** - Contains the configuration entries that tell Consul
+  how to connect to the other cluster nodes
+
+For examples on how to configure for Hyper-V please look at the configuration folder in the
+[calvinverse.configuration](https://github.com/Calvinverse/calvinverse.configuration/tree/master/config/iso/shared/consul) repository. For examples on how to configure when using Azure review the `cloud-init`
+files in the [infrastructure.azure.core.servicediscovery](https://github.com/Calvinverse/calvinverse.configuration/tree/master/config/iso/shared/consul) repository.
+
+#### Unbound config files
+
+For Unbound one configuration file is expected. This file is expected to be found in the provisioning location at: `unbound/unbound_zones.conf` and it is expected to contain the unbound zone information.
+
+For examples on how to configure for Hyper-V please look at the configuration folder in the
+[calvinverse.configuration](https://github.com/Calvinverse/calvinverse.configuration/tree/master/config/iso/shared/unbound) repository. For examples on how to configure when using Azure review the `cloud-init`
+files in the [infrastructure.azure.core.servicediscovery](https://github.com/Calvinverse/calvinverse.configuration/tree/master/config/iso/shared/consul) repository.
 
 ### Logs
 
@@ -82,8 +121,14 @@ The build process follows the standard procedure for
 [building Calvinverse images](https://www.calvinverse.net/documentation/how-to-build). Because the base
 image is build during this process the following differences exist.
 
-* The Ubuntu Server 18.04.3 ISO is obtained from the internal storage as defined by the MsBuild
-  property `IsoDirectory`.
+### Hyper-V images
+
+* In order to build a Hyper-V image the following properties need to be specified as part of the
+  command line used to build the image:
+  * `ShouldCreateHyperVImage` should be set to `true`
+  * The Ubuntu Server 18.04.3 ISO is obtained from the internal storage as defined by the MsBuild
+    property `IsoDirectory`.
+
 * A number of additional scripts and configuration files have to be gathered. Amongst these files is
   the Ubuntu `preseed.cfg` file. The preseed file contains the OS configuration and it is provided
   to the machine when booting from the ISO initially.
@@ -103,6 +148,18 @@ image is build during this process the following differences exist.
       * General use (mounted as `/`)
     * The Hyper-V packages necessary for Hyper-V to connect to Linux
   * Once the OS is installed the standard process will be followed
+
+### Azure images
+
+* In order to build an Azure image the following properties need to be specified as part of the
+  command line used to build the image:
+  * `ShouldCreateAzureImage` should be set to `true`
+  * `AzureClientId` - The client ID of the [service principal](https://www.packer.io/docs/builders/azure/#authentication-for-azure)
+  * `AzureClientCertPath` - The path to the [certificate](https://docs.microsoft.com/en-us/cli/azure/create-an-azure-service-principal-azure-cli?view=azure-cli-latest) for the service principal
+  * `AzureLocation` - The name of the Azure region in which the image should be created
+  * `AzureImageResourceGroup` - The name of the resource group into which the image should be stored
+  * `AzureSubscriptionId` - The subscription ID
+
 
 ## Deploy
 

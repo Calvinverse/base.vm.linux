@@ -209,6 +209,7 @@
         <DirTestsIntegration>$(DirTests)\integration</DirTestsIntegration>
         <DirTestsIntegrationPacker>$(DirTestsIntegration)\packer</DirTestsIntegrationPacker>
         <DirTestsIntegrationPester>$(DirTestsIntegration)\pester</DirTestsIntegrationPester>
+        <DirTestsIntegrationProvision>$(DirTestsIntegration)\provision</DirTestsIntegrationProvision>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -349,10 +350,8 @@
         <!-- <TemplateTokenGenerators>UNDEFINED</TemplateTokenGenerators> -->
     </PropertyGroup>
     <PropertyGroup>
-        <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-18.04.3</LinuxImage>
-
-        <IsoFile>$(IsoDirectory)\$(LinuxImage.ToLower())-server-amd64.iso</IsoFile>
-        <IsoHash>7d8e0055d663bffa27c1718685085626cb59346e7626ba3d3f476322271f573e</IsoHash>
+        <LinuxMajorVersion Condition=" '$(LinuxMajorVersion)' == '' ">18</LinuxMajorVersion>
+        <LinuxMinorVersion Condition=" '$(LinuxMinorVersion)' == '' ">04</LinuxMinorVersion>
     </PropertyGroup>
 
     <!--
@@ -364,18 +363,14 @@
         <TemplateTokens Include="ProductShortName">
             <ReplacementValue>$(ProductName.Replace('.', '-').ToLower())</ReplacementValue>
         </TemplateTokens>
-        <TemplateTokens Include="LocalAdministratorName">
-            <ReplacementValue>thebigkahuna</ReplacementValue>
+
+        <TemplateTokens Include="ImageMajorVersion">
+            <ReplacementValue>$(LinuxMajorVersion)</ReplacementValue>
         </TemplateTokens>
-        <TemplateTokens Include="LocalAdministratorPassword">
-            <ReplacementValue>TheB1gK@huna</ReplacementValue>
+        <TemplateTokens Include="ImageMinorVersion">
+            <ReplacementValue>$(LinuxMinorVersion)</ReplacementValue>
         </TemplateTokens>
-        <TemplateTokens Include="LinuxImage">
-            <ReplacementValue>$(LinuxImage)</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="ImageName">
-            <ReplacementValue>$(LinuxImage.Replace(' ', '-').Replace('.', '-').ToLower())</ReplacementValue>
-        </TemplateTokens>
+
         <TemplateTokens Include="SysprepHostName">
             <ReplacementValue>UbuntuTemplate_$([System.DateTime]::Now.ToString('yyyyMMdd'))</ReplacementValue>
         </TemplateTokens>
@@ -384,19 +379,8 @@
             <ReplacementValue>0.19.5</ReplacementValue>
         </TemplateTokens>
 
-        <TemplateTokens
-            Include="NetworkHostIpAddressForPreseed">
-            <ReplacementValue>192.168.3.73</ReplacementValue>
-        </TemplateTokens>
 
         <!-- For the Packer config -->
-        <TemplateTokens Include="IsoFileEscaped">
-            <ReplacementValue>$(IsoFile.Replace('\', '/'))</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="IsoFileHash">
-            <ReplacementValue>$(IsoHash)</ReplacementValue>
-        </TemplateTokens>
-
         <TemplateTokens Include="NameCookbook">
             <ReplacementValue>$(NameCookbook)</ReplacementValue>
         </TemplateTokens>
@@ -413,21 +397,20 @@
         <TemplateTokens Include="DirDeployJsonEscaped">
             <ReplacementValue>$(DirBuildDeploy.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
-        <TemplateTokens Include="VmSwitch">
-            <ReplacementValue>VM-LAN</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="VmSwitchVlan">
-            <ReplacementValue></ReplacementValue>
-        </TemplateTokens>
-
-        <!-- For the .isospec file -->
-        <TemplateTokens Include="DirBuildTempIso">
-            <ReplacementValue>$(DirBuildTempIso)</ReplacementValue>
-        </TemplateTokens>
-        <TemplateTokens Include="DirTestsIntegration">
-            <ReplacementValue>$(DirTestsIntegration)</ReplacementValue>
+        <TemplateTokens Include="DirTestsIntegrationProvisionJsonEscaped">
+            <ReplacementValue>$(DirTestsIntegrationProvision.Replace('\', '/'))</ReplacementValue>
         </TemplateTokens>
     </ItemGroup>
+
+    <Import
+        Condition="Exists('$(MSBuildThisFileDirectory)packer.azure.props') AND '$(ShouldCreateAzureImage)' == 'true' "
+        Project="$(MSBuildThisFileDirectory)packer.azure.props" />
+
+    <Import
+        Condition="Exists('$(MSBuildThisFileDirectory)packer.hyperv.props') AND '$(ShouldCreateHyperVImage)' == 'true' "
+        Project="$(MSBuildThisFileDirectory)packer.hyperv.props" />
+
+
 
 
 
@@ -457,7 +440,7 @@
             The full path and version to the packer command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
-        <ToolsExternalPackerVersion>1.3.4</ToolsExternalPackerVersion>
+        <ToolsExternalPackerVersion>1.6.0</ToolsExternalPackerVersion>
     </PropertyGroup>
 
 
@@ -473,7 +456,7 @@
     -->
 
     <PropertyGroup>
-        <OpsConfigurationVersion>0.3</OpsConfigurationVersion>
+        <OpsConfigurationVersion>1.0</OpsConfigurationVersion>
     </PropertyGroup>
 
     <!--
@@ -481,7 +464,7 @@
         NuGet if no package is specified in the packages.config file.
     -->
     <PropertyGroup>
-        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">0.3.0</PackageMinimumVersion>
-        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">0.4.0</PackageMaximumVersion>
+        <PackageMinimumVersion Condition=" '$(PackageMinimumVersion)' == '' ">1.2.0</PackageMinimumVersion>
+        <PackageMaximumVersion Condition=" '$(PackageMaximumVersion)' == '' ">2.0.0</PackageMaximumVersion>
     </PropertyGroup>
 </Project>

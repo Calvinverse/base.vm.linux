@@ -18,10 +18,11 @@ end
 
 consul_config_path = '/etc/consul'
 consul_additional_config_path = '/etc/consul/conf.d'
+consul_cert_path = '/etc/consul/conf.d/certs'
 
 # Set the permissions on the consul configuration paths so that consul can read and write
 # It will later write the data folder to this location so it needs access
-%W[#{consul_config_path} #{consul_additional_config_path}].each do |path|
+%W[#{consul_config_path} #{consul_additional_config_path} #{consul_cert_path}].each do |path|
   directory path do
     action :create
     group node['consul']['service_group']
@@ -92,6 +93,20 @@ firewall_rule 'consul-http' do
   command :allow
   description 'Allow Consul HTTP traffic'
   dest_port 8500
+  direction :in
+end
+
+firewall_rule 'consul-https' do
+  command :allow
+  description 'Allow Consul HTTPS traffic'
+  dest_port 8501
+  direction :in
+end
+
+firewall_rule 'consul-grpc' do
+  command :allow
+  description 'Allow Consul GRPC traffic'
+  dest_port 8502
   direction :in
 end
 
