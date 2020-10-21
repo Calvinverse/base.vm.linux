@@ -29,6 +29,8 @@ end
 # CONFIGURE THE PROVISIONING SCRIPT
 #
 
+provisioning_source_path = node['provision']['source_path']
+
 # Create the script containing the helper functions
 file "#{provision_config_path}/provision_helpers.sh" do
   action :create
@@ -55,7 +57,7 @@ file "#{provision_config_path}/provision_network_interfaces.sh" do
     #!/bin/bash
 
     function f_provisionNetworkInterfaces {
-      cp -a /mnt/dvd/consul/consul_region.json /tmp/region.json
+      cp -a #{provisioning_source_path}/consul/consul_region.json /tmp/region.json
       dos2unix /tmp/region.json
       DOMAIN=$(jq -r .domain /tmp/region.json)
       rm -rf /tmp/region.json
@@ -93,31 +95,79 @@ file "#{provision_config_path}/provision_consul.sh" do
       sudo systemctl stop consul.service
       sudo rm -rfv /var/lib/consul/*
 
-      cp -a /mnt/dvd/consul/consul_region.json /etc/consul/conf.d/region.json
+      cp -a #{provisioning_source_path}/consul/consul_region.json /etc/consul/conf.d/region.json
       dos2unix /etc/consul/conf.d/region.json
 
-      cp -a /mnt/dvd/consul/consul_secrets.json /etc/consul/conf.d/secrets.json
+      cp -a #{provisioning_source_path}/consul/consul_secrets.json /etc/consul/conf.d/secrets.json
       dos2unix /etc/consul/conf.d/secrets.json
 
+      # Connect
+      if [ -f #{provisioning_source_path}/consul/consul_connect.json ]; then
+        cp -a #{provisioning_source_path}/consul/consul_connect.json /etc/consul/conf.d/connect.json
+        dos2unix /etc/consul/conf.d/connect.json
+      fi
+
+      # TLS files
+      if [ -f #{provisioning_source_path}/consul/certs/consul_cert.key ]; then
+        cp -a #{provisioning_source_path}/consul/certs/consul_cert.key /etc/consul/conf.d/certs/cert.key
+        dos2unix /etc/consul/conf.d/certs/cert.key
+      fi
+
+      if [ -f #{provisioning_source_path}/consul/certs/consul_cert.crt ]; then
+        cp -a #{provisioning_source_path}/consul/certs/consul_cert.crt /etc/consul/conf.d/certs/cert.crt
+        dos2unix /etc/consul/conf.d/certs/cert.crt
+      fi
+
+      if [ -f #{provisioning_source_path}/consul/certs/consul_cert_bundle.crt ]; then
+        cp -a #{provisioning_source_path}/consul/certs/consul_cert_bundle.crt /etc/consul/conf.d/certs/bundle.crt
+        dos2unix /etc/consul/conf.d/certs/bundle.crt
+      fi
+
       # Copy the consul client files if they exist
-      if [ -f /mnt/dvd/consul/client/consul_client_location.json ]; then
-        cp -a /mnt/dvd/consul/client/consul_client_location.json /etc/consul/conf.d/location.json
+      if [ -f #{provisioning_source_path}/consul/client/consul_client_location.json ]; then
+        cp -a #{provisioning_source_path}/consul/client/consul_client_location.json /etc/consul/conf.d/location.json
         dos2unix /etc/consul/conf.d/location.json
 
         echo 'CONSUL_SERVER_OR_CLIENT=client' >> /etc/environment
+
+        cat <<JSON >> /etc/consul/conf.d/tls.json
+    {
+      "verify_incoming": false,
+      "verify_outgoing": true,
+      "verify_server_hostname": true,
+      "ca_file": "/etc/consul/conf.d/certs/bundle.crt",
+      "auto_encrypt": {
+        "tls": true
+      }
+    }
+    JSON
       fi
 
       # Copy the consul server files if they exist
-      if [ -f /mnt/dvd/consul/server/consul_server_bootstrap.json ]; then
-        cp -a /mnt/dvd/consul/server/consul_server_bootstrap.json /etc/consul/conf.d/bootstrap.json
+      if [ -f #{provisioning_source_path}/consul/server/consul_server_bootstrap.json ]; then
+        cp -a #{provisioning_source_path}/consul/server/consul_server_bootstrap.json /etc/consul/conf.d/bootstrap.json
         dos2unix /etc/consul/conf.d/bootstrap.json
       fi
 
-      if [ -f /mnt/dvd/consul/server/consul_server_location.json ]; then
-        cp -a /mnt/dvd/consul/server/consul_server_location.json /etc/consul/conf.d/location.json
+      if [ -f #{provisioning_source_path}/consul/server/consul_server_location.json ]; then
+        cp -a #{provisioning_source_path}/consul/server/consul_server_location.json /etc/consul/conf.d/location.json
         dos2unix /etc/consul/conf.d/location.json
 
         echo 'CONSUL_SERVER_OR_CLIENT=server' >> /etc/environment
+
+        cat <<JSON >> /etc/consul/conf.d/tls.json
+    {
+      "verify_incoming": true,
+      "verify_outgoing": true,
+      "verify_server_hostname": true,
+      "key_file": "/etc/consul/conf.d/certs/cert.key",
+      "cert_file": "/etc/consul/conf.d/certs/cert.crt",
+      "ca_file": "/etc/consul/conf.d/certs/bundle.crt",
+      "auto_encrypt": {
+        "allow_tls": true
+      }
+    }
+    JSON
       fi
     }
   BASH
@@ -146,7 +196,7 @@ file "#{provision_config_path}/provision_unbound.sh" do
     #!/bin/bash
 
     function f_provisionUnbound {
-      cp -a /mnt/dvd/unbound/unbound_zones.conf /etc/unbound/unbound.conf.d/unbound_zones.conf
+      cp -a #{provisioning_source_path}/unbound/unbound_zones.conf /etc/unbound/unbound.conf.d/unbound_zones.conf
       dos2unix /etc/unbound/unbound.conf.d/unbound_zones.conf
 
       sudo systemctl restart unbound.service
@@ -171,15 +221,18 @@ file "#{provision_config_path}/provision.sh" do
 
     FLAG="/var/log/firstboot.log"
     if [ ! -f $FLAG ]; then
-      #
-      # MOUNT THE DVD WITH THE CONFIGURATION FILES
-      #
-      if [ ! -d /mnt/dvd ]; then
-        mkdir /mnt/dvd
+      SHOULD_MOUNT_DVD='#{node['provision']['use_dvd']}'
+      if [ "$SHOULD_MOUNT_DVD" == 'true' ]; then
+        #
+        # MOUNT THE DVD WITH THE CONFIGURATION FILES
+        #
+        if [ ! -d #{provisioning_source_path} ]; then
+          mkdir #{provisioning_source_path}
+        fi
+        mount /dev/dvd #{provisioning_source_path}
       fi
-      mount /dev/dvd /mnt/dvd
 
-      if [ ! -f /mnt/dvd/run_provisioning.json ]; then
+      if [ ! -f #{provisioning_source_path}/run_provisioning.json ]; then
         umount /dev/dvd
         echo 'run_provisioning.json not found on DVD. Will not execute provisioning'
         exit 0
@@ -189,7 +242,7 @@ file "#{provision_config_path}/provision.sh" do
       # CONFIGURE SSH
       #
       # If the allow SSH file is not there, disable SSH in the firewall
-      if [ ! -f /mnt/dvd/allow_ssh.json ]; then
+      if [ ! -f #{provisioning_source_path}/allow_ssh.json ]; then
         ufw deny 22
       fi
 
@@ -229,8 +282,10 @@ file "#{provision_config_path}/provision.sh" do
       #
       # UNMOUNT DVD
       #
-      umount /dev/dvd
-      eject -T /dev/dvd
+      if [ "$SHOULD_MOUNT_DVD" == 'true' ]; then
+        umount /dev/dvd
+        eject -T /dev/dvd
+      fi
 
       # The next line creates an empty file so it won't run the next boot
       touch $FLAG

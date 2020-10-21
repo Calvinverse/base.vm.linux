@@ -104,7 +104,9 @@
         All file paths allow build templates, e.g. $(DirBuildDeploy)\myarchive-${VersionSemantic}.zip.
     -->
     <ItemGroup>
-        <ArchivePackageSpecs Include="$(DirSrc)\**\*.zipspec" />
+        <ArchivePackageSpecs
+            Condition=" '$(ShouldCreateHyperVImage)' == 'true' "
+            Include="$(DirSrcPacker)\hyperv.zipspec" />
     </ItemGroup>
 
 
@@ -133,10 +135,17 @@
     -->
     <ItemGroup Condition=" '$(ShouldLoadPackerImagesToBuild)' == 'true' ">
         <PackerImagesToBuild
-            Condition=" '$(IsBuild)' == 'true'  "
-            Include="$(DirBuildTempBuildPacker)\packer.json">
+            Condition=" '$(IsBuild)' == 'true' AND '$(ShouldCreateAzureImage)' == 'true' "
+            Include="$(DirBuildTempBuildPacker)\azure.json">
             <Variables>
-                $(DirBuildTempBuildPacker)\packer_variables.json
+                $(DirBuildTempBuildPacker)\azure_variables.json
+            </Variables>
+        </PackerImagesToBuild>
+        <PackerImagesToBuild
+            Condition=" '$(IsBuild)' == 'true' AND '$(ShouldCreateHyperVImage)' == 'true' "
+            Include="$(DirBuildTempBuildPacker)\hyperv.json">
+            <Variables>
+                $(DirBuildTempBuildPacker)\hyperv_variables.json
             </Variables>
         </PackerImagesToBuild>
     </ItemGroup>

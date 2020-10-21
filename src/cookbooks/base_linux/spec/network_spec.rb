@@ -41,7 +41,7 @@ describe 'base_linux::network' do
 
     it 'installs the unbound binaries' do
       expect(chef_run).to install_apt_package('unbound').with(
-        version: '1.6.7-1ubuntu2.2'
+        version: '1.6.7-1ubuntu2.3'
       )
     end
   end
