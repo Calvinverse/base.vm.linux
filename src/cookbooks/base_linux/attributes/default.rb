@@ -126,8 +126,8 @@ default['syslog_ng']['custom_config_path'] = '/etc/syslog-ng/conf.d'
 default['telegraf']['service_user'] = 'telegraf'
 default['telegraf']['service_group'] = 'telegraf'
 
-default['telegraf']['version'] = '1.15.2-1'
-default['telegraf']['shasums'] = 'b539ed52df8ec63258ea97e91cc1145333b0345bca3f5863bebfca60df6f46e9'
+default['telegraf']['version'] = '1.18.2-1'
+default['telegraf']['shasums'] = '7d895e2219fd24fff0d8e4e521d2a2369e0fb7b76f2a9cd7593456b808a3eef9'
 default['telegraf']['download_urls'] = 'https://dl.influxdata.com/telegraf/releases'
 
 default['telegraf']['consul_template_file'] = 'telegraf.ctmpl'
