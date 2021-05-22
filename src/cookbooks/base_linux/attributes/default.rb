@@ -33,7 +33,7 @@ default['consul']['config']['disable_remote_exec'] = true
 default['consul']['config']['disable_update_check'] = true
 
 # Discard the results of service checks so the output doesn't get logged
-default['consul']['config']['discard_update_check'] = true
+# default['consul']['config']['discard_update_check'] = true
 
 # Set the DNS configuration
 default['consul']['config']['dns_config'] = {
