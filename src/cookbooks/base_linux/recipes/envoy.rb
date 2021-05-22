@@ -19,6 +19,6 @@ end
 %w[getenvoy-envoy].each do |pkg|
   apt_package pkg do
     action :install
-    version '1.14.2.p0.g1a0363c-1p66.gfbeeb15'
+    version '1.16.3.p0.gc4b7ab8-1p74.gbb8060d'
   end
 end
