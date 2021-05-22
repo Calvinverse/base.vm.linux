@@ -130,7 +130,8 @@ file "#{provision_config_path}/provision_consul.sh" do
 
         echo 'CONSUL_SERVER_OR_CLIENT=client' >> /etc/environment
 
-        cat <<JSON >> /etc/consul/conf.d/tls.json
+        if [ -f #{provisioning_source_path}/consul/certs/consul_cert_bundle.crt ]; then
+          cat <<JSON >> /etc/consul/conf.d/tls.json
     {
       "verify_incoming": false,
       "verify_outgoing": true,
@@ -141,6 +142,7 @@ file "#{provision_config_path}/provision_consul.sh" do
       }
     }
     JSON
+        fi
       fi
 
       # Copy the consul server files if they exist
@@ -155,6 +157,7 @@ file "#{provision_config_path}/provision_consul.sh" do
 
         echo 'CONSUL_SERVER_OR_CLIENT=server' >> /etc/environment
 
+        if [ -f #{provisioning_source_path}/consul/certs/consul_cert_bundle.crt ]; then
         cat <<JSON >> /etc/consul/conf.d/tls.json
     {
       "verify_incoming": true,
@@ -168,6 +171,7 @@ file "#{provision_config_path}/provision_consul.sh" do
       }
     }
     JSON
+        fi
       fi
     }
   BASH
