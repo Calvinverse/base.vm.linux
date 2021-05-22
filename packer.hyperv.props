@@ -40,6 +40,11 @@
             <ReplacementValue></ReplacementValue>
         </TemplateTokens>
 
+         <TemplateTokens
+            Include="NetworkHostIpAddressForPreseed">
+            <ReplacementValue>192.168.3.73</ReplacementValue>
+        </TemplateTokens>
+
         <!-- For the .isospec file -->
         <TemplateTokens Include="DirBuildTempIso">
             <ReplacementValue>$(DirBuildTempIso)</ReplacementValue>
