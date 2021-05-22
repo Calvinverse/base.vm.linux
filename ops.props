@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project
     DefaultTargets="Run"
     ToolsVersion="14.0"
@@ -352,6 +352,7 @@
     <PropertyGroup>
         <LinuxMajorVersion Condition=" '$(LinuxMajorVersion)' == '' ">18</LinuxMajorVersion>
         <LinuxMinorVersion Condition=" '$(LinuxMinorVersion)' == '' ">04</LinuxMinorVersion>
+        <LinuxPatchVersion Condition=" '$(LinuxPatchVersion)' == '' ">4</LinuxPatchVersion>
     </PropertyGroup>
 
     <!--
