@@ -1,33 +1,11 @@
 {
-    "variables": {
-        "admin_username": "admin",
-        "admin_password": "admin",
-
-        "cookbook_name": "not_realy_a_cookbook_name",
-
-        "dir_cookbooks_src": "src/cookbooks",
-        "dir_cookbooks_vendors": "packages/vendor/cookbooks",
-        "dir_deploy": null,
-        "dir_http_user": null,
-        "dir_scripts_user": null,
-        "dir_temp": null,
-
-        "iso_checksum": null,
-        "iso_url": null,
-
-        "vm_name": "not_really_a_vm_name",
-        "vm_ram_size_in_mb": "1024",
-        "vm_switch_name": "this_switch_does_not_exist",
-        "vm_switch_vlan": ""
-    },
     "builders": [
         {
-            "boot_wait": "1s",
             "boot_command": [
                 "<esc><wait10><esc><esc><enter><wait>",
                 "set gfxpayload=1024x768<enter>",
                 "linux /install/vmlinuz ",
-                "preseed/url=http://{{ .HTTPIP }}:{{.HTTPPort}}/preseed.cfg ",
+                "preseed/url=http://${NetworkHostIpAddressForPreseed}:{{.HTTPPort}}/preseed.cfg ",
                 "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
                 "hostname={{.Name}} ",
                 "fb=false debconf/frontend=noninteractive ",
@@ -36,6 +14,7 @@
                 "initrd /install/initrd.gz<enter>",
                 "boot<enter>"
             ],
+            "boot_wait": "1s",
             "communicator": "ssh",
             "disk_block_size": "1",
             "enable_dynamic_memory": false,
@@ -46,12 +25,11 @@
             "guest_additions_mode": "disable",
             "headless": true,
             "http_directory": "{{ user `dir_http_user` }}",
-            "http_port_min": 8150,
             "http_port_max": 8160,
-            "iso_url": "{{user `iso_url`}}",
-            "iso_checksum_type": "sha256",
-            "iso_checksum": "{{user `iso_checksum`}}",
+            "http_port_min": 8150,
+            "iso_checksum": "sha256:{{user `iso_checksum`}}",
             "iso_target_path": "{{ user `dir_temp` }}/packer",
+            "iso_url": "{{user `iso_url`}}",
             "memory": "{{user `vm_ram_size_in_mb`}}",
             "output_directory": "{{ user `dir_temp` }}/{{ user `vm_name` }}",
             "secure_boot_template": "MicrosoftUEFICertificateAuthority",
@@ -66,11 +44,11 @@
     ],
     "provisioners": [
         {
-            "type": "shell",
             "execute_command": "echo '{{user `admin_password`}}' | sudo -S sh {{.Path}}",
             "scripts": [
                 "{{ user `dir_scripts_user` }}/ubuntu/update.sh"
-            ]
+            ],
+            "type": "shell"
         },
         {
             "expect_disconnect": false,
@@ -92,7 +70,7 @@
             ],
             "execute_command": "sudo -E chef-solo --no-color -c {{.ConfigPath}} -j {{.JsonPath}} --chef-license accept-no-persist --log_level info",
             "guest_os_type": "unix",
-            "install_command": "curl -LO https://omnitruck.chef.io/install.sh && {{if .Sudo}}sudo{{end}} bash ./install.sh -v 16.3.45 && rm install.sh",
+            "install_command": "curl -LO https://omnitruck.chef.io/install.sh \u0026\u0026 {{if .Sudo}}sudo{{end}} bash ./install.sh -v 16.3.45 \u0026\u0026 rm install.sh",
             "run_list": [
                 "{{ user `cookbook_name` }}::default"
             ],
@@ -106,19 +84,36 @@
             "type": "shell"
         },
         {
-            "destination" : "{{ user `dir_temp` }}/installed_packages.txt",
-            "direction" : "download",
-            "source" : "/tmp/packages.txt",
-            "type" : "file"
+            "destination": "{{ user `dir_temp` }}/installed_packages.txt",
+            "direction": "download",
+            "source": "/tmp/packages.txt",
+            "type": "file"
         },
         {
-            "type": "shell",
             "execute_command": "sudo -E sh {{.Path}}",
             "scripts": [
                 "{{ user `dir_scripts_user` }}/ubuntu/network.sh",
                 "{{ user `dir_scripts_user` }}/ubuntu/cleanup.sh",
                 "{{ user `dir_scripts_user` }}/ubuntu/sysprep.sh"
-            ]
+            ],
+            "type": "shell"
         }
-    ]
+    ],
+    "variables": {
+        "admin_password": "admin",
+        "admin_username": "admin",
+        "cookbook_name": "not_realy_a_cookbook_name",
+        "dir_cookbooks_src": "src/cookbooks",
+        "dir_cookbooks_vendors": "packages/vendor/cookbooks",
+        "dir_deploy": null,
+        "dir_http_user": null,
+        "dir_scripts_user": null,
+        "dir_temp": null,
+        "iso_checksum": null,
+        "iso_url": null,
+        "vm_name": "not_really_a_vm_name",
+        "vm_ram_size_in_mb": "1024",
+        "vm_switch_name": "this_switch_does_not_exist",
+        "vm_switch_vlan": ""
+    }
 }

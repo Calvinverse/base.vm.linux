@@ -16,6 +16,8 @@ end
 # Include the local recipes
 #
 
+include_recipe 'base_linux::os_packages'
+
 include_recipe 'base_linux::firewall'
 include_recipe 'base_linux::meta'
 
