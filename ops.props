@@ -352,7 +352,7 @@
     <PropertyGroup>
         <LinuxMajorVersion Condition=" '$(LinuxMajorVersion)' == '' ">18</LinuxMajorVersion>
         <LinuxMinorVersion Condition=" '$(LinuxMinorVersion)' == '' ">04</LinuxMinorVersion>
-        <LinuxPatchVersion Condition=" '$(LinuxPatchVersion)' == '' ">4</LinuxPatchVersion>
+        <LinuxPatchVersion Condition=" '$(LinuxPatchVersion)' == '' ">5</LinuxPatchVersion>
     </PropertyGroup>
 
     <!--
