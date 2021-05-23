@@ -352,6 +352,7 @@
     <PropertyGroup>
         <LinuxMajorVersion Condition=" '$(LinuxMajorVersion)' == '' ">18</LinuxMajorVersion>
         <LinuxMinorVersion Condition=" '$(LinuxMinorVersion)' == '' ">04</LinuxMinorVersion>
+        <LinuxPatchVersion Condition=" '$(LinuxPatchVersion)' == '' ">4</LinuxPatchVersion>
     </PropertyGroup>
 
     <!--
@@ -376,7 +377,7 @@
         </TemplateTokens>
 
         <TemplateTokens Include="VersionConsulTemplate">
-            <ReplacementValue>0.19.5</ReplacementValue>
+            <ReplacementValue>0.25.2</ReplacementValue>
         </TemplateTokens>
 
 
@@ -440,7 +441,7 @@
             The full path and version to the packer command line executable. If not defined the packages directory is searched.
         -->
         <ToolsExternalPackerPath>UNDEFINED</ToolsExternalPackerPath>
-        <ToolsExternalPackerVersion>1.6.0</ToolsExternalPackerVersion>
+        <ToolsExternalPackerVersion>1.7.2</ToolsExternalPackerVersion>
     </PropertyGroup>
 
 

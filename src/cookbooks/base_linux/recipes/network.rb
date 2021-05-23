@@ -48,7 +48,7 @@ end
 
 apt_package 'unbound' do
   action :install
-  version '1.6.7-1ubuntu2.3'
+  version '1.6.7-1ubuntu2.4'
 end
 
 #
