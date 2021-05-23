@@ -10,7 +10,7 @@
         Condition=" '$(ShouldCreateHyperVImage)' == 'true' ">
         <LinuxImage Condition=" '$(LinuxImage)' == '' ">Ubuntu-$(LinuxMajorVersion).$(LinuxMinorVersion).$(LinuxPatchVersion)</LinuxImage>
         <IsoFile>$(IsoDirectory)\$(LinuxImage.ToLower())-server-amd64.iso</IsoFile>
-        <IsoHash>e2ecdace33c939527cbc9e8d23576381c493b071107207d2040af72595f8990b</IsoHash>
+        <IsoHash>8c5fc24894394035402f66f3824beb7234b757dd2b5531379cb310cedfdf0996</IsoHash>
     </PropertyGroup>
     <ItemGroup
         Condition=" '$(ShouldCreateHyperVImage)' == 'true' ">
