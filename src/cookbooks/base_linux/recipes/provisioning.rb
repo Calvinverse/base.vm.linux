@@ -294,6 +294,17 @@ file "#{provision_config_path}/provision.sh" do
       # The next line creates an empty file so it won't run the next boot
       touch $FLAG
 
+      # Wait 30 seconds
+      if [ -f #{provisioning_source_path}/run_provisioning.json ]; then
+        DELAY=$(jq -r .delay_reboot #{provisioning_source_path}/run_provisioning.json)
+
+        if [ -z "$DELAY" ]; then
+          echo "No reboot delay"
+        else
+          sleep $DELAY
+        fi
+      fi
+
       # restart the machine so that all configuration settings take hold (specifically the change in machine name)
       sudo shutdown -r now
     else
