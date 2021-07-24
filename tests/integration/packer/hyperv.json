@@ -51,7 +51,7 @@
             "inline": [
                 "echo \"Waiting for reboot after provisioning ...\""
             ],
-            "pause_before" : "45s",
+            "pause_before" : "90s",
             "type": "shell"
         },
         {
