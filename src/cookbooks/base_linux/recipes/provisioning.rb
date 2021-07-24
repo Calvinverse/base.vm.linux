@@ -283,17 +283,6 @@ file "#{provision_config_path}/provision.sh" do
       #
       f_setHostName
 
-      #
-      # UNMOUNT DVD
-      #
-      if [ "$SHOULD_MOUNT_DVD" == 'true' ]; then
-        umount /dev/dvd
-        eject -T /dev/dvd
-      fi
-
-      # The next line creates an empty file so it won't run the next boot
-      touch $FLAG
-
       # Wait 30 seconds
       if [ -f #{provisioning_source_path}/run_provisioning.json ]; then
         DELAY=$(jq -r .delay_reboot #{provisioning_source_path}/run_provisioning.json)
@@ -301,9 +290,20 @@ file "#{provision_config_path}/provision.sh" do
         if [ -z "$DELAY" ]; then
           echo "No reboot delay"
         else
+          echo "Waiting for reboot by $DELAY seconds ..."
           sleep $DELAY
         fi
       fi
+
+      #
+      # UNMOUNT DVD
+      #
+      if [ "$SHOULD_MOUNT_DVD" == 'true' ]; then
+        umount /dev/dvd
+      fi
+
+      # The next line creates an empty file so it won't run the next boot
+      touch $FLAG
 
       # restart the machine so that all configuration settings take hold (specifically the change in machine name)
       sudo shutdown -r now
